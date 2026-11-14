@@ -1,0 +1,29 @@
+{
+  "name": "@website-bot-scroll/db",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/client.ts",
+    "./sites": "./src/repositories/sites.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "db:generate": "prisma generate --config prisma7.config.ts",
+    "db:migrate:test": "prisma migrate deploy --config prisma7.config.ts",
+    "lint": "eslint src",
+    "test": "vitest run --no-file-parallelism",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "@website-bot-scroll/config": "workspace:*",
+    "@website-bot-scroll/domain": "workspace:*",
+    "argon2": "0.45.2",
+    "pg": "8.16.3"
+  },
+  "devDependencies": {
+    "@types/pg": "8.15.6",
+    "prisma": "7.10.1"
+  }
+}

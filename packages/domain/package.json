@@ -1,0 +1,15 @@
+{
+  "name": "@website-bot-scroll/domain",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./ids": "./src/ids.ts",
+    "./site": "./src/site.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit"
+  }
+}

@@ -7,6 +7,8 @@
   },
   "scripts": {
     "build": "pnpm -r build",
+    "db:generate": "pnpm --filter @website-bot-scroll/db db:generate",
+    "db:migrate:test": "pnpm --filter @website-bot-scroll/db db:migrate:test",
     "dev": "pnpm --parallel --filter web --filter worker dev",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",

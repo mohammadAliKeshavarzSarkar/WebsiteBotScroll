@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node", "vitest/globals"],
+    "rootDir": ".",
+    "module": "ESNext",
+    "moduleResolution": "Bundler"
+  },
+  "include": ["src/**/*.ts", "generated/**/*.ts", "prisma7.config.ts"]
+}

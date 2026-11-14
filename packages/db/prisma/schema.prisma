@@ -1,0 +1,97 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Organization {
+  id        String       @id @default(uuid()) @db.Uuid
+  name      String
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+  users     User[]
+  sites     Site[]
+  events    AuditEvent[]
+
+  @@map("organizations")
+}
+
+model User {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  email          String       @unique
+  passwordHash   String       @map("password_hash")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  sessions       Session[]
+  events         AuditEvent[]
+
+  @@index([organizationId])
+  @@map("users")
+}
+
+model Session {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  tokenDigest String   @unique @map("token_digest")
+  expiresAt   DateTime @map("expires_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@map("sessions")
+}
+
+model Site {
+  id             String               @id @default(uuid()) @db.Uuid
+  organizationId String               @map("organization_id") @db.Uuid
+  name           String
+  origin         String
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
+  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  verifications  DomainVerification[]
+  events         AuditEvent[]
+
+  @@unique([organizationId, origin])
+  @@index([organizationId, id])
+  @@map("sites")
+}
+
+model DomainVerification {
+  id        String    @id @default(uuid()) @db.Uuid
+  siteId    String    @map("site_id") @db.Uuid
+  method    String
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  verifiedAt DateTime? @map("verified_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  site      Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId, expiresAt])
+  @@map("domain_verifications")
+}
+
+model AuditEvent {
+  id             String        @id @default(uuid()) @db.Uuid
+  organizationId String        @map("organization_id") @db.Uuid
+  userId         String?       @map("user_id") @db.Uuid
+  siteId         String?       @map("site_id") @db.Uuid
+  action         String
+  targetId       String?       @map("target_id")
+  metadata       Json?
+  createdAt      DateTime      @default(now()) @map("created_at")
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  site           Site?         @relation(fields: [siteId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@index([siteId, createdAt])
+  @@map("audit_events")
+}

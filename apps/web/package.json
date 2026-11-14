@@ -10,7 +10,12 @@
   },
   "dependencies": {
     "@website-bot-scroll/config": "workspace:*",
+    "@website-bot-scroll/db": "workspace:*",
+    "@website-bot-scroll/domain": "workspace:*",
+    "@prisma/client": "7.10.1",
+    "argon2": "0.45.2",
     "next": "16.0.3",
+    "pg": "8.16.3",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },
