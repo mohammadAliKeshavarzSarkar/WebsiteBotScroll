@@ -193,6 +193,7 @@ export type SiteWhereInput = {
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   verifications?: Prisma.DomainVerificationListRelationFilter
   events?: Prisma.AuditEventListRelationFilter
+  crawlRuns?: Prisma.CrawlRunListRelationFilter
 }
 
 export type SiteOrderByWithRelationInput = {
@@ -205,6 +206,7 @@ export type SiteOrderByWithRelationInput = {
   organization?: Prisma.OrganizationOrderByWithRelationInput
   verifications?: Prisma.DomainVerificationOrderByRelationAggregateInput
   events?: Prisma.AuditEventOrderByRelationAggregateInput
+  crawlRuns?: Prisma.CrawlRunOrderByRelationAggregateInput
 }
 
 export type SiteWhereUniqueInput = Prisma.AtLeast<{
@@ -221,6 +223,7 @@ export type SiteWhereUniqueInput = Prisma.AtLeast<{
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   verifications?: Prisma.DomainVerificationListRelationFilter
   events?: Prisma.AuditEventListRelationFilter
+  crawlRuns?: Prisma.CrawlRunListRelationFilter
 }, "id" | "organizationId_origin">
 
 export type SiteOrderByWithAggregationInput = {
@@ -256,6 +259,7 @@ export type SiteCreateInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutSitesInput
   verifications?: Prisma.DomainVerificationCreateNestedManyWithoutSiteInput
   events?: Prisma.AuditEventCreateNestedManyWithoutSiteInput
+  crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutSiteInput
 }
 
 export type SiteUncheckedCreateInput = {
@@ -267,6 +271,7 @@ export type SiteUncheckedCreateInput = {
   updatedAt?: Date | string
   verifications?: Prisma.DomainVerificationUncheckedCreateNestedManyWithoutSiteInput
   events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutSiteInput
+  crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutSiteInput
 }
 
 export type SiteUpdateInput = {
@@ -278,6 +283,7 @@ export type SiteUpdateInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSitesNestedInput
   verifications?: Prisma.DomainVerificationUpdateManyWithoutSiteNestedInput
   events?: Prisma.AuditEventUpdateManyWithoutSiteNestedInput
+  crawlRuns?: Prisma.CrawlRunUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteUncheckedUpdateInput = {
@@ -289,6 +295,7 @@ export type SiteUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   verifications?: Prisma.DomainVerificationUncheckedUpdateManyWithoutSiteNestedInput
   events?: Prisma.AuditEventUncheckedUpdateManyWithoutSiteNestedInput
+  crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteCreateManyInput = {
@@ -411,6 +418,20 @@ export type SiteUncheckedUpdateManyWithoutOrganizationNestedInput = {
   deleteMany?: Prisma.SiteScalarWhereInput | Prisma.SiteScalarWhereInput[]
 }
 
+export type SiteCreateNestedOneWithoutCrawlRunsInput = {
+  create?: Prisma.XOR<Prisma.SiteCreateWithoutCrawlRunsInput, Prisma.SiteUncheckedCreateWithoutCrawlRunsInput>
+  connectOrCreate?: Prisma.SiteCreateOrConnectWithoutCrawlRunsInput
+  connect?: Prisma.SiteWhereUniqueInput
+}
+
+export type SiteUpdateOneRequiredWithoutCrawlRunsNestedInput = {
+  create?: Prisma.XOR<Prisma.SiteCreateWithoutCrawlRunsInput, Prisma.SiteUncheckedCreateWithoutCrawlRunsInput>
+  connectOrCreate?: Prisma.SiteCreateOrConnectWithoutCrawlRunsInput
+  upsert?: Prisma.SiteUpsertWithoutCrawlRunsInput
+  connect?: Prisma.SiteWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SiteUpdateToOneWithWhereWithoutCrawlRunsInput, Prisma.SiteUpdateWithoutCrawlRunsInput>, Prisma.SiteUncheckedUpdateWithoutCrawlRunsInput>
+}
+
 export type SiteCreateNestedOneWithoutVerificationsInput = {
   create?: Prisma.XOR<Prisma.SiteCreateWithoutVerificationsInput, Prisma.SiteUncheckedCreateWithoutVerificationsInput>
   connectOrCreate?: Prisma.SiteCreateOrConnectWithoutVerificationsInput
@@ -449,6 +470,7 @@ export type SiteCreateWithoutOrganizationInput = {
   updatedAt?: Date | string
   verifications?: Prisma.DomainVerificationCreateNestedManyWithoutSiteInput
   events?: Prisma.AuditEventCreateNestedManyWithoutSiteInput
+  crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutSiteInput
 }
 
 export type SiteUncheckedCreateWithoutOrganizationInput = {
@@ -459,6 +481,7 @@ export type SiteUncheckedCreateWithoutOrganizationInput = {
   updatedAt?: Date | string
   verifications?: Prisma.DomainVerificationUncheckedCreateNestedManyWithoutSiteInput
   events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutSiteInput
+  crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutSiteInput
 }
 
 export type SiteCreateOrConnectWithoutOrganizationInput = {
@@ -499,6 +522,66 @@ export type SiteScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Site"> | Date | string
 }
 
+export type SiteCreateWithoutCrawlRunsInput = {
+  id?: string
+  name: string
+  origin: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutSitesInput
+  verifications?: Prisma.DomainVerificationCreateNestedManyWithoutSiteInput
+  events?: Prisma.AuditEventCreateNestedManyWithoutSiteInput
+}
+
+export type SiteUncheckedCreateWithoutCrawlRunsInput = {
+  id?: string
+  organizationId: string
+  name: string
+  origin: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  verifications?: Prisma.DomainVerificationUncheckedCreateNestedManyWithoutSiteInput
+  events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutSiteInput
+}
+
+export type SiteCreateOrConnectWithoutCrawlRunsInput = {
+  where: Prisma.SiteWhereUniqueInput
+  create: Prisma.XOR<Prisma.SiteCreateWithoutCrawlRunsInput, Prisma.SiteUncheckedCreateWithoutCrawlRunsInput>
+}
+
+export type SiteUpsertWithoutCrawlRunsInput = {
+  update: Prisma.XOR<Prisma.SiteUpdateWithoutCrawlRunsInput, Prisma.SiteUncheckedUpdateWithoutCrawlRunsInput>
+  create: Prisma.XOR<Prisma.SiteCreateWithoutCrawlRunsInput, Prisma.SiteUncheckedCreateWithoutCrawlRunsInput>
+  where?: Prisma.SiteWhereInput
+}
+
+export type SiteUpdateToOneWithWhereWithoutCrawlRunsInput = {
+  where?: Prisma.SiteWhereInput
+  data: Prisma.XOR<Prisma.SiteUpdateWithoutCrawlRunsInput, Prisma.SiteUncheckedUpdateWithoutCrawlRunsInput>
+}
+
+export type SiteUpdateWithoutCrawlRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutSitesNestedInput
+  verifications?: Prisma.DomainVerificationUpdateManyWithoutSiteNestedInput
+  events?: Prisma.AuditEventUpdateManyWithoutSiteNestedInput
+}
+
+export type SiteUncheckedUpdateWithoutCrawlRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  verifications?: Prisma.DomainVerificationUncheckedUpdateManyWithoutSiteNestedInput
+  events?: Prisma.AuditEventUncheckedUpdateManyWithoutSiteNestedInput
+}
+
 export type SiteCreateWithoutVerificationsInput = {
   id?: string
   name: string
@@ -507,6 +590,7 @@ export type SiteCreateWithoutVerificationsInput = {
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutSitesInput
   events?: Prisma.AuditEventCreateNestedManyWithoutSiteInput
+  crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutSiteInput
 }
 
 export type SiteUncheckedCreateWithoutVerificationsInput = {
@@ -517,6 +601,7 @@ export type SiteUncheckedCreateWithoutVerificationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutSiteInput
+  crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutSiteInput
 }
 
 export type SiteCreateOrConnectWithoutVerificationsInput = {
@@ -543,6 +628,7 @@ export type SiteUpdateWithoutVerificationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSitesNestedInput
   events?: Prisma.AuditEventUpdateManyWithoutSiteNestedInput
+  crawlRuns?: Prisma.CrawlRunUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteUncheckedUpdateWithoutVerificationsInput = {
@@ -553,6 +639,7 @@ export type SiteUncheckedUpdateWithoutVerificationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   events?: Prisma.AuditEventUncheckedUpdateManyWithoutSiteNestedInput
+  crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteCreateWithoutEventsInput = {
@@ -563,6 +650,7 @@ export type SiteCreateWithoutEventsInput = {
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutSitesInput
   verifications?: Prisma.DomainVerificationCreateNestedManyWithoutSiteInput
+  crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutSiteInput
 }
 
 export type SiteUncheckedCreateWithoutEventsInput = {
@@ -573,6 +661,7 @@ export type SiteUncheckedCreateWithoutEventsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   verifications?: Prisma.DomainVerificationUncheckedCreateNestedManyWithoutSiteInput
+  crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutSiteInput
 }
 
 export type SiteCreateOrConnectWithoutEventsInput = {
@@ -599,6 +688,7 @@ export type SiteUpdateWithoutEventsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSitesNestedInput
   verifications?: Prisma.DomainVerificationUpdateManyWithoutSiteNestedInput
+  crawlRuns?: Prisma.CrawlRunUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteUncheckedUpdateWithoutEventsInput = {
@@ -609,6 +699,7 @@ export type SiteUncheckedUpdateWithoutEventsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   verifications?: Prisma.DomainVerificationUncheckedUpdateManyWithoutSiteNestedInput
+  crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteCreateManyOrganizationInput = {
@@ -627,6 +718,7 @@ export type SiteUpdateWithoutOrganizationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   verifications?: Prisma.DomainVerificationUpdateManyWithoutSiteNestedInput
   events?: Prisma.AuditEventUpdateManyWithoutSiteNestedInput
+  crawlRuns?: Prisma.CrawlRunUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteUncheckedUpdateWithoutOrganizationInput = {
@@ -637,6 +729,7 @@ export type SiteUncheckedUpdateWithoutOrganizationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   verifications?: Prisma.DomainVerificationUncheckedUpdateManyWithoutSiteNestedInput
   events?: Prisma.AuditEventUncheckedUpdateManyWithoutSiteNestedInput
+  crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteUncheckedUpdateManyWithoutOrganizationInput = {
@@ -655,11 +748,13 @@ export type SiteUncheckedUpdateManyWithoutOrganizationInput = {
 export type SiteCountOutputType = {
   verifications: number
   events: number
+  crawlRuns: number
 }
 
 export type SiteCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   verifications?: boolean | SiteCountOutputTypeCountVerificationsArgs
   events?: boolean | SiteCountOutputTypeCountEventsArgs
+  crawlRuns?: boolean | SiteCountOutputTypeCountCrawlRunsArgs
 }
 
 /**
@@ -686,6 +781,13 @@ export type SiteCountOutputTypeCountEventsArgs<ExtArgs extends runtime.Types.Ext
   where?: Prisma.AuditEventWhereInput
 }
 
+/**
+ * SiteCountOutputType without action
+ */
+export type SiteCountOutputTypeCountCrawlRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CrawlRunWhereInput
+}
+
 
 export type SiteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -697,6 +799,7 @@ export type SiteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   verifications?: boolean | Prisma.Site$verificationsArgs<ExtArgs>
   events?: boolean | Prisma.Site$eventsArgs<ExtArgs>
+  crawlRuns?: boolean | Prisma.Site$crawlRunsArgs<ExtArgs>
   _count?: boolean | Prisma.SiteCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["site"]>
 
@@ -734,6 +837,7 @@ export type SiteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   verifications?: boolean | Prisma.Site$verificationsArgs<ExtArgs>
   events?: boolean | Prisma.Site$eventsArgs<ExtArgs>
+  crawlRuns?: boolean | Prisma.Site$crawlRunsArgs<ExtArgs>
   _count?: boolean | Prisma.SiteCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SiteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -749,6 +853,7 @@ export type $SitePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     organization: Prisma.$OrganizationPayload<ExtArgs>
     verifications: Prisma.$DomainVerificationPayload<ExtArgs>[]
     events: Prisma.$AuditEventPayload<ExtArgs>[]
+    crawlRuns: Prisma.$CrawlRunPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1154,6 +1259,7 @@ export interface Prisma__SiteClient<T, Null = never, ExtArgs extends runtime.Typ
   organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   verifications<T extends Prisma.Site$verificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Site$verificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DomainVerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   events<T extends Prisma.Site$eventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Site$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  crawlRuns<T extends Prisma.Site$crawlRunsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Site$crawlRunsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CrawlRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1635,6 +1741,30 @@ export type Site$eventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.AuditEventScalarFieldEnum | Prisma.AuditEventScalarFieldEnum[]
+}
+
+/**
+ * Site.crawlRuns
+ */
+export type Site$crawlRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CrawlRun
+   */
+  select?: Prisma.CrawlRunSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CrawlRun
+   */
+  omit?: Prisma.CrawlRunOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CrawlRunInclude<ExtArgs> | null
+  where?: Prisma.CrawlRunWhereInput
+  orderBy?: Prisma.CrawlRunOrderByWithRelationInput | Prisma.CrawlRunOrderByWithRelationInput[]
+  cursor?: Prisma.CrawlRunWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CrawlRunScalarFieldEnum | Prisma.CrawlRunScalarFieldEnum[]
 }
 
 /**

@@ -9,7 +9,22 @@
 * 🟢 You can import this file directly.
 */
 
+export const CrawlStatus = {
+  PENDING: 'PENDING',
+  RUNNING: 'RUNNING',
+  COMPLETED: 'COMPLETED',
+  PARTIAL: 'PARTIAL',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type CrawlStatus = (typeof CrawlStatus)[keyof typeof CrawlStatus]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const CrawlTrigger = {
+  MANUAL: 'MANUAL',
+  SCHEDULED: 'SCHEDULED',
+  RETRY: 'RETRY'
+} as const
+
+export type CrawlTrigger = (typeof CrawlTrigger)[keyof typeof CrawlTrigger]

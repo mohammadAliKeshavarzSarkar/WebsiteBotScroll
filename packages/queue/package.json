@@ -1,0 +1,21 @@
+{
+  "name": "@website-bot-scroll/queue",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./contracts": "./src/contracts.ts",
+    "./client": "./src/client.ts",
+    "./worker-options": "./src/worker-options.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@website-bot-scroll/db": "workspace:*",
+    "bullmq": "6.7.7",
+    "zod": "4.1.12"
+  }
+}

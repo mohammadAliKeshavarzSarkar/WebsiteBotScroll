@@ -401,6 +401,8 @@ export const ModelName = {
   User: 'User',
   Session: 'Session',
   Site: 'Site',
+  CrawlRun: 'CrawlRun',
+  CrawlError: 'CrawlError',
   DomainVerification: 'DomainVerification',
   AuditEvent: 'AuditEvent'
 } as const
@@ -418,7 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "session" | "site" | "domainVerification" | "auditEvent"
+    modelProps: "organization" | "user" | "session" | "site" | "crawlRun" | "crawlError" | "domainVerification" | "auditEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -718,6 +720,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CrawlRun: {
+      payload: Prisma.$CrawlRunPayload<ExtArgs>
+      fields: Prisma.CrawlRunFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CrawlRunFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlRunPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CrawlRunFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlRunPayload>
+        }
+        findFirst: {
+          args: Prisma.CrawlRunFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlRunPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CrawlRunFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlRunPayload>
+        }
+        findMany: {
+          args: Prisma.CrawlRunFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlRunPayload>[]
+        }
+        create: {
+          args: Prisma.CrawlRunCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlRunPayload>
+        }
+        createMany: {
+          args: Prisma.CrawlRunCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CrawlRunCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlRunPayload>[]
+        }
+        delete: {
+          args: Prisma.CrawlRunDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlRunPayload>
+        }
+        update: {
+          args: Prisma.CrawlRunUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlRunPayload>
+        }
+        deleteMany: {
+          args: Prisma.CrawlRunDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CrawlRunUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CrawlRunUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlRunPayload>[]
+        }
+        upsert: {
+          args: Prisma.CrawlRunUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlRunPayload>
+        }
+        aggregate: {
+          args: Prisma.CrawlRunAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCrawlRun>
+        }
+        groupBy: {
+          args: Prisma.CrawlRunGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CrawlRunGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CrawlRunCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CrawlRunCountAggregateOutputType> | number
+        }
+      }
+    }
+    CrawlError: {
+      payload: Prisma.$CrawlErrorPayload<ExtArgs>
+      fields: Prisma.CrawlErrorFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CrawlErrorFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlErrorPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CrawlErrorFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlErrorPayload>
+        }
+        findFirst: {
+          args: Prisma.CrawlErrorFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlErrorPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CrawlErrorFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlErrorPayload>
+        }
+        findMany: {
+          args: Prisma.CrawlErrorFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlErrorPayload>[]
+        }
+        create: {
+          args: Prisma.CrawlErrorCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlErrorPayload>
+        }
+        createMany: {
+          args: Prisma.CrawlErrorCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CrawlErrorCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlErrorPayload>[]
+        }
+        delete: {
+          args: Prisma.CrawlErrorDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlErrorPayload>
+        }
+        update: {
+          args: Prisma.CrawlErrorUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlErrorPayload>
+        }
+        deleteMany: {
+          args: Prisma.CrawlErrorDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CrawlErrorUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CrawlErrorUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlErrorPayload>[]
+        }
+        upsert: {
+          args: Prisma.CrawlErrorUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrawlErrorPayload>
+        }
+        aggregate: {
+          args: Prisma.CrawlErrorAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCrawlError>
+        }
+        groupBy: {
+          args: Prisma.CrawlErrorGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CrawlErrorGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CrawlErrorCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CrawlErrorCountAggregateOutputType> | number
+        }
+      }
+    }
     DomainVerification: {
       payload: Prisma.$DomainVerificationPayload<ExtArgs>
       fields: Prisma.DomainVerificationFieldRefs
@@ -950,6 +1100,39 @@ export const SiteScalarFieldEnum = {
 export type SiteScalarFieldEnum = (typeof SiteScalarFieldEnum)[keyof typeof SiteScalarFieldEnum]
 
 
+export const CrawlRunScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  siteId: 'siteId',
+  trigger: 'trigger',
+  idempotencyKey: 'idempotencyKey',
+  status: 'status',
+  activeSiteKey: 'activeSiteKey',
+  frontier: 'frontier',
+  processedUrls: 'processedUrls',
+  attemptCount: 'attemptCount',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CrawlRunScalarFieldEnum = (typeof CrawlRunScalarFieldEnum)[keyof typeof CrawlRunScalarFieldEnum]
+
+
+export const CrawlErrorScalarFieldEnum = {
+  id: 'id',
+  crawlRunId: 'crawlRunId',
+  code: 'code',
+  message: 'message',
+  url: 'url',
+  retryable: 'retryable',
+  createdAt: 'createdAt'
+} as const
+
+export type CrawlErrorScalarFieldEnum = (typeof CrawlErrorScalarFieldEnum)[keyof typeof CrawlErrorScalarFieldEnum]
+
+
 export const DomainVerificationScalarFieldEnum = {
   id: 'id',
   siteId: 'siteId',
@@ -985,6 +1168,13 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const NullableJsonNullValueInput = {
   DbNull: DbNull,
   JsonNull: JsonNull
@@ -1001,14 +1191,6 @@ export const QueryMode = {
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
 export const JsonNullValueFilter = {
   DbNull: DbNull,
   JsonNull: JsonNull,
@@ -1016,6 +1198,14 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 
@@ -1053,6 +1243,34 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'CrawlTrigger'
+ */
+export type EnumCrawlTriggerFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CrawlTrigger'>
+    
+
+
+/**
+ * Reference to a field of type 'CrawlTrigger[]'
+ */
+export type ListEnumCrawlTriggerFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CrawlTrigger[]'>
+    
+
+
+/**
+ * Reference to a field of type 'CrawlStatus'
+ */
+export type EnumCrawlStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CrawlStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'CrawlStatus[]'
+ */
+export type ListEnumCrawlStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CrawlStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Json'
  */
 export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -1077,6 +1295,27 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**
@@ -1234,6 +1473,8 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   session?: Prisma.SessionOmit
   site?: Prisma.SiteOmit
+  crawlRun?: Prisma.CrawlRunOmit
+  crawlError?: Prisma.CrawlErrorOmit
   domainVerification?: Prisma.DomainVerificationOmit
   auditEvent?: Prisma.AuditEventOmit
 }

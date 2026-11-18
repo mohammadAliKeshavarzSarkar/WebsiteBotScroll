@@ -507,10 +507,6 @@ export type AuditEventUncheckedUpdateManyWithoutSiteNestedInput = {
   deleteMany?: Prisma.AuditEventScalarWhereInput | Prisma.AuditEventScalarWhereInput[]
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type AuditEventCreateWithoutOrganizationInput = {
   id?: string
   action: string

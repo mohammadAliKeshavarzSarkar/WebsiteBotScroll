@@ -17,6 +17,7 @@ model Organization {
   users     User[]
   sites     Site[]
   events    AuditEvent[]
+  crawlRuns CrawlRun[]
 
   @@map("organizations")
 }
@@ -58,10 +59,65 @@ model Site {
   organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   verifications  DomainVerification[]
   events         AuditEvent[]
+  crawlRuns      CrawlRun[]
 
   @@unique([organizationId, origin])
   @@index([organizationId, id])
   @@map("sites")
+}
+
+enum CrawlStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  PARTIAL
+  FAILED
+  CANCELLED
+}
+
+enum CrawlTrigger {
+  MANUAL
+  SCHEDULED
+  RETRY
+}
+
+model CrawlRun {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  siteId         String       @map("site_id") @db.Uuid
+  trigger        CrawlTrigger
+  idempotencyKey String       @map("idempotency_key")
+  status         CrawlStatus  @default(PENDING)
+  activeSiteKey  String?      @unique @map("active_site_key") @db.Uuid
+  frontier       Json         @default("[]")
+  processedUrls  Json         @default("[]") @map("processed_urls")
+  attemptCount   Int          @default(0) @map("attempt_count")
+  startedAt      DateTime?    @map("started_at")
+  finishedAt     DateTime?    @map("finished_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  site           Site         @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  errors         CrawlError[]
+
+  @@unique([siteId, idempotencyKey])
+  @@index([organizationId, createdAt])
+  @@index([siteId, status])
+  @@map("crawl_runs")
+}
+
+model CrawlError {
+  id         String   @id @default(uuid()) @db.Uuid
+  crawlRunId String   @map("crawl_run_id") @db.Uuid
+  code       String
+  message    String
+  url        String?
+  retryable  Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at")
+  crawlRun   CrawlRun @relation(fields: [crawlRunId], references: [id], onDelete: Cascade)
+
+  @@index([crawlRunId, createdAt])
+  @@map("crawl_errors")
 }
 
 model DomainVerification {

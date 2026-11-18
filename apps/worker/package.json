@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@website-bot-scroll/config": "workspace:*"
+    "@website-bot-scroll/config": "workspace:*",
+    "@website-bot-scroll/db": "workspace:*",
+    "@website-bot-scroll/queue": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "24.10.1",

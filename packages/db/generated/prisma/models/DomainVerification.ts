@@ -403,10 +403,6 @@ export type DomainVerificationUncheckedUpdateManyWithoutSiteNestedInput = {
   deleteMany?: Prisma.DomainVerificationScalarWhereInput | Prisma.DomainVerificationScalarWhereInput[]
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type DomainVerificationCreateWithoutSiteInput = {
   id?: string
   method: string

@@ -62,6 +62,16 @@ export type Session = Prisma.SessionModel
  */
 export type Site = Prisma.SiteModel
 /**
+ * Model CrawlRun
+ * 
+ */
+export type CrawlRun = Prisma.CrawlRunModel
+/**
+ * Model CrawlError
+ * 
+ */
+export type CrawlError = Prisma.CrawlErrorModel
+/**
  * Model DomainVerification
  * 
  */

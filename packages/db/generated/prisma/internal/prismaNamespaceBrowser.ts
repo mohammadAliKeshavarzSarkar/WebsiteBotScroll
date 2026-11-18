@@ -55,6 +55,8 @@ export const ModelName = {
   User: 'User',
   Session: 'Session',
   Site: 'Site',
+  CrawlRun: 'CrawlRun',
+  CrawlError: 'CrawlError',
   DomainVerification: 'DomainVerification',
   AuditEvent: 'AuditEvent'
 } as const
@@ -120,6 +122,39 @@ export const SiteScalarFieldEnum = {
 export type SiteScalarFieldEnum = (typeof SiteScalarFieldEnum)[keyof typeof SiteScalarFieldEnum]
 
 
+export const CrawlRunScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  siteId: 'siteId',
+  trigger: 'trigger',
+  idempotencyKey: 'idempotencyKey',
+  status: 'status',
+  activeSiteKey: 'activeSiteKey',
+  frontier: 'frontier',
+  processedUrls: 'processedUrls',
+  attemptCount: 'attemptCount',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CrawlRunScalarFieldEnum = (typeof CrawlRunScalarFieldEnum)[keyof typeof CrawlRunScalarFieldEnum]
+
+
+export const CrawlErrorScalarFieldEnum = {
+  id: 'id',
+  crawlRunId: 'crawlRunId',
+  code: 'code',
+  message: 'message',
+  url: 'url',
+  retryable: 'retryable',
+  createdAt: 'createdAt'
+} as const
+
+export type CrawlErrorScalarFieldEnum = (typeof CrawlErrorScalarFieldEnum)[keyof typeof CrawlErrorScalarFieldEnum]
+
+
 export const DomainVerificationScalarFieldEnum = {
   id: 'id',
   siteId: 'siteId',
@@ -155,6 +190,13 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const NullableJsonNullValueInput = {
   DbNull: DbNull,
   JsonNull: JsonNull
@@ -171,14 +213,6 @@ export const QueryMode = {
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
 export const JsonNullValueFilter = {
   DbNull: DbNull,
   JsonNull: JsonNull,
@@ -186,4 +220,12 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
