@@ -394,6 +394,19 @@
       }
     },
     "availableShape": {
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": { "status": { "const": "partial" } },
+            "required": ["status"]
+          },
+          "then": {
+            "type": "object",
+            "properties": { "reasons": { "$ref": "#/$defs/reasons" } }
+          }
+        }
+      ],
       "if": {
         "type": "object",
         "properties": {

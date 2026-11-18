@@ -1,0 +1,6 @@
+{
+  "contract": { "name": "seo-crawl-evidence", "version": "0.1.0" },
+  "producer": { "name": "WebsiteBotScroll", "version": "0.1.0", "schema_version": "0.1.0", "normalization_policy_version": "1.0.0" },
+  "run": { "id": "run-invalid", "trigger": "manual", "lifecycle": "completed", "started_at": "18 November", "finished_at": "2026-11-18T10:01:00Z", "scope": { "seed_urls": ["https://example.com/"], "allowed_hosts": ["example.com"] }, "limits": { "max_pages": 1, "max_depth": 0, "max_duration_ms": 60000 }, "coverage": { "discovered": 0, "attempted": 0, "collected": 0, "failed": 0 }, "stop_reason": "frontier_exhausted", "limitations": [] },
+  "pages": [], "diagnostics": { "id": "obs-diagnostics", "status": "not_collected", "value": null, "reasons": ["stage_not_run"] }, "errors": []
+}
