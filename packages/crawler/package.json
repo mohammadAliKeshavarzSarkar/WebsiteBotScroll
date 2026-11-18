@@ -5,7 +5,11 @@
   "exports": {
     "./url/normalize": "./src/url/normalize.ts",
     "./url/policy": "./src/url/policy.ts",
-    "./network/resolve-public": "./src/network/resolve-public.ts"
+    "./network/resolve-public": "./src/network/resolve-public.ts",
+    "./robots/fetch-robots": "./src/robots/fetch-robots.ts",
+    "./robots/policy": "./src/robots/policy.ts",
+    "./sitemap/parse": "./src/sitemap/parse.ts",
+    "./sitemap/discover": "./src/sitemap/discover.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",
