@@ -3,7 +3,8 @@ import * as formatsModule from "ajv-formats";
 import type { FormatsPlugin } from "ajv-formats";
 
 import schema from "../schema/seo-crawl-evidence/0.1.0/schema.json" with { type: "json" };
-import type { ValidationIssue, ValidationResult } from "./types.js";
+import { validateEvidenceSemantics } from "./semantic-validation.js";
+import type { EvidenceDocument, ValidationIssue, ValidationResult } from "./types.js";
 
 const ajv = new Ajv2020({
   strict: true,
@@ -25,7 +26,8 @@ const toIssue = (error: ErrorObject): ValidationIssue => ({
 
 export const validateEvidence = (input: unknown): ValidationResult => {
   if (validateStructure(input)) {
-    return { valid: true };
+    const semanticErrors = validateEvidenceSemantics(input as EvidenceDocument);
+    return semanticErrors.length === 0 ? { valid: true } : { valid: false, errors: semanticErrors };
   }
 
   return { valid: false, errors: (validateStructure.errors ?? []).map(toIssue) };

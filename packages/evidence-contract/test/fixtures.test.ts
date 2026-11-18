@@ -29,6 +29,10 @@ const invalidFixtures = [
   "missing-partial-reason",
   "malformed-timestamp",
   "invalid-status-value-pairing",
+  "duplicate-identities",
+  "dangling-observation-reference",
+  "inconsistent-coverage",
+  "redirect-final-url-mismatch",
 ] as const;
 
 describe("authoritative compatibility fixtures", () => {
