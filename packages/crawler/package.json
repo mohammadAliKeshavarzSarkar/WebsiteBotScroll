@@ -9,7 +9,11 @@
     "./robots/fetch-robots": "./src/robots/fetch-robots.ts",
     "./robots/policy": "./src/robots/policy.ts",
     "./sitemap/parse": "./src/sitemap/parse.ts",
-    "./sitemap/discover": "./src/sitemap/discover.ts"
+    "./sitemap/discover": "./src/sitemap/discover.ts",
+    "./http/fetch-page": "./src/http/fetch-page.ts",
+    "./http/budget": "./src/http/budget.ts",
+    "./frontier/frontier": "./src/frontier/frontier.ts",
+    "./frontier/politeness": "./src/frontier/politeness.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",
