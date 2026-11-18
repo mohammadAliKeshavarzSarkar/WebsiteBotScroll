@@ -1,0 +1,19 @@
+{
+  "name": "@website-bot-scroll/evidence-contract",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/validate.ts",
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1"
+  }
+}
