@@ -173,6 +173,7 @@ apps/web             Next.js application and authentication routes
 apps/worker          Background worker entry point
 packages/config      Validated environment configuration
 packages/crawler     URL, network, robots, and sitemap crawler foundations
+packages/evidence-contract  Canonical crawl-evidence schema, fixtures, and validators
 packages/db          Prisma schema, migrations, repositories, and owner seed logic
 packages/domain      Shared domain identifiers and types
 packages/test-sites  Hostile and edge-case crawler fixtures
@@ -183,6 +184,10 @@ docs/superpowers     Product specification and phased implementation plan
 
 - [Product design](docs/superpowers/specs/2026-11-14-automated-seo-platform-design.md)
 - [MVP implementation plan](docs/superpowers/plans/2026-11-14-seo-auditor-mvp.md)
+
+## Evidence interoperability
+
+Stage A.1 defines the reviewable `seo-crawl-evidence` 0.1.0 boundary without coupling this repository to an SEO intelligence engine. See the [interoperability architecture](docs/architecture/evidence-interoperability.md), [evidence preservation gaps](docs/architecture/evidence-preservation-gaps.md), and the package's machine-readable [review manifest](packages/evidence-contract/review-manifest.json).
 
 ## Troubleshooting
 
