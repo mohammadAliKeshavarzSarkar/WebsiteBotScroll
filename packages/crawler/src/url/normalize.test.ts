@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { normalizeUrl } from "./normalize.js";
+import { normalizeUrl, normalizeUrlIdentity } from "./normalize.js";
 import { isSameSite, type SitePolicy, type UrlPolicy } from "./policy.js";
 
 const policy: UrlPolicy = {
@@ -8,6 +8,16 @@ const policy: UrlPolicy = {
 };
 
 describe("normalizeUrl", () => {
+  it("preserves distinct URL identity components and policy version", () => {
+    expect(normalizeUrlIdentity("https://example.com/a?utm_source=x#part", policy, "normalize/1")).toEqual({
+      discoveredUrl: "https://example.com/a?utm_source=x#part",
+      requestedUrl: "https://example.com/a?utm_source=x#part",
+      normalizedUrl: "https://example.com/a",
+      finalUrl: "https://example.com/a",
+      canonicalUrls: [],
+      normalizationPolicyVersion: "normalize/1",
+    });
+  });
   it("creates a deterministic identity for equivalent URLs", () => {
     const normalized = normalizeUrl(
       "HTTPS://BÜCHER.Example:443/a/../b/./?z=2&utm_source=x&a=3&a=1&gclid=y#part",

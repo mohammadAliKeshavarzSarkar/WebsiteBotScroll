@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import type { DnsResolver } from "../network/resolve-public.js";
+import type { CrawlEvidenceEvent, EvidenceSink } from "../evidence/events.js";
 import { fetchPage, probeResource, type HttpTransport, type TransportResponse } from "./fetch-page.js";
 
 const resolver: DnsResolver = { resolve: vi.fn().mockResolvedValue(["93.184.216.34"]) };
@@ -8,6 +9,29 @@ const body = (...chunks: string[]): AsyncIterable<Uint8Array> => ({ async *[Symb
 const response = (status: number, options: Partial<TransportResponse> = {}): TransportResponse => ({ status, headers: { "content-type": "text/html" }, body: body("<html></html>"), compressedBytes: 13, ...options });
 
 describe("fetchPage", () => {
+  it("records every redirect transaction with ordered repeated allowlisted headers", async () => {
+    const events: CrawlEvidenceEvent[] = [];
+    const evidenceSink: EvidenceSink = { record: async (event) => { events.push(event); } };
+    const transport: HttpTransport = {
+      request: vi.fn()
+        .mockResolvedValueOnce(response(302, { headers: { location: ["https://www.example.com/final"], link: ["</fa>; rel=alternate", "</en>; rel=alternate"] } }))
+        .mockResolvedValueOnce(response(200, { headers: { "content-type": ["text/html"] } })),
+    };
+
+    await fetchPage({
+      url: new URL("https://example.com/start"), resolver, transport, evidenceSink,
+      evidenceContext: { runId: "run-1", pageId: "page-1" }, now: () => new Date("2026-11-19T00:00:00.000Z"),
+    });
+
+    const transactions = events.filter((event) => event.kind === "http_transaction");
+    expect(transactions).toHaveLength(2);
+    expect(transactions[0]).toMatchObject({ transaction: { requestUrl: "https://example.com/start", redirectTo: "https://www.example.com/final" } });
+    expect(transactions[0]?.kind === "http_transaction" ? transactions[0].transaction.headers : []).toEqual([
+      { name: "location", values: ["https://www.example.com/final"] },
+      { name: "link", values: ["</fa>; rel=alternate", "</en>; rel=alternate"] },
+    ]);
+  });
+
   it("revalidates every redirect and returns inert HTML bytes", async () => {
     const transport: HttpTransport = { request: vi.fn().mockResolvedValueOnce(response(302, { headers: { location: "https://www.example.com/a" } })).mockResolvedValueOnce(response(200)) };
     const result = await fetchPage({ url: new URL("https://example.com"), resolver, transport, sleep: async () => undefined });
@@ -21,6 +45,19 @@ describe("fetchPage", () => {
     const changingResolver: DnsResolver = { resolve: vi.fn().mockResolvedValueOnce(["93.184.216.34"]).mockResolvedValueOnce(["127.0.0.1"]) };
     const transport: HttpTransport = { request: vi.fn().mockResolvedValue(response(302, { headers: { location: "http://internal.example/" } })) };
     await expect(fetchPage({ url: new URL("https://example.com"), resolver: changingResolver, transport })).rejects.toThrow("forbidden");
+    expect(transport.request).toHaveBeenCalledTimes(1);
+  });
+
+  it("preserves a completed public hop and records an error before a private redirect request", async () => {
+    const events: CrawlEvidenceEvent[] = [];
+    const changingResolver: DnsResolver = { resolve: vi.fn().mockResolvedValueOnce(["93.184.216.34"]).mockResolvedValueOnce(["127.0.0.1"]) };
+    const transport: HttpTransport = { request: vi.fn().mockResolvedValue(response(302, { headers: { location: "http://internal.example/" } })) };
+    await expect(fetchPage({
+      url: new URL("https://example.com"), resolver: changingResolver, transport,
+      evidenceSink: { record: async (event) => { events.push(event); } }, evidenceContext: { runId: "run-1", pageId: "page-1" },
+    })).rejects.toThrow("forbidden");
+    expect(events.some((event) => event.kind === "http_transaction")).toBe(true);
+    expect(events).toContainEqual(expect.objectContaining({ kind: "collection_error", stage: "network_boundary" }));
     expect(transport.request).toHaveBeenCalledTimes(1);
   });
 

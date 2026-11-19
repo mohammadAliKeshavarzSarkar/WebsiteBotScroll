@@ -2,7 +2,11 @@
   "name": "@website-bot-scroll/crawler",
   "private": true,
   "type": "module",
+  "dependencies": {
+    "@website-bot-scroll/domain": "workspace:*"
+  },
   "exports": {
+    "./evidence/events": "./src/evidence/events.ts",
     "./url/normalize": "./src/url/normalize.ts",
     "./url/policy": "./src/url/policy.ts",
     "./network/resolve-public": "./src/network/resolve-public.ts",

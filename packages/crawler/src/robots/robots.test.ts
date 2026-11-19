@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { loadRobots, type SafeTextFetcher } from "./fetch-robots.js";
-import { canCrawl } from "./policy.js";
+import type { CrawlEvidenceEvent } from "../evidence/events.js";
+import { canCrawl, evaluateCrawl } from "./policy.js";
 
 const encoder = new TextEncoder();
 
@@ -12,6 +13,30 @@ function fetcher(status: number, text = "", finalUrl = "https://example.com/robo
 }
 
 describe("robots access results", () => {
+  it("returns the evaluated user agent and matched rule as provenance", async () => {
+    const source = await loadRobots(
+      new URL("https://example.com"),
+      fetcher(200, "User-agent: WebsiteBotScroll\nDisallow: /private\nAllow: /private/public"),
+      { cache: false },
+    );
+    expect(evaluateCrawl(source, new URL("https://example.com/private/a"), "WebsiteBotScroll/1.0")).toEqual({
+      allowed: false,
+      userAgent: "WebsiteBotScroll/1.0",
+      matchedRule: { allow: false, path: "/private" },
+      sourceKind: "rules",
+    });
+  });
+  it("records robots fetch and parse provenance", async () => {
+    const events: CrawlEvidenceEvent[] = [];
+    await loadRobots(new URL("https://example.com"), fetcher(200, "User-agent: *\nDisallow: /private"), {
+      cache: false,
+      evidenceSink: { record: async (event) => { events.push(event); } },
+      evidenceContext: { runId: "run-1" },
+    });
+    expect(events).toContainEqual(expect.objectContaining({
+      kind: "robots_fetch", robotsUrl: "https://example.com/robots.txt", outcome: "rules", status: 200,
+    }));
+  });
   it("honors the longest matching allow/disallow rule for the selected agent", async () => {
     const source = await loadRobots(
       new URL("https://example.com"),
