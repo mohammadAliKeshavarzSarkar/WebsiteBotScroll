@@ -72,4 +72,10 @@ describe("seo-crawl-evidence structural validation", () => {
     page.pages[0].observations.structured_data.value[0] = { format: "json-ld", parsed: true, types: ["WebPage"], error: "Invalid JSON" };
     expect(validateEvidence(page).valid).toBe(false);
   });
+
+  it("rejects reason codes outside the versioned vocabulary", () => {
+    const input = minimalDocument();
+    input.diagnostics.reasons = ["producer_specific_unreviewed_code"];
+    expect(validateEvidence(input).valid).toBe(false);
+  });
 });

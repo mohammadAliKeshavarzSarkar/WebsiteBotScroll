@@ -170,4 +170,68 @@ describe("cross-record semantic validation", () => {
     doc.pages[0]!.url_identity.requested_url = "https://example.com/unrelated";
     expect(codes(doc)).toContain("semantic.initial_request_url_mismatch");
   });
+
+  it("applies URL-secret validation to metadata canonical declarations", () => {
+    const doc = load();
+    const metadata = doc.pages[0]!.observations.metadata.value as { canonical_urls: string[] };
+    metadata.canonical_urls = ["https://user:secret@example.com/private"];
+    expect(codes(doc)).toContain("semantic.unsafe_url");
+  });
+
+  it("returns a structured issue instead of throwing for an unparseable URL", () => {
+    const doc = load();
+    const unsafe = doc as unknown as { run: { scope: { seed_urls: string[] } } };
+    unsafe.run.scope.seed_urls = ["http://[::1"];
+    expect(() => codes(doc)).not.toThrow();
+    expect(codes(doc)).toContain("semantic.url_parse_error");
+  });
+
+  it("rejects duplicate transaction and link identities in their run-local namespaces", () => {
+    const redirect = load("redirect-repeated-headers") as unknown as TestDocument & { pages: Array<{ observations: { http: { value: { transactions: Array<{ id: string }> } } } }> };
+    redirect.pages[0]!.observations.http.value.transactions[1]!.id = redirect.pages[0]!.observations.http.value.transactions[0]!.id;
+    expect(codes(redirect)).toContain("semantic.duplicate_transaction_id");
+
+    const links = load("internal-links-uninspected");
+    const values = links.pages[0]!.observations.links.value as Array<Record<string, unknown>>;
+    values.push(structuredClone(values[0]!));
+    expect(codes(links)).toContain("semantic.duplicate_link_id");
+  });
+
+  it("enforces subject-page and explicit cross-page diagnostic evidence scope", () => {
+    const doc = load();
+    const second = structuredClone(doc.pages[0]!);
+    second.id = "page-second";
+    for (const observation of Object.values(second.observations)) observation.id = `${observation.id}-second`;
+    doc.pages.push(second);
+    doc.run.coverage.discovered = 2;
+    doc.run.coverage.attempted = 2;
+    doc.run.coverage.collected = 2;
+    doc.diagnostics = { id: "obs-diagnostics", status: "observed", reasons: [], provenance: { method: "diagnostic_engine", collected_at: "2026-11-18T10:01:00Z", source: "derived" }, value: [
+      { id: "diag-scope", rule_id: "same-page", rule_version: "1", policy_version: "1", evidence_scope: "subject_page", related_page_ids: [], subject_page_id: "page-home", outcome: "fail", observation_ids: ["obs-metadata-home-second"], limitations: [] },
+    ] };
+    expect(codes(doc)).toContain("semantic.diagnostic_evidence_scope_mismatch");
+
+    const diagnostic = (doc.diagnostics.value as Array<Record<string, unknown>>)[0]!;
+    diagnostic.evidence_scope = "cross_page";
+    diagnostic.related_page_ids = ["page-second"];
+    expect(codes(doc)).not.toContain("semantic.diagnostic_evidence_scope_mismatch");
+  });
+
+  it("rejects missing, duplicate, and overlapping field override pointers", () => {
+    const doc = load();
+    Object.assign(doc.pages[0]!.observations.metadata, {
+      field_overrides: [
+        { path: "/missing", provenance: { method: "override", collected_at: "2026-11-18T10:00:02Z", source: "derived" } },
+        { path: "/title", provenance: { method: "override", collected_at: "2026-11-18T10:00:02Z", source: "derived" } },
+        { path: "/title", provenance: { method: "override", collected_at: "2026-11-18T10:00:02Z", source: "derived" } },
+        { path: "/canonical_urls", provenance: { method: "override", collected_at: "2026-11-18T10:00:02Z", source: "derived" } },
+        { path: "/canonical_urls/0", provenance: { method: "override", collected_at: "2026-11-18T10:00:02Z", source: "derived" } },
+      ],
+    });
+    expect(codes(doc)).toEqual(expect.arrayContaining([
+      "semantic.field_override_target_missing",
+      "semantic.duplicate_field_override",
+      "semantic.overlapping_field_override",
+    ]));
+  });
 });

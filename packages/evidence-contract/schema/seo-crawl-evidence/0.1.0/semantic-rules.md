@@ -26,7 +26,9 @@ HTTP transactions are ordered. Each redirect target must equal the next transact
 
 ## Diagnostics
 
-Diagnostics are optional and deterministic. Each diagnostic identifies both its rule version and the policy version used to interpret evidence. A `pass` requires at least one directly referenced page observation with status `observed`; partial or unavailable evidence and the diagnostics envelope itself cannot support a pass. Rule-specific prerequisites may narrow this further in later compatible versions. A technical result carries no strategic priority and grants no authorization to change a site.
+Diagnostics are optional and deterministic. Each diagnostic identifies both its rule version and the policy version used to interpret evidence. `subject_page` evidence must be owned by the subject page. `cross_page` rules declare every related page explicitly; evidence may come only from the subject and declared related pages. A `pass` requires directly referenced page observations with status `observed`; partial or unavailable evidence and the diagnostics envelope itself cannot support a pass. Rule-specific prerequisites may narrow this further in later compatible versions. A technical result carries no strategic priority and grants no authorization to change a site.
+
+Field override paths are RFC 6901 JSON Pointers relative to the observation `value`. Every path must resolve. Duplicate paths and parent/child overlaps are conflicts and invalidate the document; consumers never choose a winner.
 
 ## Serialization and privacy
 

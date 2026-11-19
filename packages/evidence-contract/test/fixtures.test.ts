@@ -12,6 +12,7 @@ const readFixture = (kind: "valid" | "invalid", name: string): unknown =>
 
 const validFixtures = [
   "complete-page",
+  "cross-page-diagnostic",
   "observed-absent-metadata",
   "partial-crawl",
   "redirect-repeated-headers",
@@ -92,5 +93,15 @@ describe("authoritative compatibility fixtures", () => {
     };
     delete fixture.diagnostics.value[0]?.policy_version;
     expect(validateEvidence(fixture).valid).toBe(false);
+  });
+
+  it.each([
+    "{",
+    "{\"\\uZZZZ\": 1}",
+    "{\"contract\": true,}",
+  ])("returns a structured failure for malformed JSON: %s", (raw) => {
+    const result = parseEvidenceJson(raw);
+    expect(result.valid).toBe(false);
+    if (!result.valid) expect(result.errors[0]?.code).toBe("json.parse");
   });
 });

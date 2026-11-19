@@ -62,7 +62,7 @@
     "id": "obs-diagnostics", "status": "observed", "reasons": [],
     "provenance": { "method": "diagnostic_engine", "collected_at": "2026-11-18T10:01:00Z", "source": "derived", "version": "1.0.0" },
     "value": [{
-      "id": "diag-title", "rule_id": "title-present", "rule_version": "1.0.0", "policy_version": "1.0.0",
+      "id": "diag-title", "rule_id": "title-present", "rule_version": "1.0.0", "policy_version": "1.0.0", "evidence_scope": "subject_page", "related_page_ids": [],
       "subject_page_id": "page-home", "outcome": "pass", "observation_ids": ["obs-metadata-home"], "limitations": []
     }]
   },

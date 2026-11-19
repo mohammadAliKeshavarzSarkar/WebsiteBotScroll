@@ -43,6 +43,21 @@
       "type": "string",
       "minLength": 1
     },
+    "reasonCode": {
+      "enum": [
+        "browser_rendering_disabled",
+        "diagnostic_engine_error",
+        "fixture_scope",
+        "incomplete_evidence",
+        "network_error",
+        "not_applicable_to_resource",
+        "page_limit_reached",
+        "stage_not_run",
+        "target_not_inspected",
+        "timeout",
+        "unsupported_method"
+      ]
+    },
     "uri": {
       "type": "string",
       "format": "uri"
@@ -60,7 +75,7 @@
       "minItems": 1,
       "uniqueItems": true,
       "items": {
-        "$ref": "#/$defs/nonEmptyString"
+        "$ref": "#/$defs/reasonCode"
       }
     },
     "contract": {
@@ -341,7 +356,7 @@
       "properties": {
         "path": {
           "type": "string",
-          "pattern": "^/"
+          "pattern": "^/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*$"
         },
         "provenance": {
           "$ref": "#/$defs/provenance"
@@ -379,7 +394,7 @@
           "type": "array",
           "uniqueItems": true,
           "items": {
-            "$ref": "#/$defs/nonEmptyString"
+            "$ref": "#/$defs/reasonCode"
           }
         },
         "provenance": {
@@ -1060,6 +1075,8 @@
         "rule_id",
         "rule_version",
         "policy_version",
+        "evidence_scope",
+        "related_page_ids",
         "subject_page_id",
         "outcome",
         "observation_ids",
@@ -1077,6 +1094,14 @@
         },
         "policy_version": {
           "$ref": "#/$defs/nonEmptyString"
+        },
+        "evidence_scope": {
+          "enum": ["subject_page", "cross_page"]
+        },
+        "related_page_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
         },
         "subject_page_id": {
           "$ref": "#/$defs/nonEmptyString"
@@ -1103,7 +1128,14 @@
             "$ref": "#/$defs/limitation"
           }
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": { "type": "object", "properties": { "evidence_scope": { "const": "subject_page" } }, "required": ["evidence_scope"] },
+          "then": { "type": "object", "properties": { "related_page_ids": { "type": "array", "maxItems": 0 } } },
+          "else": { "type": "object", "properties": { "related_page_ids": { "type": "array", "minItems": 1 } } }
+        }
+      ]
     },
     "diagnosticsGroup": {
       "allOf": [

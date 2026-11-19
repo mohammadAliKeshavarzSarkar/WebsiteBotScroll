@@ -5,7 +5,7 @@
     "dialect": "https://json-schema.org/draft/2020-12/schema",
     "owner": "WebsiteBotScroll",
     "schema_path": "packages/evidence-contract/schema/seo-crawl-evidence/0.1.0/schema.json",
-    "schema_sha256": "857a6cb81ccf9002d9d1b58389e331e2432a11822ff24fc7755573a1f1f2fca9"
+    "schema_sha256": "8e06803f254b863a670418491aa85856208e75ae70b6bb77dcfde71cbc8787e8"
   },
   "checksum_algorithm": "SHA-256",
   "stage_boundary": {
@@ -19,7 +19,7 @@
   "raw_html_policy": "excluded by default",
   "deferred_capabilities": ["REST", "MCP", "browser rendering", "Python consumer", "historical comparison", "external search data", "performance measurements"],
   "fixtures": [
-    { "path": "packages/evidence-contract/fixtures/invalid/dangling-observation-reference.json", "sha256": "5ce897fb60df180abb99da21aa7ec731ea17e1e342363a3c59e51896205a7e57", "expected": "invalid" },
+    { "path": "packages/evidence-contract/fixtures/invalid/dangling-observation-reference.json", "sha256": "8648ba349e427b044dabc2d3e5598fcd1d93376380490d7519b7d669188b8a27", "expected": "invalid" },
     { "path": "packages/evidence-contract/fixtures/invalid/duplicate-identities.json", "sha256": "a6c0c66e173a3102c28e40f7efadd520602b1ce8a14a8d02bc3d04bcb8f88b5c", "expected": "invalid" },
     { "path": "packages/evidence-contract/fixtures/invalid/duplicate-structural-property.json", "sha256": "e8fbced663ffd4a8e21b21fc7f1f5793e8afc32c34eb16d16924cff4871b6c07", "expected": "invalid", "validation_layer": "raw_json_parser" },
     { "path": "packages/evidence-contract/fixtures/invalid/failed-as-empty.json", "sha256": "90de8e806ed0c0bc1b4950d3114f3e6eb03325d3fa166d8f0e2ea900d7a768c5", "expected": "invalid" },
@@ -30,7 +30,8 @@
     { "path": "packages/evidence-contract/fixtures/invalid/redirect-final-url-mismatch.json", "sha256": "3cbabe36839660cd74e80f53560e89e263177355c9318c76794936400c0e1869", "expected": "invalid" },
     { "path": "packages/evidence-contract/fixtures/invalid/unexpected-property.json", "sha256": "b059f1628ea09fe4d591ee49025c51b8ca6e0f85592fce5f4a223bc2613a3de2", "expected": "invalid" },
     { "path": "packages/evidence-contract/fixtures/invalid/unsupported-version.json", "sha256": "1f13deec2d352c266cc7898abe3fd72a4f53a43525fd071b34aa765593ba0344", "expected": "invalid" },
-    { "path": "packages/evidence-contract/fixtures/valid/complete-page.json", "sha256": "f643dd00f5744284392df8f782740f315a84d26f3fb6ba2dad0c0eb9a4c96ae4", "expected": "valid" },
+    { "path": "packages/evidence-contract/fixtures/valid/complete-page.json", "sha256": "11a58c53990c1253d5bb5b6fa7263753c6e42b520c833531303391693df3d33f", "expected": "valid" },
+    { "path": "packages/evidence-contract/fixtures/valid/cross-page-diagnostic.json", "sha256": "1470dc26f24dd4ebce7e36aa5039ce375f22b5f70e1220948b89d5d30a1af664", "expected": "valid" },
     { "path": "packages/evidence-contract/fixtures/valid/internal-links-uninspected.json", "sha256": "86d66c004c464c01df90acd328b412a8fe9f5c7ebfc973e8e3ede6f4b4f0e861", "expected": "valid" },
     { "path": "packages/evidence-contract/fixtures/valid/malformed-structured-data.json", "sha256": "260d3e5442aff76092d1a1351795776f8652cdead3ae45e481372f49b23d3ea4", "expected": "valid" },
     { "path": "packages/evidence-contract/fixtures/valid/observed-absent-metadata.json", "sha256": "5b2b23f76f65c8591b3d292347db309948f20256c2aea3bfd2d80928bcda56aa", "expected": "valid" },

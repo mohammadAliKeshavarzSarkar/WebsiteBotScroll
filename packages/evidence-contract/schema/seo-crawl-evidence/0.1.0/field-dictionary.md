@@ -46,8 +46,8 @@ Allowed names are `location`, `content-type`, `x-robots-tag`, `link`, `content-l
 
 ## Diagnostics and errors
 
-A diagnostic has stable `id`, `rule_id`, `rule_version`, `policy_version`, `subject_page_id`, outcome (`pass`, `fail`, `inconclusive`, or `not_applicable`), referenced `observation_ids`, and limitations. An error has stable `id`, stage, code, message, timestamp, retryability, and optional page/observation references.
+A diagnostic has stable `id`, `rule_id`, `rule_version`, `policy_version`, `evidence_scope`, `related_page_ids`, `subject_page_id`, outcome (`pass`, `fail`, `inconclusive`, or `not_applicable`), referenced `observation_ids`, and limitations. `subject_page` scope permits evidence owned only by the subject page. `cross_page` scope requires at least one explicitly related page and permits evidence only from the subject and those related pages. An error has stable `id`, stage, code, message, timestamp, retryability, and optional page/observation references.
 
 ## Reason-code categories
 
-Reason strings are stable machine-readable identifiers. Initial categories are lifecycle (`stage_not_run`), configuration (`browser_rendering_disabled`), coverage (`page_limit_reached`, `target_not_inspected`, `incomplete_evidence`), collection (`timeout`, `network_error`), capability (`unsupported_method`), and applicability (`not_applicable_to_resource`). New codes may be added only in a reviewed contract version.
+Reason strings are an enforced, versioned vocabulary rather than extensible producer-defined identifiers. Version 0.1.0 permits lifecycle (`stage_not_run`), configuration (`browser_rendering_disabled`, `fixture_scope`, `diagnostic_engine_error`), coverage (`page_limit_reached`, `target_not_inspected`, `incomplete_evidence`), collection (`timeout`, `network_error`), capability (`unsupported_method`), and applicability (`not_applicable_to_resource`). New codes require a reviewed contract version.

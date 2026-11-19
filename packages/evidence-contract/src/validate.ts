@@ -59,7 +59,12 @@ const findDuplicateJsonKey = (input: string): { key: string; position: number } 
       while (/\s/.test(input[next] ?? "")) next += 1;
       const frame = stack.at(-1);
       if (input[next] === ":" && frame?.kind === "object") {
-        const key = JSON.parse(rawString) as string;
+        let key: string;
+        try {
+          key = JSON.parse(rawString) as string;
+        } catch {
+          return undefined;
+        }
         if (frame.keys.has(key)) return { key, position: start };
         frame.keys.add(key);
       }

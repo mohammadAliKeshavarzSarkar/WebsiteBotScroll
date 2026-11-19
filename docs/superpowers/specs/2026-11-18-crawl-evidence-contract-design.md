@@ -95,7 +95,7 @@ Validators must not coerce types, apply defaults, remove unknown properties, acc
 
 ## Compatibility fixtures
 
-Authoritative synthetic fixtures contain no customer data. Initial valid cases cover complete HTTP collection, observed absent metadata, partial collection, redirect chains, repeated headers, rendering not collected, malformed structured data as an observation, internal links, and Persian UTF-8. Invalid cases cover failed-as-empty, duplicate IDs, dangling references, inconsistent coverage, missing partial reasons, redirect mismatch, unexpected properties, and unsupported versions.
+Authoritative synthetic fixtures contain no customer data. Initial valid cases cover complete HTTP collection, observed absent metadata, partial collection, redirect chains, repeated headers, rendering not collected, malformed structured data as an observation, internal links, an explicitly scoped cross-page diagnostic, and Persian UTF-8. Invalid cases cover failed-as-empty, duplicate IDs, dangling references, inconsistent coverage, missing partial reasons, redirect mismatch, unexpected properties, and unsupported versions.
 
 ## Package boundary
 
