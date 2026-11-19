@@ -403,10 +403,6 @@ export type CrawlErrorUncheckedUpdateManyWithoutCrawlRunNestedInput = {
   deleteMany?: Prisma.CrawlErrorScalarWhereInput | Prisma.CrawlErrorScalarWhereInput[]
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type CrawlErrorCreateWithoutCrawlRunInput = {
   id?: string
   code: string

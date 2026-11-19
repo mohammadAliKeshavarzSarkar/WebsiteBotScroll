@@ -4,6 +4,7 @@
   "type": "module",
   "exports": {
     ".": "./src/client.ts",
+    "./evidence": "./src/repositories/evidence.ts",
     "./sites": "./src/repositories/sites.ts"
   },
   "scripts": {

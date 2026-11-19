@@ -56,6 +56,14 @@ export const ModelName = {
   Session: 'Session',
   Site: 'Site',
   CrawlRun: 'CrawlRun',
+  ExportAuthorization: 'ExportAuthorization',
+  EvidencePage: 'EvidencePage',
+  EvidenceTransaction: 'EvidenceTransaction',
+  EvidenceHeader: 'EvidenceHeader',
+  EvidenceHeaderValue: 'EvidenceHeaderValue',
+  EvidenceObservation: 'EvidenceObservation',
+  EvidenceLimitation: 'EvidenceLimitation',
+  EvidenceError: 'EvidenceError',
   CrawlError: 'CrawlError',
   DomainVerification: 'DomainVerification',
   AuditEvent: 'AuditEvent'
@@ -136,10 +144,134 @@ export const CrawlRunScalarFieldEnum = {
   startedAt: 'startedAt',
   finishedAt: 'finishedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  authorizationId: 'authorizationId',
+  scope: 'scope',
+  limits: 'limits',
+  producerVersion: 'producerVersion',
+  normalizationPolicyVersion: 'normalizationPolicyVersion',
+  extractorVersion: 'extractorVersion',
+  discoveredCount: 'discoveredCount',
+  attemptedCount: 'attemptedCount',
+  collectedCount: 'collectedCount',
+  failedCount: 'failedCount',
+  unattemptedCount: 'unattemptedCount',
+  stopReason: 'stopReason',
+  frozenAt: 'frozenAt'
 } as const
 
 export type CrawlRunScalarFieldEnum = (typeof CrawlRunScalarFieldEnum)[keyof typeof CrawlRunScalarFieldEnum]
+
+
+export const ExportAuthorizationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  siteId: 'siteId',
+  description: 'description',
+  scope: 'scope',
+  createdAt: 'createdAt',
+  revokedAt: 'revokedAt'
+} as const
+
+export type ExportAuthorizationScalarFieldEnum = (typeof ExportAuthorizationScalarFieldEnum)[keyof typeof ExportAuthorizationScalarFieldEnum]
+
+
+export const EvidencePageScalarFieldEnum = {
+  id: 'id',
+  crawlRunId: 'crawlRunId',
+  position: 'position',
+  discoveredUrl: 'discoveredUrl',
+  requestedUrl: 'requestedUrl',
+  normalizedUrl: 'normalizedUrl',
+  finalUrl: 'finalUrl',
+  canonicalUrls: 'canonicalUrls',
+  createdAt: 'createdAt'
+} as const
+
+export type EvidencePageScalarFieldEnum = (typeof EvidencePageScalarFieldEnum)[keyof typeof EvidencePageScalarFieldEnum]
+
+
+export const EvidenceTransactionScalarFieldEnum = {
+  id: 'id',
+  pageId: 'pageId',
+  position: 'position',
+  requestUrl: 'requestUrl',
+  responseUrl: 'responseUrl',
+  method: 'method',
+  statusCode: 'statusCode',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
+  transferredBytes: 'transferredBytes',
+  decodedBytes: 'decodedBytes',
+  redirectTo: 'redirectTo',
+  createdAt: 'createdAt'
+} as const
+
+export type EvidenceTransactionScalarFieldEnum = (typeof EvidenceTransactionScalarFieldEnum)[keyof typeof EvidenceTransactionScalarFieldEnum]
+
+
+export const EvidenceHeaderScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  position: 'position',
+  name: 'name'
+} as const
+
+export type EvidenceHeaderScalarFieldEnum = (typeof EvidenceHeaderScalarFieldEnum)[keyof typeof EvidenceHeaderScalarFieldEnum]
+
+
+export const EvidenceHeaderValueScalarFieldEnum = {
+  id: 'id',
+  headerId: 'headerId',
+  position: 'position',
+  value: 'value'
+} as const
+
+export type EvidenceHeaderValueScalarFieldEnum = (typeof EvidenceHeaderValueScalarFieldEnum)[keyof typeof EvidenceHeaderValueScalarFieldEnum]
+
+
+export const EvidenceObservationScalarFieldEnum = {
+  id: 'id',
+  pageId: 'pageId',
+  method: 'method',
+  status: 'status',
+  value: 'value',
+  reasons: 'reasons',
+  provenance: 'provenance',
+  fieldOverrides: 'fieldOverrides',
+  rawHash: 'rawHash',
+  normalizedHash: 'normalizedHash',
+  createdAt: 'createdAt'
+} as const
+
+export type EvidenceObservationScalarFieldEnum = (typeof EvidenceObservationScalarFieldEnum)[keyof typeof EvidenceObservationScalarFieldEnum]
+
+
+export const EvidenceLimitationScalarFieldEnum = {
+  id: 'id',
+  crawlRunId: 'crawlRunId',
+  pageId: 'pageId',
+  code: 'code',
+  message: 'message',
+  createdAt: 'createdAt'
+} as const
+
+export type EvidenceLimitationScalarFieldEnum = (typeof EvidenceLimitationScalarFieldEnum)[keyof typeof EvidenceLimitationScalarFieldEnum]
+
+
+export const EvidenceErrorScalarFieldEnum = {
+  id: 'id',
+  crawlRunId: 'crawlRunId',
+  pageId: 'pageId',
+  observationId: 'observationId',
+  stage: 'stage',
+  code: 'code',
+  message: 'message',
+  occurredAt: 'occurredAt',
+  retryable: 'retryable'
+} as const
+
+export type EvidenceErrorScalarFieldEnum = (typeof EvidenceErrorScalarFieldEnum)[keyof typeof EvidenceErrorScalarFieldEnum]
 
 
 export const CrawlErrorScalarFieldEnum = {

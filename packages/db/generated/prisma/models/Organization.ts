@@ -178,6 +178,7 @@ export type OrganizationWhereInput = {
   sites?: Prisma.SiteListRelationFilter
   events?: Prisma.AuditEventListRelationFilter
   crawlRuns?: Prisma.CrawlRunListRelationFilter
+  exportAuthorizations?: Prisma.ExportAuthorizationListRelationFilter
 }
 
 export type OrganizationOrderByWithRelationInput = {
@@ -189,6 +190,7 @@ export type OrganizationOrderByWithRelationInput = {
   sites?: Prisma.SiteOrderByRelationAggregateInput
   events?: Prisma.AuditEventOrderByRelationAggregateInput
   crawlRuns?: Prisma.CrawlRunOrderByRelationAggregateInput
+  exportAuthorizations?: Prisma.ExportAuthorizationOrderByRelationAggregateInput
 }
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -203,6 +205,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   sites?: Prisma.SiteListRelationFilter
   events?: Prisma.AuditEventListRelationFilter
   crawlRuns?: Prisma.CrawlRunListRelationFilter
+  exportAuthorizations?: Prisma.ExportAuthorizationListRelationFilter
 }, "id">
 
 export type OrganizationOrderByWithAggregationInput = {
@@ -234,6 +237,7 @@ export type OrganizationCreateInput = {
   sites?: Prisma.SiteCreateNestedManyWithoutOrganizationInput
   events?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
   crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutOrganizationInput
+  exportAuthorizations?: Prisma.ExportAuthorizationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateInput = {
@@ -245,6 +249,7 @@ export type OrganizationUncheckedCreateInput = {
   sites?: Prisma.SiteUncheckedCreateNestedManyWithoutOrganizationInput
   events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
   crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutOrganizationInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUpdateInput = {
@@ -256,6 +261,7 @@ export type OrganizationUpdateInput = {
   sites?: Prisma.SiteUpdateManyWithoutOrganizationNestedInput
   events?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
   crawlRuns?: Prisma.CrawlRunUpdateManyWithoutOrganizationNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateInput = {
@@ -267,6 +273,7 @@ export type OrganizationUncheckedUpdateInput = {
   sites?: Prisma.SiteUncheckedUpdateManyWithoutOrganizationNestedInput
   events?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
   crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateManyInput = {
@@ -366,6 +373,20 @@ export type OrganizationUpdateOneRequiredWithoutCrawlRunsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutCrawlRunsInput, Prisma.OrganizationUpdateWithoutCrawlRunsInput>, Prisma.OrganizationUncheckedUpdateWithoutCrawlRunsInput>
 }
 
+export type OrganizationCreateNestedOneWithoutExportAuthorizationsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutExportAuthorizationsInput, Prisma.OrganizationUncheckedCreateWithoutExportAuthorizationsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutExportAuthorizationsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutExportAuthorizationsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutExportAuthorizationsInput, Prisma.OrganizationUncheckedCreateWithoutExportAuthorizationsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutExportAuthorizationsInput
+  upsert?: Prisma.OrganizationUpsertWithoutExportAuthorizationsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutExportAuthorizationsInput, Prisma.OrganizationUpdateWithoutExportAuthorizationsInput>, Prisma.OrganizationUncheckedUpdateWithoutExportAuthorizationsInput>
+}
+
 export type OrganizationCreateNestedOneWithoutEventsInput = {
   create?: Prisma.XOR<Prisma.OrganizationCreateWithoutEventsInput, Prisma.OrganizationUncheckedCreateWithoutEventsInput>
   connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutEventsInput
@@ -388,6 +409,7 @@ export type OrganizationCreateWithoutUsersInput = {
   sites?: Prisma.SiteCreateNestedManyWithoutOrganizationInput
   events?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
   crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutOrganizationInput
+  exportAuthorizations?: Prisma.ExportAuthorizationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutUsersInput = {
@@ -398,6 +420,7 @@ export type OrganizationUncheckedCreateWithoutUsersInput = {
   sites?: Prisma.SiteUncheckedCreateNestedManyWithoutOrganizationInput
   events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
   crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutOrganizationInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutUsersInput = {
@@ -424,6 +447,7 @@ export type OrganizationUpdateWithoutUsersInput = {
   sites?: Prisma.SiteUpdateManyWithoutOrganizationNestedInput
   events?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
   crawlRuns?: Prisma.CrawlRunUpdateManyWithoutOrganizationNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutUsersInput = {
@@ -434,6 +458,7 @@ export type OrganizationUncheckedUpdateWithoutUsersInput = {
   sites?: Prisma.SiteUncheckedUpdateManyWithoutOrganizationNestedInput
   events?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
   crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutSitesInput = {
@@ -444,6 +469,7 @@ export type OrganizationCreateWithoutSitesInput = {
   users?: Prisma.UserCreateNestedManyWithoutOrganizationInput
   events?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
   crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutOrganizationInput
+  exportAuthorizations?: Prisma.ExportAuthorizationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutSitesInput = {
@@ -454,6 +480,7 @@ export type OrganizationUncheckedCreateWithoutSitesInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutOrganizationInput
   events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
   crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutOrganizationInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutSitesInput = {
@@ -480,6 +507,7 @@ export type OrganizationUpdateWithoutSitesInput = {
   users?: Prisma.UserUpdateManyWithoutOrganizationNestedInput
   events?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
   crawlRuns?: Prisma.CrawlRunUpdateManyWithoutOrganizationNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutSitesInput = {
@@ -490,6 +518,7 @@ export type OrganizationUncheckedUpdateWithoutSitesInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutOrganizationNestedInput
   events?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
   crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutCrawlRunsInput = {
@@ -500,6 +529,7 @@ export type OrganizationCreateWithoutCrawlRunsInput = {
   users?: Prisma.UserCreateNestedManyWithoutOrganizationInput
   sites?: Prisma.SiteCreateNestedManyWithoutOrganizationInput
   events?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  exportAuthorizations?: Prisma.ExportAuthorizationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutCrawlRunsInput = {
@@ -510,6 +540,7 @@ export type OrganizationUncheckedCreateWithoutCrawlRunsInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutOrganizationInput
   sites?: Prisma.SiteUncheckedCreateNestedManyWithoutOrganizationInput
   events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutCrawlRunsInput = {
@@ -536,6 +567,7 @@ export type OrganizationUpdateWithoutCrawlRunsInput = {
   users?: Prisma.UserUpdateManyWithoutOrganizationNestedInput
   sites?: Prisma.SiteUpdateManyWithoutOrganizationNestedInput
   events?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutCrawlRunsInput = {
@@ -546,6 +578,67 @@ export type OrganizationUncheckedUpdateWithoutCrawlRunsInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutOrganizationNestedInput
   sites?: Prisma.SiteUncheckedUpdateManyWithoutOrganizationNestedInput
   events?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutExportAuthorizationsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserCreateNestedManyWithoutOrganizationInput
+  sites?: Prisma.SiteCreateNestedManyWithoutOrganizationInput
+  events?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutExportAuthorizationsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutOrganizationInput
+  sites?: Prisma.SiteUncheckedCreateNestedManyWithoutOrganizationInput
+  events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutExportAuthorizationsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutExportAuthorizationsInput, Prisma.OrganizationUncheckedCreateWithoutExportAuthorizationsInput>
+}
+
+export type OrganizationUpsertWithoutExportAuthorizationsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutExportAuthorizationsInput, Prisma.OrganizationUncheckedUpdateWithoutExportAuthorizationsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutExportAuthorizationsInput, Prisma.OrganizationUncheckedCreateWithoutExportAuthorizationsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutExportAuthorizationsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutExportAuthorizationsInput, Prisma.OrganizationUncheckedUpdateWithoutExportAuthorizationsInput>
+}
+
+export type OrganizationUpdateWithoutExportAuthorizationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUpdateManyWithoutOrganizationNestedInput
+  sites?: Prisma.SiteUpdateManyWithoutOrganizationNestedInput
+  events?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  crawlRuns?: Prisma.CrawlRunUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutExportAuthorizationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUncheckedUpdateManyWithoutOrganizationNestedInput
+  sites?: Prisma.SiteUncheckedUpdateManyWithoutOrganizationNestedInput
+  events?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutEventsInput = {
@@ -556,6 +649,7 @@ export type OrganizationCreateWithoutEventsInput = {
   users?: Prisma.UserCreateNestedManyWithoutOrganizationInput
   sites?: Prisma.SiteCreateNestedManyWithoutOrganizationInput
   crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutOrganizationInput
+  exportAuthorizations?: Prisma.ExportAuthorizationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutEventsInput = {
@@ -566,6 +660,7 @@ export type OrganizationUncheckedCreateWithoutEventsInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutOrganizationInput
   sites?: Prisma.SiteUncheckedCreateNestedManyWithoutOrganizationInput
   crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutOrganizationInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutEventsInput = {
@@ -592,6 +687,7 @@ export type OrganizationUpdateWithoutEventsInput = {
   users?: Prisma.UserUpdateManyWithoutOrganizationNestedInput
   sites?: Prisma.SiteUpdateManyWithoutOrganizationNestedInput
   crawlRuns?: Prisma.CrawlRunUpdateManyWithoutOrganizationNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutEventsInput = {
@@ -602,6 +698,7 @@ export type OrganizationUncheckedUpdateWithoutEventsInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutOrganizationNestedInput
   sites?: Prisma.SiteUncheckedUpdateManyWithoutOrganizationNestedInput
   crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 
@@ -614,6 +711,7 @@ export type OrganizationCountOutputType = {
   sites: number
   events: number
   crawlRuns: number
+  exportAuthorizations: number
 }
 
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -621,6 +719,7 @@ export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   sites?: boolean | OrganizationCountOutputTypeCountSitesArgs
   events?: boolean | OrganizationCountOutputTypeCountEventsArgs
   crawlRuns?: boolean | OrganizationCountOutputTypeCountCrawlRunsArgs
+  exportAuthorizations?: boolean | OrganizationCountOutputTypeCountExportAuthorizationsArgs
 }
 
 /**
@@ -661,6 +760,13 @@ export type OrganizationCountOutputTypeCountCrawlRunsArgs<ExtArgs extends runtim
   where?: Prisma.CrawlRunWhereInput
 }
 
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountExportAuthorizationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ExportAuthorizationWhereInput
+}
+
 
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -671,6 +777,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   sites?: boolean | Prisma.Organization$sitesArgs<ExtArgs>
   events?: boolean | Prisma.Organization$eventsArgs<ExtArgs>
   crawlRuns?: boolean | Prisma.Organization$crawlRunsArgs<ExtArgs>
+  exportAuthorizations?: boolean | Prisma.Organization$exportAuthorizationsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
 
@@ -701,6 +808,7 @@ export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   sites?: boolean | Prisma.Organization$sitesArgs<ExtArgs>
   events?: boolean | Prisma.Organization$eventsArgs<ExtArgs>
   crawlRuns?: boolean | Prisma.Organization$crawlRunsArgs<ExtArgs>
+  exportAuthorizations?: boolean | Prisma.Organization$exportAuthorizationsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -713,6 +821,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     sites: Prisma.$SitePayload<ExtArgs>[]
     events: Prisma.$AuditEventPayload<ExtArgs>[]
     crawlRuns: Prisma.$CrawlRunPayload<ExtArgs>[]
+    exportAuthorizations: Prisma.$ExportAuthorizationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1117,6 +1226,7 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   sites<T extends Prisma.Organization$sitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$sitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   events<T extends Prisma.Organization$eventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   crawlRuns<T extends Prisma.Organization$crawlRunsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$crawlRunsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CrawlRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  exportAuthorizations<T extends Prisma.Organization$exportAuthorizationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$exportAuthorizationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExportAuthorizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1636,6 +1746,30 @@ export type Organization$crawlRunsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.CrawlRunScalarFieldEnum | Prisma.CrawlRunScalarFieldEnum[]
+}
+
+/**
+ * Organization.exportAuthorizations
+ */
+export type Organization$exportAuthorizationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExportAuthorization
+   */
+  select?: Prisma.ExportAuthorizationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ExportAuthorization
+   */
+  omit?: Prisma.ExportAuthorizationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExportAuthorizationInclude<ExtArgs> | null
+  where?: Prisma.ExportAuthorizationWhereInput
+  orderBy?: Prisma.ExportAuthorizationOrderByWithRelationInput | Prisma.ExportAuthorizationOrderByWithRelationInput[]
+  cursor?: Prisma.ExportAuthorizationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ExportAuthorizationScalarFieldEnum | Prisma.ExportAuthorizationScalarFieldEnum[]
 }
 
 /**

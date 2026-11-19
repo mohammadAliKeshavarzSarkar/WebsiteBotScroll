@@ -43,6 +43,46 @@ export type Site = Prisma.SiteModel
  */
 export type CrawlRun = Prisma.CrawlRunModel
 /**
+ * Model ExportAuthorization
+ * 
+ */
+export type ExportAuthorization = Prisma.ExportAuthorizationModel
+/**
+ * Model EvidencePage
+ * 
+ */
+export type EvidencePage = Prisma.EvidencePageModel
+/**
+ * Model EvidenceTransaction
+ * 
+ */
+export type EvidenceTransaction = Prisma.EvidenceTransactionModel
+/**
+ * Model EvidenceHeader
+ * 
+ */
+export type EvidenceHeader = Prisma.EvidenceHeaderModel
+/**
+ * Model EvidenceHeaderValue
+ * 
+ */
+export type EvidenceHeaderValue = Prisma.EvidenceHeaderValueModel
+/**
+ * Model EvidenceObservation
+ * 
+ */
+export type EvidenceObservation = Prisma.EvidenceObservationModel
+/**
+ * Model EvidenceLimitation
+ * 
+ */
+export type EvidenceLimitation = Prisma.EvidenceLimitationModel
+/**
+ * Model EvidenceError
+ * 
+ */
+export type EvidenceError = Prisma.EvidenceErrorModel
+/**
  * Model CrawlError
  * 
  */
