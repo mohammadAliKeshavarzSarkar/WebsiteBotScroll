@@ -1,0 +1,70 @@
+{
+  "contract": { "name": "seo-crawl-evidence", "version": "0.1.0" },
+  "producer": { "name": "WebsiteBotScroll", "version": "0.1.0", "schema_version": "0.1.0", "normalization_policy_version": "1.0.0", "extractor_version": "1.0.0" },
+  "run": {
+    "id": "run-complete", "trigger": "manual", "lifecycle": "completed",
+    "started_at": "2026-11-18T10:00:00Z", "finished_at": "2026-11-18T10:01:00Z",
+    "scope": { "seed_urls": ["https://example.com/"], "allowed_hosts": ["example.com"] },
+    "limits": { "max_pages": 10, "max_depth": 2, "max_duration_ms": 60000, "max_response_bytes": 1048576 },
+    "coverage": { "discovered": 1, "attempted": 1, "collected": 1, "failed": 0, "unattempted": 0 },
+    "stop_reason": "frontier_exhausted", "limitations": []
+  },
+  "pages": [{
+    "id": "page-home", "depth": 0,
+    "url_identity": {
+      "discovered_url": "https://example.com/", "requested_url": "https://example.com/",
+      "normalized_url": "https://example.com/", "final_url": "https://example.com/", "canonical_urls": ["https://example.com/"]
+    },
+    "observations": {
+      "http": {
+        "id": "obs-http-home", "status": "observed", "reasons": [],
+        "provenance": { "method": "http_fetch", "collected_at": "2026-11-18T10:00:01Z", "source": "http", "version": "1.0.0" },
+        "value": { "transactions": [{
+          "id": "tx-home", "request_url": "https://example.com/", "response_url": "https://example.com/", "method": "GET", "status_code": 200,
+          "started_at": "2026-11-18T10:00:00Z", "finished_at": "2026-11-18T10:00:01Z",
+          "headers": [{ "name": "content-type", "values": ["text/html; charset=utf-8"] }],
+          "transferred_bytes": 1200, "decoded_bytes": 2400, "redirect_to": null
+        }], "final_transaction_id": "tx-home" }
+      },
+      "metadata": {
+        "id": "obs-metadata-home", "status": "observed", "reasons": [],
+        "provenance": { "method": "html_extract", "collected_at": "2026-11-18T10:00:02Z", "source": "source_html", "version": "1.0.0" },
+        "value": { "title": "Example", "meta_description": "An example page", "canonical_urls": ["https://example.com/"], "robots": ["index", "follow"], "language": "en" }
+      },
+      "headings": {
+        "id": "obs-headings-home", "status": "observed", "reasons": [],
+        "provenance": { "method": "html_extract", "collected_at": "2026-11-18T10:00:02Z", "source": "source_html", "version": "1.0.0" },
+        "value": [{ "level": 1, "text": "Example" }]
+      },
+      "structured_data": {
+        "id": "obs-structured-home", "status": "observed", "reasons": [],
+        "provenance": { "method": "structured_data_extract", "collected_at": "2026-11-18T10:00:02Z", "source": "source_html", "version": "1.0.0" },
+        "value": [{ "format": "json-ld", "parsed": true, "types": ["WebPage"], "error": null, "raw_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }]
+      },
+      "content": {
+        "id": "obs-content-home", "status": "observed", "reasons": [],
+        "provenance": { "method": "content_extract", "collected_at": "2026-11-18T10:00:02Z", "source": "source_html", "version": "1.0.0" },
+        "value": {
+          "raw_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "normalized_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "hash_method_version": "1.0.0", "visible_text_summary": "Example page content."
+        }
+      },
+      "links": {
+        "id": "obs-links-home", "status": "observed", "reasons": [],
+        "provenance": { "method": "link_extract", "collected_at": "2026-11-18T10:00:02Z", "source": "source_html", "version": "1.0.0" },
+        "value": []
+      },
+      "rendering": { "id": "obs-render-home", "status": "not_collected", "value": null, "reasons": ["browser_rendering_disabled"] }
+    }
+  }],
+  "diagnostics": {
+    "id": "obs-diagnostics", "status": "observed", "reasons": [],
+    "provenance": { "method": "diagnostic_engine", "collected_at": "2026-11-18T10:01:00Z", "source": "derived", "version": "1.0.0" },
+    "value": [{
+      "id": "diag-title", "rule_id": "title-present", "rule_version": "1.0.0", "policy_version": "1.0.0", "evidence_scope": "subject_page", "related_page_ids": [],
+      "subject_page_id": "page-home", "outcome": "pass", "observation_ids": ["obs-metadata-home"], "limitations": []
+    }]
+  },
+  "errors": []
+}
