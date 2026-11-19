@@ -1,0 +1,64 @@
+import { createHash } from "node:crypto";
+
+export const PLATFORM_LIMITS = {
+  maxSchemaBytes: 1_048_576,
+  maxPayloadBytes: 1_048_576,
+  maxDepth: 32,
+  maxObjectProperties: 1_024,
+  maxArrayItems: 10_000,
+  maxArtifactBytes: 50 * 1_048_576,
+  maxExecutionArtifactBytes: 250 * 1_048_576,
+} as const;
+
+export type DefinitionStatus = "draft" | "published" | "deprecated";
+export type ObservationScope = "run" | "page" | "resource" | "site" | "cross_page";
+export type PlatformCollectionStatus = "observed" | "partial" | "unknown" | "not_collected" | "failed" | "unsupported" | "not_applicable";
+export interface PlatformValidationIssue { code: string; path: string; message: string }
+export type PlatformValidationResult = { valid: true } | { valid: false; issues: PlatformValidationIssue[] };
+
+export interface ObservationDefinitionInput {
+  key: string;
+  version: string;
+  schema: unknown;
+  scopes: ObservationScope[];
+  statuses: PlatformCollectionStatus[];
+  sensitivity: "public" | "internal" | "sensitive";
+  retentionClass: string;
+}
+
+export interface CollectorDefinitionInput {
+  key: string;
+  version: string;
+  configurationSchema: unknown;
+  capabilities: Array<{ observationKey: string; observationVersion: string }>;
+  executionMode: "worker" | "renderer" | "external";
+}
+
+const KEY = /^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$/;
+const VERSION = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
+const stable = (value: unknown): unknown => Array.isArray(value)
+  ? value.map(stable)
+  : value !== null && typeof value === "object"
+    ? Object.fromEntries(Object.entries(value).sort(([left], [right]) => left.localeCompare(right)).map(([key, item]) => [key, stable(item)]))
+    : value;
+
+export const hashDefinitionSchema = (schema: unknown): string => createHash("sha256").update(JSON.stringify(stable(schema)), "utf8").digest("hex");
+
+const assertIdentity = (key: string, version: string): void => {
+  if (!KEY.test(key)) throw new TypeError("definition key is invalid");
+  if (!VERSION.test(version)) throw new TypeError("definition version is invalid");
+};
+
+export function defineObservationDefinition(input: ObservationDefinitionInput): ObservationDefinitionInput & { schemaSha256: string } {
+  assertIdentity(input.key, input.version);
+  if (input.scopes.length === 0) throw new TypeError("definition requires a scope");
+  if (input.statuses.length === 0) throw new TypeError("definition requires a status");
+  return { ...input, scopes: [...input.scopes], statuses: [...input.statuses], schemaSha256: hashDefinitionSchema(input.schema) };
+}
+
+export function defineCollectorDefinition(input: CollectorDefinitionInput): CollectorDefinitionInput & { configurationSchemaSha256: string } {
+  assertIdentity(input.key, input.version);
+  if (input.capabilities.length === 0) throw new TypeError("collector requires a capability");
+  input.capabilities.forEach(({ observationKey, observationVersion }) => assertIdentity(observationKey, observationVersion));
+  return { ...input, capabilities: input.capabilities.map((item) => ({ ...item })), configurationSchemaSha256: hashDefinitionSchema(input.configurationSchema) };
+}

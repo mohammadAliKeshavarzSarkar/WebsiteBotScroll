@@ -1,10 +1,10 @@
 import type { DatabaseClient } from "@website-bot-scroll/db";
 import { Queue } from "bullmq";
 
-import { runCrawlJobSchema, type CrawlTrigger, type RunCrawlJob } from "./contracts.js";
+import { crawlScopeSchema, runCrawlJobSchema, type CrawlTrigger, type RunCrawlJob } from "./contracts.js";
 import { CRAWL_QUEUE_NAME, crawlJobOptions, RUN_CRAWL_JOB_NAME } from "./worker-options.js";
 
-export interface EnqueueCrawlInput { organizationId: string; siteId: string; trigger: CrawlTrigger; idempotencyKey: string }
+export type EnqueueCrawlInput = Omit<RunCrawlJob, "crawlRunId">;
 export interface QueueProducer { add(name: string, data: RunCrawlJob, options: { jobId: string }): Promise<unknown> }
 export interface CloseableQueueProducer extends QueueProducer { close(): Promise<void> }
 export interface EnqueueDependencies { prisma: DatabaseClient; producer: QueueProducer }
@@ -31,8 +31,14 @@ export function createCrawlQueueProducer(redisUrl: string): CloseableQueueProduc
   };
 }
 
-async function publish(run: { id: string; organizationId: string; siteId: string; trigger: CrawlTrigger; idempotencyKey: string }, producer: QueueProducer): Promise<void> {
-  const job = runCrawlJobSchema.parse({ organizationId: run.organizationId, siteId: run.siteId, crawlRunId: run.id, trigger: run.trigger, idempotencyKey: run.idempotencyKey });
+async function publish(run: { id: string; organizationId: string; siteId: string; trigger: CrawlTrigger; idempotencyKey: string; authorizationId: string | null; limits: unknown; producerVersion: string | null; normalizationPolicyVersion: string | null; extractorVersion: string | null }, producer: QueueProducer): Promise<void> {
+  const limits = run.limits as { max_pages?: number; max_depth?: number; max_duration_ms?: number; max_response_bytes?: number } | null;
+  const job = runCrawlJobSchema.parse({
+    organizationId: run.organizationId, siteId: run.siteId, crawlRunId: run.id, trigger: run.trigger, idempotencyKey: run.idempotencyKey,
+    authorizationRef: run.authorizationId,
+    limits: { maxPages: limits?.max_pages, maxDepth: limits?.max_depth, maxDurationMs: limits?.max_duration_ms, maxResponseBytes: limits?.max_response_bytes },
+    producerVersion: run.producerVersion, normalizationPolicyVersion: run.normalizationPolicyVersion, extractorVersion: run.extractorVersion,
+  });
   await producer.add(RUN_CRAWL_JOB_NAME, job, { jobId: run.id });
 }
 
@@ -48,9 +54,17 @@ export async function enqueueCrawl(input: EnqueueCrawlInput, dependencies: Enque
   }
   const site = await dependencies.prisma.site.findFirst({ where: { id: input.siteId, organizationId: input.organizationId }, select: { id: true } });
   if (!site) throw new Error("Site does not belong to the organization");
+  const authorization = await dependencies.prisma.exportAuthorization.findFirst({ where: { id: input.authorizationRef, siteId: input.siteId, organizationId: input.organizationId, revokedAt: null } });
+  if (!authorization) throw new Error("Export authorization does not belong to the organization and site");
+  const authorizationScope = crawlScopeSchema.parse(authorization.scope);
 
   try {
-    const run = await dependencies.prisma.crawlRun.create({ data: { ...input, activeSiteKey: input.siteId } });
+    const run = await dependencies.prisma.crawlRun.create({ data: {
+      organizationId: input.organizationId, siteId: input.siteId, trigger: input.trigger, idempotencyKey: input.idempotencyKey,
+      activeSiteKey: input.siteId, authorizationId: input.authorizationRef, scope: authorizationScope,
+      limits: { max_pages: input.limits.maxPages, max_depth: input.limits.maxDepth, max_duration_ms: input.limits.maxDurationMs, max_response_bytes: input.limits.maxResponseBytes },
+      producerVersion: input.producerVersion, normalizationPolicyVersion: input.normalizationPolicyVersion, extractorVersion: input.extractorVersion,
+    } });
     await publish(run, dependencies.producer);
     return run.id;
   } catch (error) {

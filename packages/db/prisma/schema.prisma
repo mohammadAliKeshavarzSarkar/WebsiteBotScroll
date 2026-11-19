@@ -18,6 +18,7 @@ model Organization {
   sites     Site[]
   events    AuditEvent[]
   crawlRuns CrawlRun[]
+  exportAuthorizations ExportAuthorization[]
 
   @@map("organizations")
 }
@@ -60,6 +61,7 @@ model Site {
   verifications  DomainVerification[]
   events         AuditEvent[]
   crawlRuns      CrawlRun[]
+  exportAuthorizations ExportAuthorization[]
 
   @@unique([organizationId, origin])
   @@index([organizationId, id])
@@ -96,14 +98,166 @@ model CrawlRun {
   finishedAt     DateTime?    @map("finished_at")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
+  authorizationId String?     @map("authorization_id")
+  scope          Json?
+  limits         Json?
+  producerVersion String?     @map("producer_version")
+  normalizationPolicyVersion String? @map("normalization_policy_version")
+  extractorVersion String?    @map("extractor_version")
+  discoveredCount Int         @default(0) @map("discovered_count")
+  attemptedCount Int          @default(0) @map("attempted_count")
+  collectedCount Int          @default(0) @map("collected_count")
+  failedCount Int             @default(0) @map("failed_count")
+  unattemptedCount Int?       @map("unattempted_count")
+  stopReason     String?      @map("stop_reason")
+  frozenAt       DateTime?    @map("frozen_at")
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   site           Site         @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  authorization  ExportAuthorization? @relation(fields: [authorizationId], references: [id], onDelete: Restrict)
   errors         CrawlError[]
+  evidencePages  EvidencePage[]
+  evidenceLimitations EvidenceLimitation[]
+  evidenceErrors EvidenceError[]
 
   @@unique([siteId, idempotencyKey])
   @@index([organizationId, createdAt])
   @@index([siteId, status])
   @@map("crawl_runs")
+}
+
+model ExportAuthorization {
+  id             String       @id
+  organizationId String       @map("organization_id") @db.Uuid
+  siteId         String       @map("site_id") @db.Uuid
+  description    String
+  scope          Json
+  createdAt      DateTime     @default(now()) @map("created_at")
+  revokedAt      DateTime?    @map("revoked_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  site           Site         @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  crawlRuns      CrawlRun[]
+
+  @@index([organizationId, siteId])
+  @@map("export_authorizations")
+}
+
+model EvidencePage {
+  id             String       @id
+  crawlRunId     String       @map("crawl_run_id") @db.Uuid
+  position       Int
+  depth          Int
+  discoveredUrl  String       @map("discovered_url")
+  requestedUrl   String       @map("requested_url")
+  normalizedUrl  String       @map("normalized_url")
+  finalUrl       String       @map("final_url")
+  canonicalUrls  Json         @map("canonical_urls")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  crawlRun       CrawlRun     @relation(fields: [crawlRunId], references: [id], onDelete: Cascade)
+  transactions   EvidenceTransaction[]
+  observations   EvidenceObservation[]
+  limitations    EvidenceLimitation[]
+  errors         EvidenceError[]
+
+  @@unique([crawlRunId, position])
+  @@index([crawlRunId, id])
+  @@map("evidence_pages")
+}
+
+model EvidenceTransaction {
+  id               String       @id
+  pageId           String       @map("page_id")
+  position         Int
+  requestUrl       String       @map("request_url")
+  responseUrl      String       @map("response_url")
+  method           String
+  statusCode       Int          @map("status_code")
+  startedAt        DateTime     @map("started_at")
+  finishedAt       DateTime     @map("finished_at")
+  transferredBytes BigInt       @map("transferred_bytes")
+  decodedBytes     BigInt       @map("decoded_bytes")
+  redirectTo       String?      @map("redirect_to")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  page             EvidencePage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  headers          EvidenceHeader[]
+
+  @@unique([pageId, position])
+  @@index([pageId, id])
+  @@map("evidence_transactions")
+}
+
+model EvidenceHeader {
+  id            String              @id @default(uuid()) @db.Uuid
+  transactionId String              @map("transaction_id")
+  position      Int
+  name          String
+  transaction   EvidenceTransaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  values        EvidenceHeaderValue[]
+
+  @@unique([transactionId, position])
+  @@map("evidence_headers")
+}
+
+model EvidenceHeaderValue {
+  id       String         @id @default(uuid()) @db.Uuid
+  headerId String         @map("header_id") @db.Uuid
+  position Int
+  value    String
+  header   EvidenceHeader @relation(fields: [headerId], references: [id], onDelete: Cascade)
+
+  @@unique([headerId, position])
+  @@map("evidence_header_values")
+}
+
+model EvidenceObservation {
+  id              String       @id
+  pageId          String       @map("page_id")
+  method          String
+  status          String
+  value           Json?
+  reasons         Json
+  provenance      Json
+  fieldOverrides  Json?        @map("field_overrides")
+  rawHash         String?      @map("raw_hash")
+  normalizedHash  String?      @map("normalized_hash")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  page            EvidencePage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  errors          EvidenceError[]
+
+  @@unique([pageId, method])
+  @@index([pageId, id])
+  @@map("evidence_observations")
+}
+
+model EvidenceLimitation {
+  id         String        @id
+  crawlRunId String        @map("crawl_run_id") @db.Uuid
+  pageId     String?       @map("page_id")
+  code       String
+  message    String
+  createdAt  DateTime      @default(now()) @map("created_at")
+  crawlRun   CrawlRun      @relation(fields: [crawlRunId], references: [id], onDelete: Cascade)
+  page       EvidencePage? @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([crawlRunId, id])
+  @@map("evidence_limitations")
+}
+
+model EvidenceError {
+  id            String               @id
+  crawlRunId    String               @map("crawl_run_id") @db.Uuid
+  pageId        String?              @map("page_id")
+  observationId String?              @map("observation_id")
+  stage         String
+  code          String
+  message       String
+  occurredAt    DateTime             @map("occurred_at")
+  retryable     Boolean
+  crawlRun      CrawlRun             @relation(fields: [crawlRunId], references: [id], onDelete: Cascade)
+  page          EvidencePage?        @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  observation   EvidenceObservation? @relation(fields: [observationId], references: [id], onDelete: Cascade)
+
+  @@index([crawlRunId, id])
+  @@map("evidence_errors")
 }
 
 model CrawlError {
@@ -118,6 +272,55 @@ model CrawlError {
 
   @@index([crawlRunId, createdAt])
   @@map("crawl_errors")
+}
+
+model ObservationDefinition {
+  id             String   @id @default(uuid()) @db.Uuid
+  key            String
+  version        String
+  schema         Json
+  schemaSha256   String   @map("schema_sha256") @db.Char(64)
+  scopes         Json
+  statuses       Json
+  sensitivity    String
+  retentionClass String   @map("retention_class")
+  status         String   @default("published")
+  createdAt      DateTime @default(now()) @map("created_at")
+  deprecatedAt   DateTime? @map("deprecated_at")
+  capabilities   CollectorCapability[]
+
+  @@unique([key, version])
+  @@index([key, status])
+  @@map("observation_definitions")
+}
+
+model CollectorDefinition {
+  id                        String   @id @default(uuid()) @db.Uuid
+  key                       String
+  version                   String
+  configurationSchema       Json     @map("configuration_schema")
+  configurationSchemaSha256 String   @map("configuration_schema_sha256") @db.Char(64)
+  executionMode             String   @map("execution_mode")
+  status                    String   @default("published")
+  createdAt                 DateTime @default(now()) @map("created_at")
+  deprecatedAt              DateTime? @map("deprecated_at")
+  capabilities              CollectorCapability[]
+
+  @@unique([key, version])
+  @@index([key, status])
+  @@map("collector_definitions")
+}
+
+model CollectorCapability {
+  collectorDefinitionId   String @map("collector_definition_id") @db.Uuid
+  observationDefinitionId String @map("observation_definition_id") @db.Uuid
+  position                Int
+  collector               CollectorDefinition @relation(fields: [collectorDefinitionId], references: [id], onDelete: Cascade)
+  observation             ObservationDefinition @relation(fields: [observationDefinitionId], references: [id], onDelete: Restrict)
+
+  @@id([collectorDefinitionId, observationDefinitionId])
+  @@unique([collectorDefinitionId, position])
+  @@map("collector_capabilities")
 }
 
 model DomainVerification {

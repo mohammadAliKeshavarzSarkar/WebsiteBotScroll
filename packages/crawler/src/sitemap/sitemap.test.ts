@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { SafeTextFetcher } from "../robots/fetch-robots.js";
 import type { RobotsDecisionSource } from "../robots/policy.js";
 import { discoverSitemaps } from "./discover.js";
+import type { CrawlEvidenceEvent } from "../evidence/events.js";
 import { parseSitemap } from "./parse.js";
 
 const encoder = new TextEncoder();
@@ -26,6 +27,16 @@ describe("parseSitemap", () => {
 });
 
 describe("discoverSitemaps", () => {
+  it("records each sitemap fetch chain entry", async () => {
+    const events: CrawlEvidenceEvent[] = [];
+    const fetcher: SafeTextFetcher = { fetch: vi.fn().mockResolvedValue(xml("<urlset><url><loc>https://example.com/a</loc></url></urlset>")) };
+    for await (const entry of discoverSitemaps(new URL("https://example.com"), robots(), fetcher, {
+      evidenceSink: { record: async (event) => { events.push(event); } }, evidenceContext: { runId: "run-1" },
+    })) { void entry; }
+    expect(events).toContainEqual(expect.objectContaining({
+      kind: "sitemap_fetch", requestedUrl: "https://example.com/sitemap.xml", depth: 0, status: 200,
+    }));
+  });
   it("uses robots declarations, follows bounded indexes, and deduplicates URLs", async () => {
     const pages = new Map([
       ["https://example.com/root.xml", xml("<sitemapindex><sitemap><loc>https://example.com/child.xml</loc></sitemap></sitemapindex>")],

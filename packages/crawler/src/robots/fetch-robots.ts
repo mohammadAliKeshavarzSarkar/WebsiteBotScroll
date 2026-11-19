@@ -1,4 +1,5 @@
 import type { RobotsDecisionSource, RobotsRule } from "./policy.js";
+import type { EvidenceContext, EvidenceSink } from "../evidence/events.js";
 
 export interface SafeFetchResult {
   status: number;
@@ -18,6 +19,8 @@ export interface LoadRobotsOptions {
   maxAgeMs?: number;
   retryAfterMs?: number;
   now?: () => number;
+  evidenceSink?: EvidenceSink;
+  evidenceContext?: EvidenceContext;
 }
 
 const caches = new WeakMap<SafeTextFetcher, Map<string, RobotsDecisionSource>>();
@@ -68,8 +71,13 @@ export async function loadRobots(origin: URL, fetcher: SafeTextFetcher, options:
   const retryAfter = options.retryAfterMs ?? 300_000;
   const maxBytes = options.maxBytes ?? 512_000;
   let result: RobotsDecisionSource;
+  let status: number | undefined;
+  let finalUrl: string | undefined;
+  let failure: string | undefined;
   try {
     const response = await fetcher.fetch(new URL("/robots.txt", origin), { maxBytes });
+    status = response.status;
+    finalUrl = response.finalUrl.href;
     if (response.body.byteLength > maxBytes) throw new Error("robots.txt exceeds byte limit");
     if (response.status >= 200 && response.status < 300) {
       const text = new TextDecoder("utf-8", { fatal: true }).decode(response.body);
@@ -81,8 +89,16 @@ export async function loadRobots(origin: URL, fetcher: SafeTextFetcher, options:
     } else {
       result = { kind: "allow-all", sitemaps: [], expiresAt: now + maxAge };
     }
-  } catch {
+  } catch (error) {
+    failure = error instanceof Error ? error.message : "robots fetch failed";
     result = { kind: "temporary-disallow", sitemaps: [], expiresAt: now + retryAfter };
+  }
+  if (options.evidenceSink && options.evidenceContext) {
+    await options.evidenceSink.record({
+      kind: "robots_fetch", runId: options.evidenceContext.runId, robotsUrl: new URL("/robots.txt", origin).href,
+      ...(finalUrl ? { finalUrl } : {}), ...(status === undefined ? {} : { status }), outcome: result.kind,
+      occurredAt: new Date(now).toISOString(), ...(failure ? { error: failure } : {}),
+    });
   }
   if (cacheEnabled) cache.set(key, result);
   return result;

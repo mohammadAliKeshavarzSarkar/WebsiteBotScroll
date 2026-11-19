@@ -1,0 +1,2 @@
+ALTER TABLE "evidence_pages" ADD COLUMN "depth" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "evidence_pages" ALTER COLUMN "depth" DROP DEFAULT;

@@ -194,6 +194,7 @@ export type SiteWhereInput = {
   verifications?: Prisma.DomainVerificationListRelationFilter
   events?: Prisma.AuditEventListRelationFilter
   crawlRuns?: Prisma.CrawlRunListRelationFilter
+  exportAuthorizations?: Prisma.ExportAuthorizationListRelationFilter
 }
 
 export type SiteOrderByWithRelationInput = {
@@ -207,6 +208,7 @@ export type SiteOrderByWithRelationInput = {
   verifications?: Prisma.DomainVerificationOrderByRelationAggregateInput
   events?: Prisma.AuditEventOrderByRelationAggregateInput
   crawlRuns?: Prisma.CrawlRunOrderByRelationAggregateInput
+  exportAuthorizations?: Prisma.ExportAuthorizationOrderByRelationAggregateInput
 }
 
 export type SiteWhereUniqueInput = Prisma.AtLeast<{
@@ -224,6 +226,7 @@ export type SiteWhereUniqueInput = Prisma.AtLeast<{
   verifications?: Prisma.DomainVerificationListRelationFilter
   events?: Prisma.AuditEventListRelationFilter
   crawlRuns?: Prisma.CrawlRunListRelationFilter
+  exportAuthorizations?: Prisma.ExportAuthorizationListRelationFilter
 }, "id" | "organizationId_origin">
 
 export type SiteOrderByWithAggregationInput = {
@@ -260,6 +263,7 @@ export type SiteCreateInput = {
   verifications?: Prisma.DomainVerificationCreateNestedManyWithoutSiteInput
   events?: Prisma.AuditEventCreateNestedManyWithoutSiteInput
   crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutSiteInput
+  exportAuthorizations?: Prisma.ExportAuthorizationCreateNestedManyWithoutSiteInput
 }
 
 export type SiteUncheckedCreateInput = {
@@ -272,6 +276,7 @@ export type SiteUncheckedCreateInput = {
   verifications?: Prisma.DomainVerificationUncheckedCreateNestedManyWithoutSiteInput
   events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutSiteInput
   crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutSiteInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedCreateNestedManyWithoutSiteInput
 }
 
 export type SiteUpdateInput = {
@@ -284,6 +289,7 @@ export type SiteUpdateInput = {
   verifications?: Prisma.DomainVerificationUpdateManyWithoutSiteNestedInput
   events?: Prisma.AuditEventUpdateManyWithoutSiteNestedInput
   crawlRuns?: Prisma.CrawlRunUpdateManyWithoutSiteNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteUncheckedUpdateInput = {
@@ -296,6 +302,7 @@ export type SiteUncheckedUpdateInput = {
   verifications?: Prisma.DomainVerificationUncheckedUpdateManyWithoutSiteNestedInput
   events?: Prisma.AuditEventUncheckedUpdateManyWithoutSiteNestedInput
   crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutSiteNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteCreateManyInput = {
@@ -432,6 +439,20 @@ export type SiteUpdateOneRequiredWithoutCrawlRunsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.SiteUpdateToOneWithWhereWithoutCrawlRunsInput, Prisma.SiteUpdateWithoutCrawlRunsInput>, Prisma.SiteUncheckedUpdateWithoutCrawlRunsInput>
 }
 
+export type SiteCreateNestedOneWithoutExportAuthorizationsInput = {
+  create?: Prisma.XOR<Prisma.SiteCreateWithoutExportAuthorizationsInput, Prisma.SiteUncheckedCreateWithoutExportAuthorizationsInput>
+  connectOrCreate?: Prisma.SiteCreateOrConnectWithoutExportAuthorizationsInput
+  connect?: Prisma.SiteWhereUniqueInput
+}
+
+export type SiteUpdateOneRequiredWithoutExportAuthorizationsNestedInput = {
+  create?: Prisma.XOR<Prisma.SiteCreateWithoutExportAuthorizationsInput, Prisma.SiteUncheckedCreateWithoutExportAuthorizationsInput>
+  connectOrCreate?: Prisma.SiteCreateOrConnectWithoutExportAuthorizationsInput
+  upsert?: Prisma.SiteUpsertWithoutExportAuthorizationsInput
+  connect?: Prisma.SiteWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SiteUpdateToOneWithWhereWithoutExportAuthorizationsInput, Prisma.SiteUpdateWithoutExportAuthorizationsInput>, Prisma.SiteUncheckedUpdateWithoutExportAuthorizationsInput>
+}
+
 export type SiteCreateNestedOneWithoutVerificationsInput = {
   create?: Prisma.XOR<Prisma.SiteCreateWithoutVerificationsInput, Prisma.SiteUncheckedCreateWithoutVerificationsInput>
   connectOrCreate?: Prisma.SiteCreateOrConnectWithoutVerificationsInput
@@ -471,6 +492,7 @@ export type SiteCreateWithoutOrganizationInput = {
   verifications?: Prisma.DomainVerificationCreateNestedManyWithoutSiteInput
   events?: Prisma.AuditEventCreateNestedManyWithoutSiteInput
   crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutSiteInput
+  exportAuthorizations?: Prisma.ExportAuthorizationCreateNestedManyWithoutSiteInput
 }
 
 export type SiteUncheckedCreateWithoutOrganizationInput = {
@@ -482,6 +504,7 @@ export type SiteUncheckedCreateWithoutOrganizationInput = {
   verifications?: Prisma.DomainVerificationUncheckedCreateNestedManyWithoutSiteInput
   events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutSiteInput
   crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutSiteInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedCreateNestedManyWithoutSiteInput
 }
 
 export type SiteCreateOrConnectWithoutOrganizationInput = {
@@ -531,6 +554,7 @@ export type SiteCreateWithoutCrawlRunsInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutSitesInput
   verifications?: Prisma.DomainVerificationCreateNestedManyWithoutSiteInput
   events?: Prisma.AuditEventCreateNestedManyWithoutSiteInput
+  exportAuthorizations?: Prisma.ExportAuthorizationCreateNestedManyWithoutSiteInput
 }
 
 export type SiteUncheckedCreateWithoutCrawlRunsInput = {
@@ -542,6 +566,7 @@ export type SiteUncheckedCreateWithoutCrawlRunsInput = {
   updatedAt?: Date | string
   verifications?: Prisma.DomainVerificationUncheckedCreateNestedManyWithoutSiteInput
   events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutSiteInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedCreateNestedManyWithoutSiteInput
 }
 
 export type SiteCreateOrConnectWithoutCrawlRunsInput = {
@@ -569,6 +594,7 @@ export type SiteUpdateWithoutCrawlRunsInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSitesNestedInput
   verifications?: Prisma.DomainVerificationUpdateManyWithoutSiteNestedInput
   events?: Prisma.AuditEventUpdateManyWithoutSiteNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteUncheckedUpdateWithoutCrawlRunsInput = {
@@ -580,6 +606,71 @@ export type SiteUncheckedUpdateWithoutCrawlRunsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   verifications?: Prisma.DomainVerificationUncheckedUpdateManyWithoutSiteNestedInput
   events?: Prisma.AuditEventUncheckedUpdateManyWithoutSiteNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedUpdateManyWithoutSiteNestedInput
+}
+
+export type SiteCreateWithoutExportAuthorizationsInput = {
+  id?: string
+  name: string
+  origin: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutSitesInput
+  verifications?: Prisma.DomainVerificationCreateNestedManyWithoutSiteInput
+  events?: Prisma.AuditEventCreateNestedManyWithoutSiteInput
+  crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutSiteInput
+}
+
+export type SiteUncheckedCreateWithoutExportAuthorizationsInput = {
+  id?: string
+  organizationId: string
+  name: string
+  origin: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  verifications?: Prisma.DomainVerificationUncheckedCreateNestedManyWithoutSiteInput
+  events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutSiteInput
+  crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutSiteInput
+}
+
+export type SiteCreateOrConnectWithoutExportAuthorizationsInput = {
+  where: Prisma.SiteWhereUniqueInput
+  create: Prisma.XOR<Prisma.SiteCreateWithoutExportAuthorizationsInput, Prisma.SiteUncheckedCreateWithoutExportAuthorizationsInput>
+}
+
+export type SiteUpsertWithoutExportAuthorizationsInput = {
+  update: Prisma.XOR<Prisma.SiteUpdateWithoutExportAuthorizationsInput, Prisma.SiteUncheckedUpdateWithoutExportAuthorizationsInput>
+  create: Prisma.XOR<Prisma.SiteCreateWithoutExportAuthorizationsInput, Prisma.SiteUncheckedCreateWithoutExportAuthorizationsInput>
+  where?: Prisma.SiteWhereInput
+}
+
+export type SiteUpdateToOneWithWhereWithoutExportAuthorizationsInput = {
+  where?: Prisma.SiteWhereInput
+  data: Prisma.XOR<Prisma.SiteUpdateWithoutExportAuthorizationsInput, Prisma.SiteUncheckedUpdateWithoutExportAuthorizationsInput>
+}
+
+export type SiteUpdateWithoutExportAuthorizationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutSitesNestedInput
+  verifications?: Prisma.DomainVerificationUpdateManyWithoutSiteNestedInput
+  events?: Prisma.AuditEventUpdateManyWithoutSiteNestedInput
+  crawlRuns?: Prisma.CrawlRunUpdateManyWithoutSiteNestedInput
+}
+
+export type SiteUncheckedUpdateWithoutExportAuthorizationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  verifications?: Prisma.DomainVerificationUncheckedUpdateManyWithoutSiteNestedInput
+  events?: Prisma.AuditEventUncheckedUpdateManyWithoutSiteNestedInput
+  crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteCreateWithoutVerificationsInput = {
@@ -591,6 +682,7 @@ export type SiteCreateWithoutVerificationsInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutSitesInput
   events?: Prisma.AuditEventCreateNestedManyWithoutSiteInput
   crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutSiteInput
+  exportAuthorizations?: Prisma.ExportAuthorizationCreateNestedManyWithoutSiteInput
 }
 
 export type SiteUncheckedCreateWithoutVerificationsInput = {
@@ -602,6 +694,7 @@ export type SiteUncheckedCreateWithoutVerificationsInput = {
   updatedAt?: Date | string
   events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutSiteInput
   crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutSiteInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedCreateNestedManyWithoutSiteInput
 }
 
 export type SiteCreateOrConnectWithoutVerificationsInput = {
@@ -629,6 +722,7 @@ export type SiteUpdateWithoutVerificationsInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSitesNestedInput
   events?: Prisma.AuditEventUpdateManyWithoutSiteNestedInput
   crawlRuns?: Prisma.CrawlRunUpdateManyWithoutSiteNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteUncheckedUpdateWithoutVerificationsInput = {
@@ -640,6 +734,7 @@ export type SiteUncheckedUpdateWithoutVerificationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   events?: Prisma.AuditEventUncheckedUpdateManyWithoutSiteNestedInput
   crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutSiteNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteCreateWithoutEventsInput = {
@@ -651,6 +746,7 @@ export type SiteCreateWithoutEventsInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutSitesInput
   verifications?: Prisma.DomainVerificationCreateNestedManyWithoutSiteInput
   crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutSiteInput
+  exportAuthorizations?: Prisma.ExportAuthorizationCreateNestedManyWithoutSiteInput
 }
 
 export type SiteUncheckedCreateWithoutEventsInput = {
@@ -662,6 +758,7 @@ export type SiteUncheckedCreateWithoutEventsInput = {
   updatedAt?: Date | string
   verifications?: Prisma.DomainVerificationUncheckedCreateNestedManyWithoutSiteInput
   crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutSiteInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedCreateNestedManyWithoutSiteInput
 }
 
 export type SiteCreateOrConnectWithoutEventsInput = {
@@ -689,6 +786,7 @@ export type SiteUpdateWithoutEventsInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSitesNestedInput
   verifications?: Prisma.DomainVerificationUpdateManyWithoutSiteNestedInput
   crawlRuns?: Prisma.CrawlRunUpdateManyWithoutSiteNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteUncheckedUpdateWithoutEventsInput = {
@@ -700,6 +798,7 @@ export type SiteUncheckedUpdateWithoutEventsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   verifications?: Prisma.DomainVerificationUncheckedUpdateManyWithoutSiteNestedInput
   crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutSiteNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteCreateManyOrganizationInput = {
@@ -719,6 +818,7 @@ export type SiteUpdateWithoutOrganizationInput = {
   verifications?: Prisma.DomainVerificationUpdateManyWithoutSiteNestedInput
   events?: Prisma.AuditEventUpdateManyWithoutSiteNestedInput
   crawlRuns?: Prisma.CrawlRunUpdateManyWithoutSiteNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteUncheckedUpdateWithoutOrganizationInput = {
@@ -730,6 +830,7 @@ export type SiteUncheckedUpdateWithoutOrganizationInput = {
   verifications?: Prisma.DomainVerificationUncheckedUpdateManyWithoutSiteNestedInput
   events?: Prisma.AuditEventUncheckedUpdateManyWithoutSiteNestedInput
   crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutSiteNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedUpdateManyWithoutSiteNestedInput
 }
 
 export type SiteUncheckedUpdateManyWithoutOrganizationInput = {
@@ -749,12 +850,14 @@ export type SiteCountOutputType = {
   verifications: number
   events: number
   crawlRuns: number
+  exportAuthorizations: number
 }
 
 export type SiteCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   verifications?: boolean | SiteCountOutputTypeCountVerificationsArgs
   events?: boolean | SiteCountOutputTypeCountEventsArgs
   crawlRuns?: boolean | SiteCountOutputTypeCountCrawlRunsArgs
+  exportAuthorizations?: boolean | SiteCountOutputTypeCountExportAuthorizationsArgs
 }
 
 /**
@@ -788,6 +891,13 @@ export type SiteCountOutputTypeCountCrawlRunsArgs<ExtArgs extends runtime.Types.
   where?: Prisma.CrawlRunWhereInput
 }
 
+/**
+ * SiteCountOutputType without action
+ */
+export type SiteCountOutputTypeCountExportAuthorizationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ExportAuthorizationWhereInput
+}
+
 
 export type SiteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -800,6 +910,7 @@ export type SiteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   verifications?: boolean | Prisma.Site$verificationsArgs<ExtArgs>
   events?: boolean | Prisma.Site$eventsArgs<ExtArgs>
   crawlRuns?: boolean | Prisma.Site$crawlRunsArgs<ExtArgs>
+  exportAuthorizations?: boolean | Prisma.Site$exportAuthorizationsArgs<ExtArgs>
   _count?: boolean | Prisma.SiteCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["site"]>
 
@@ -838,6 +949,7 @@ export type SiteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   verifications?: boolean | Prisma.Site$verificationsArgs<ExtArgs>
   events?: boolean | Prisma.Site$eventsArgs<ExtArgs>
   crawlRuns?: boolean | Prisma.Site$crawlRunsArgs<ExtArgs>
+  exportAuthorizations?: boolean | Prisma.Site$exportAuthorizationsArgs<ExtArgs>
   _count?: boolean | Prisma.SiteCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SiteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -854,6 +966,7 @@ export type $SitePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     verifications: Prisma.$DomainVerificationPayload<ExtArgs>[]
     events: Prisma.$AuditEventPayload<ExtArgs>[]
     crawlRuns: Prisma.$CrawlRunPayload<ExtArgs>[]
+    exportAuthorizations: Prisma.$ExportAuthorizationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1260,6 +1373,7 @@ export interface Prisma__SiteClient<T, Null = never, ExtArgs extends runtime.Typ
   verifications<T extends Prisma.Site$verificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Site$verificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DomainVerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   events<T extends Prisma.Site$eventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Site$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   crawlRuns<T extends Prisma.Site$crawlRunsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Site$crawlRunsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CrawlRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  exportAuthorizations<T extends Prisma.Site$exportAuthorizationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Site$exportAuthorizationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExportAuthorizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1765,6 +1879,30 @@ export type Site$crawlRunsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.CrawlRunScalarFieldEnum | Prisma.CrawlRunScalarFieldEnum[]
+}
+
+/**
+ * Site.exportAuthorizations
+ */
+export type Site$exportAuthorizationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExportAuthorization
+   */
+  select?: Prisma.ExportAuthorizationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ExportAuthorization
+   */
+  omit?: Prisma.ExportAuthorizationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExportAuthorizationInclude<ExtArgs> | null
+  where?: Prisma.ExportAuthorizationWhereInput
+  orderBy?: Prisma.ExportAuthorizationOrderByWithRelationInput | Prisma.ExportAuthorizationOrderByWithRelationInput[]
+  cursor?: Prisma.ExportAuthorizationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ExportAuthorizationScalarFieldEnum | Prisma.ExportAuthorizationScalarFieldEnum[]
 }
 
 /**

@@ -2,6 +2,15 @@ import type { UrlPolicy } from "./policy.js";
 
 export type NormalizedUrl = string & { readonly __normalizedUrl: unique symbol };
 
+export interface NormalizedUrlIdentity {
+  discoveredUrl: string;
+  requestedUrl: string;
+  normalizedUrl: NormalizedUrl;
+  finalUrl: string;
+  canonicalUrls: string[];
+  normalizationPolicyVersion: string;
+}
+
 function isTrackingParameter(name: string): boolean {
   const normalized = name.toLowerCase();
   return normalized === "gclid" || normalized.startsWith("utm_");
@@ -25,4 +34,16 @@ export function normalizeUrl(input: string, policy: UrlPolicy): NormalizedUrl {
   url.searchParams.sort();
 
   return url.href as NormalizedUrl;
+}
+
+export function normalizeUrlIdentity(input: string, policy: UrlPolicy, normalizationPolicyVersion: string): NormalizedUrlIdentity {
+  const normalizedUrl = normalizeUrl(input, policy);
+  return {
+    discoveredUrl: input,
+    requestedUrl: input,
+    normalizedUrl,
+    finalUrl: normalizedUrl,
+    canonicalUrls: [],
+    normalizationPolicyVersion,
+  };
 }

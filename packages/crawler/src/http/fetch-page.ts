@@ -1,10 +1,12 @@
 import { assertAllowedDestination, type DnsResolver, type ResolvedDestination } from "../network/resolve-public.js";
+import { createEvidenceId, type EvidenceHeaderInput, type EvidenceHeaderName, type HttpTransactionInput } from "@website-bot-scroll/domain/evidence";
+import type { EvidenceContext, EvidenceSink } from "../evidence/events.js";
 
 export interface TransportRequest { url: URL; method: "GET" | "HEAD"; destination: ResolvedDestination; headers: Record<string, string>; signal: AbortSignal }
-export interface TransportResponse { status: number; headers: Record<string, string | undefined>; body: AsyncIterable<Uint8Array>; compressedBytes?: number }
+export interface TransportResponse { status: number; headers: Record<string, string | string[] | undefined>; body: AsyncIterable<Uint8Array>; compressedBytes?: number }
 export interface HttpTransport { request(request: TransportRequest): Promise<TransportResponse> }
 
-interface CommonRequest { url: URL; resolver: DnsResolver; transport: HttpTransport; timeoutMs?: number; sleep?: (milliseconds: number) => Promise<void> }
+interface CommonRequest { url: URL; resolver: DnsResolver; transport: HttpTransport; timeoutMs?: number; sleep?: (milliseconds: number) => Promise<void>; evidenceSink?: EvidenceSink; evidenceContext?: EvidenceContext; now?: () => Date }
 export interface FetchPageRequest extends CommonRequest { attempts?: number; maxRedirects?: number; retryDelaysMs?: number[]; maxCompressedBytes?: number; maxDecompressedBytes?: number; maxOtherBytes?: number }
 export type FetchPageResult =
   | { kind: "html"; url: string; status: number; body: Uint8Array; compressedBytes: number; decompressedBytes: number }
@@ -15,6 +17,15 @@ export interface ResourceObservation { url: string; status: number; contentType?
 
 class RetryableRequestError extends Error {}
 class RequestTimeoutError extends RetryableRequestError { constructor() { super("Request timed out"); } }
+
+const allowedHeaderNames = new Set<EvidenceHeaderName>(["location", "content-type", "x-robots-tag", "link", "content-language", "content-length", "content-encoding", "retry-after", "cache-control", "vary", "etag", "last-modified", "age"]);
+const valuesOf = (value: string | string[] | undefined): string[] => value === undefined ? [] : Array.isArray(value) ? [...value] : [value];
+const firstOf = (value: string | string[] | undefined): string | undefined => valuesOf(value)[0];
+const evidenceHeaders = (headers: TransportResponse["headers"]): EvidenceHeaderInput[] => Object.entries(headers).flatMap(([rawName, rawValues]) => {
+  const name = rawName.toLowerCase() as EvidenceHeaderName;
+  const values = valuesOf(rawValues);
+  return allowedHeaderNames.has(name) && values.length > 0 ? [{ name, values }] : [];
+});
 
 async function requestWithTimeout(transport: HttpTransport, request: Omit<TransportRequest, "signal">, timeoutMs: number): Promise<TransportResponse> {
   const controller = new AbortController();
@@ -49,11 +60,41 @@ export async function fetchPage(request: FetchPageRequest): Promise<FetchPageRes
   const sleep = request.sleep ?? ((milliseconds) => new Promise<void>((resolve) => setTimeout(resolve, milliseconds)));
   const timeoutMs = request.timeoutMs ?? 15_000;
   let lastError: unknown;
+  const now = request.now ?? (() => new Date());
+  const recordTransaction = async (attempt: number, redirect: number, current: URL, response: TransportResponse, startedAt: Date, decodedBytes: number, redirectTo: string | null): Promise<void> => {
+    const context = request.evidenceContext;
+    if (!request.evidenceSink || !context?.pageId) return;
+    const transaction: HttpTransactionInput = {
+      id: createEvidenceId("transaction", [context.runId, context.pageId, String(attempt), String(redirect)]),
+      requestUrl: current.href,
+      responseUrl: current.href,
+      method: "GET",
+      statusCode: response.status,
+      startedAt: startedAt.toISOString(),
+      finishedAt: now().toISOString(),
+      headers: evidenceHeaders(response.headers),
+      transferredBytes: response.compressedBytes ?? decodedBytes,
+      decodedBytes,
+      redirectTo,
+    };
+    await request.evidenceSink.record({ kind: "http_transaction", runId: context.runId, pageId: context.pageId, transaction });
+  };
+  const recordError = async (error: unknown): Promise<void> => {
+    if (!request.evidenceSink || !request.evidenceContext) return;
+    const message = error instanceof Error ? error.message : "Page request failed";
+    await request.evidenceSink.record({
+      kind: "collection_error", runId: request.evidenceContext.runId, ...(request.evidenceContext.pageId ? { pageId: request.evidenceContext.pageId } : {}),
+      stage: /forbidden|public address/i.test(message) ? "network_boundary" : "http_fetch",
+      code: /timed out/i.test(message) ? "timeout" : "network_error", message,
+      retryable: error instanceof RetryableRequestError, occurredAt: now().toISOString(),
+    });
+  };
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     let current = request.url;
     try {
       for (let redirect = 0; redirect <= (request.maxRedirects ?? 5); redirect += 1) {
         const destination = await assertAllowedDestination(current, request.resolver);
+        const startedAt = now();
         let response: TransportResponse;
         try {
           response = await requestWithTimeout(request.transport, { url: current, method: "GET", destination, headers: {}, }, timeoutMs);
@@ -61,26 +102,30 @@ export async function fetchPage(request: FetchPageRequest): Promise<FetchPageRes
           if (error instanceof RequestTimeoutError) throw error;
           throw new RetryableRequestError(error instanceof Error ? error.message : "Network request failed");
         }
-        if (response.status === 429) return { kind: "rate-limited", url: current.href, status: 429 };
-        if (response.status >= 500) throw new RetryableRequestError(`Server returned ${response.status}`);
+        if (response.status === 429) { await recordTransaction(attempt, redirect, current, response, startedAt, 0, null); return { kind: "rate-limited", url: current.href, status: 429 }; }
+        if (response.status >= 500) { await recordTransaction(attempt, redirect, current, response, startedAt, 0, null); throw new RetryableRequestError(`Server returned ${response.status}`); }
         if (response.status >= 300 && response.status < 400) {
-          const location = response.headers.location;
+          const location = firstOf(response.headers.location);
           if (!location) throw new Error("Redirect is missing Location");
           if (redirect === (request.maxRedirects ?? 5)) throw new Error("Redirect limit exceeded");
-          current = new URL(location, current);
+          const redirectUrl = new URL(location, current);
+          await recordTransaction(attempt, redirect, current, response, startedAt, 0, redirectUrl.href);
+          current = redirectUrl;
           continue;
         }
-        const contentType = response.headers["content-type"]?.split(";", 1)[0]?.trim().toLowerCase();
+        const contentType = firstOf(response.headers["content-type"])?.split(";", 1)[0]?.trim().toLowerCase();
         const compressedBytes = response.compressedBytes ?? 0;
         const html = contentType === "text/html" || contentType === "application/xhtml+xml";
         const compressedLimit = html ? (request.maxCompressedBytes ?? 5 * 1024 * 1024) : (request.maxOtherBytes ?? 10 * 1024 * 1024);
         if (compressedBytes > compressedLimit) throw new Error("compressed body exceeds limit");
         const bytes = await collect(response.body, html ? (request.maxDecompressedBytes ?? 20 * 1024 * 1024) : (request.maxOtherBytes ?? 10 * 1024 * 1024), html ? "decompressed" : "response");
+        await recordTransaction(attempt, redirect, current, response, startedAt, bytes.byteLength, null);
         if (!html) return { kind: "non-html", url: current.href, status: response.status, ...(contentType ? { contentType } : {}), bytes: bytes.byteLength };
         return { kind: "html", url: current.href, status: response.status, body: bytes, compressedBytes: compressedBytes || bytes.byteLength, decompressedBytes: bytes.byteLength };
       }
     } catch (error) {
       lastError = error;
+      await recordError(error);
       if (!(error instanceof RetryableRequestError)) throw error;
       if (attempt + 1 < attempts) await sleep(delays[attempt] ?? delays.at(-1) ?? 0);
     }
@@ -96,7 +141,7 @@ export async function probeResource(request: ProbeResourceRequest): Promise<Reso
       const destination = await assertAllowedDestination(url, request.resolver);
       const response = await requestWithTimeout(request.transport, { url, method, destination, headers }, timeout);
       if (response.status < 300 || response.status >= 400) return { response, url };
-      const location = response.headers.location;
+      const location = firstOf(response.headers.location);
       if (!location || redirects === 5) throw new Error("Resource redirect limit exceeded");
       url = new URL(location, url);
     }
@@ -111,7 +156,7 @@ export async function probeResource(request: ProbeResourceRequest): Promise<Reso
     response = result.response;
     await collect(response.body, request.maxGetBytes ?? 1024, "resource probe");
   }
-  const contentType = response.headers["content-type"]?.split(";", 1)[0]?.trim().toLowerCase();
-  const length = Number(response.headers["content-length"]);
+  const contentType = firstOf(response.headers["content-type"])?.split(";", 1)[0]?.trim().toLowerCase();
+  const length = Number(firstOf(response.headers["content-length"]));
   return { url: result.url.href, status: response.status, method, ...(contentType ? { contentType } : {}), ...(Number.isFinite(length) ? { contentLength: length } : {}) };
 }
