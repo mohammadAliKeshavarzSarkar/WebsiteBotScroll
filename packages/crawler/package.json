@@ -3,10 +3,12 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@website-bot-scroll/domain": "workspace:*"
+    "@website-bot-scroll/domain": "workspace:*",
+    "cheerio": "1.1.2"
   },
   "exports": {
     "./evidence/events": "./src/evidence/events.ts",
+    "./extract/html-observations": "./src/extract/html-observations.ts",
     "./url/normalize": "./src/url/normalize.ts",
     "./url/policy": "./src/url/policy.ts",
     "./network/resolve-public": "./src/network/resolve-public.ts",
