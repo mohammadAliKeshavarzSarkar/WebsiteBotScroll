@@ -42,8 +42,8 @@ describe("cross-record semantic validation", () => {
     ["observation", ((doc: TestDocument) => { doc.pages[0]!.observations.metadata.id = doc.pages[0]!.observations.http.id; }) satisfies Mutator, "semantic.duplicate_observation_id"],
     ["diagnostic", ((doc: TestDocument) => {
       doc.diagnostics = { id: "obs-diagnostics", status: "observed", reasons: [], provenance: { method: "diagnostic_engine", collected_at: "2026-11-18T10:01:00Z", source: "derived" }, value: [
-        { id: "diag-1", rule_id: "title", rule_version: "1", subject_page_id: "page-home", outcome: "fail", observation_ids: ["obs-metadata-home"], limitations: [] },
-        { id: "diag-1", rule_id: "heading", rule_version: "1", subject_page_id: "page-home", outcome: "fail", observation_ids: ["obs-headings-home"], limitations: [] }
+        { id: "diag-1", rule_id: "title", rule_version: "1", policy_version: "1", subject_page_id: "page-home", outcome: "fail", observation_ids: ["obs-metadata-home"], limitations: [] },
+        { id: "diag-1", rule_id: "heading", rule_version: "1", policy_version: "1", subject_page_id: "page-home", outcome: "fail", observation_ids: ["obs-headings-home"], limitations: [] }
       ] };
     }) satisfies Mutator, "semantic.duplicate_diagnostic_id"],
     ["error", ((doc: TestDocument) => { doc.errors = [
@@ -59,7 +59,7 @@ describe("cross-record semantic validation", () => {
   it("rejects dangling diagnostic page and observation references", () => {
     const doc = load();
     doc.diagnostics = { id: "obs-diagnostics", status: "observed", reasons: [], provenance: { method: "diagnostic_engine", collected_at: "2026-11-18T10:01:00Z", source: "derived" }, value: [
-      { id: "diag-1", rule_id: "title", rule_version: "1", subject_page_id: "missing-page", outcome: "fail", observation_ids: ["missing-observation"], limitations: [] }
+      { id: "diag-1", rule_id: "title", rule_version: "1", policy_version: "1", subject_page_id: "missing-page", outcome: "fail", observation_ids: ["missing-observation"], limitations: [] }
     ] };
     expect(codes(doc)).toEqual(expect.arrayContaining(["semantic.dangling_page_reference", "semantic.dangling_observation_reference"]));
   });
@@ -96,7 +96,7 @@ describe("cross-record semantic validation", () => {
   it("rejects pass diagnostics backed by unavailable evidence", () => {
     const doc = load();
     doc.diagnostics = { id: "obs-diagnostics", status: "observed", reasons: [], provenance: { method: "diagnostic_engine", collected_at: "2026-11-18T10:01:00Z", source: "derived" }, value: [
-      { id: "diag-1", rule_id: "rendered-title", rule_version: "1", subject_page_id: "page-home", outcome: "pass", observation_ids: ["obs-render-home"], limitations: [] }
+      { id: "diag-1", rule_id: "rendered-title", rule_version: "1", policy_version: "1", subject_page_id: "page-home", outcome: "pass", observation_ids: ["obs-render-home"], limitations: [] }
     ] };
     expect(codes(doc)).toContain("semantic.pass_requires_available_evidence");
   });
@@ -107,5 +107,67 @@ describe("cross-record semantic validation", () => {
     const result = validateEvidence(doc);
     expect(result.valid).toBe(false);
     if (!result.valid) expect(result.errors.some(({ code }) => code === "semantic.page_count_mismatch")).toBe(true);
+  });
+
+  it("rejects dangling link and limitation page references", () => {
+    const doc = load("internal-links-uninspected");
+    const links = doc.pages[0]!.observations.links.value as Array<{ target_page_id: string | null }>;
+    links[0]!.target_page_id = "missing-page";
+    Object.assign(doc.run, { limitations: [{ code: "run", message: "run", page_id: "missing-page" }] });
+    doc.diagnostics = {
+      id: "obs-diagnostics", status: "observed", reasons: [],
+      provenance: { method: "diagnostic_engine", collected_at: "2026-11-18T10:01:00Z", source: "derived" },
+      value: [{ id: "diag-1", rule_id: "links", rule_version: "1", policy_version: "1", subject_page_id: "page-links", outcome: "fail", observation_ids: ["obs-links"], limitations: [{ code: "diag", message: "diag", page_id: "missing-page" }] }],
+    };
+    expect(codes(doc).filter((code) => code === "semantic.dangling_page_reference")).toHaveLength(3);
+  });
+
+  it("rejects unexplained partial runs and reverse chronology", () => {
+    const doc = load("partial-crawl") as unknown as TestDocument & { run: { stop_reason: string | null; limitations: unknown[]; started_at: string; finished_at: string | null } };
+    doc.run.stop_reason = null;
+    doc.run.limitations = [];
+    doc.run.finished_at = "2026-11-18T09:59:59Z";
+    expect(codes(doc)).toEqual(expect.arrayContaining([
+      "semantic.partial_stop_reason_required",
+      "semantic.partial_limitation_required",
+      "semantic.run_time_order_invalid",
+    ]));
+  });
+
+  it("rejects transaction end times before start times", () => {
+    const doc = load("redirect-repeated-headers") as unknown as TestDocument & { pages: Array<{ observations: { http: { value: { transactions: Array<{ started_at: string; finished_at: string }> } } } }> };
+    doc.pages[0]!.observations.http.value.transactions[0]!.finished_at = "2026-11-18T09:59:59Z";
+    expect(codes(doc)).toContain("semantic.transaction_time_order_invalid");
+  });
+
+  it("rejects diagnostics that pass using their own envelope or partial evidence", () => {
+    const selfSupported = load();
+    selfSupported.diagnostics = { id: "obs-diagnostics", status: "observed", reasons: [], provenance: { method: "diagnostic_engine", collected_at: "2026-11-18T10:01:00Z", source: "derived" }, value: [
+      { id: "diag-self", rule_id: "self", rule_version: "1", policy_version: "1", subject_page_id: "page-home", outcome: "pass", observation_ids: ["obs-diagnostics"], limitations: [] },
+    ] };
+    expect(codes(selfSupported)).toContain("semantic.pass_requires_observed_page_evidence");
+
+    const partial = load("internal-links-uninspected");
+    partial.diagnostics = { id: "obs-diagnostics", status: "observed", reasons: [], provenance: { method: "diagnostic_engine", collected_at: "2026-11-18T10:01:00Z", source: "derived" }, value: [
+      { id: "diag-partial", rule_id: "absence", rule_version: "1", policy_version: "1", subject_page_id: "page-links", outcome: "pass", observation_ids: ["obs-links"], limitations: [] },
+    ] };
+    expect(codes(partial)).toContain("semantic.pass_requires_observed_page_evidence");
+  });
+
+  it("rejects credential-bearing and recognizable signed URLs", () => {
+    const doc = load();
+    const unsafe = doc as unknown as { run: { scope: { seed_urls: string[] } } };
+    unsafe.run.scope.seed_urls[0] = "https://user:secret@example.com/";
+    expect(codes(doc)).toContain("semantic.unsafe_url");
+
+    const signed = load("redirect-repeated-headers") as unknown as TestDocument & { pages: Array<{ observations: { http: { value: { transactions: Array<{ headers: Array<{ name: string; values: string[] }> }> } } } }> };
+    signed.pages[0]!.observations.http.value.transactions[0]!.headers.push({ name: "location", values: ["https://example.com/final?X-Amz-Signature=secret"] });
+    expect(codes(signed)).toContain("semantic.sensitive_header_url");
+  });
+
+  it("rejects redirect histories attributed to a different requested URL", () => {
+    const doc = load("redirect-repeated-headers") as unknown as TestDocument & { pages: Array<{ url_identity: { requested_url: string }; observations: { http: { value: { transactions: Array<{ request_url: string }> } } } }> };
+    doc.pages[0]!.url_identity.requested_url = "https://example.com/unrelated";
+    expect(codes(doc)).toContain("semantic.initial_request_url_mismatch");
   });
 });

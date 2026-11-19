@@ -8,7 +8,8 @@ import { describe, expect, it } from "vitest";
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const repositoryRoot = resolve(packageRoot, "..", "..");
 const manifestPath = resolve(packageRoot, "review-manifest.json");
-const sha256 = (path: string): string => createHash("sha256").update(readFileSync(path)).digest("hex");
+const sha256 = (path: string): string =>
+  createHash("sha256").update(readFileSync(path, "utf8").replaceAll("\r\n", "\n"), "utf8").digest("hex");
 
 type ReviewManifest = {
   contract: { name: string; version: string; dialect: string; owner: string; schema_path: string; schema_sha256: string };
@@ -17,7 +18,7 @@ type ReviewManifest = {
   header_allowlist: string[];
   raw_html_policy: string;
   deferred_capabilities: string[];
-  fixtures: Array<{ path: string; sha256: string; expected: string }>;
+  fixtures: Array<{ path: string; sha256: string; expected: string; validation_layer?: string }>;
 };
 
 describe("Stage A.1 consumer review bundle", () => {
@@ -54,6 +55,7 @@ describe("Stage A.1 consumer review bundle", () => {
       expect(fixture.sha256).toBe(sha256(resolve(repositoryRoot, fixture.path)));
       expect(["valid", "invalid"]).toContain(fixture.expected);
     }
+    expect(manifest.fixtures.find(({ path }) => path.endsWith("duplicate-structural-property.json"))?.validation_layer).toBe("raw_json_parser");
   });
 
   it("ships the architecture, preservation-gap, and entry-point documentation", () => {

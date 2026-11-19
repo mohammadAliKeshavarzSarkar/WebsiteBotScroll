@@ -1,1 +1,4 @@
 packages/db/generated/** whitespace=-trailing-space,-blank-at-eof
+packages/evidence-contract/schema/**/*.json text eol=lf
+packages/evidence-contract/fixtures/**/*.json text eol=lf
+packages/evidence-contract/review-manifest.json text eol=lf

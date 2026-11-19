@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
 import { validateEvidence } from "../src/validate.js";
@@ -63,5 +65,11 @@ describe("seo-crawl-evidence structural validation", () => {
     const input = minimalDocument();
     Object.assign(input.diagnostics, { status: "observed", value: null, reasons: [] });
     expect(validateEvidence(input).valid).toBe(false);
+  });
+
+  it("rejects contradictory structured-data parse outcomes", () => {
+    const page = JSON.parse(readFileSync(new URL("../fixtures/valid/malformed-structured-data.json", import.meta.url), "utf8"));
+    page.pages[0].observations.structured_data.value[0] = { format: "json-ld", parsed: true, types: ["WebPage"], error: "Invalid JSON" };
+    expect(validateEvidence(page).valid).toBe(false);
   });
 });

@@ -20,7 +20,7 @@ Stage A.1 ends with agreement on schema, fields, fixtures, and validators. Stage
 
 ## Security and privacy
 
-Raw HTML is excluded by default. The header allowlist is pinned in the manifest and preserves repeated values in order. Cookies, authorization, credentials, unrestricted request headers, and signed request data are excluded. Raw-byte and normalized-content hashes are distinct.
+Raw HTML is excluded by default. The header allowlist is pinned in the manifest and preserves repeated values in order. Cookies, authorization, credentials, unrestricted request headers, and signed request data are excluded. Validators reject URL userinfo and recognizable signing/query-secret names; producers remain responsible for redacting sensitive URL-bearing header values that cannot be recognized generically. Raw-byte and normalized-content hashes are distinct.
 
 ## Reproducing checksums
 
@@ -31,7 +31,7 @@ Get-FileHash -Algorithm SHA256 packages/evidence-contract/schema/seo-crawl-evide
 Get-ChildItem packages/evidence-contract/fixtures -Recurse -Filter *.json | Get-FileHash -Algorithm SHA256
 ```
 
-Any schema or fixture change requires a reviewed version decision and regenerated `review-manifest.json` hashes. The review-bundle test independently recomputes every hash.
+Schema, fixtures, and the manifest are pinned to LF in `.gitattributes`. Any schema or fixture change requires a reviewed version decision and regenerated `review-manifest.json` hashes. The review-bundle test independently recomputes every hash. Duplicate-member conformance is checked against raw JSON before `JSON.parse` because parsed objects cannot preserve duplicate keys.
 
 ## Deferred capabilities
 

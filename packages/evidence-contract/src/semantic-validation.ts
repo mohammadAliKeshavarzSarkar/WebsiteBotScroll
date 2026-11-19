@@ -12,13 +12,27 @@ type Transaction = {
   request_url: string;
   response_url: string;
   redirect_to: string | null;
+  started_at: string;
+  finished_at: string;
+  headers: Array<{ name: string; values: string[] }>;
 };
+
+type Limitation = { page_id?: string };
+type Link = { target_url: string; target_page_id: string | null };
 
 type Page = {
   id: string;
-  url_identity: { final_url: string };
+  url_identity: {
+    discovered_url: string;
+    requested_url: string;
+    normalized_url: string;
+    final_url: string;
+    canonical_urls: string[];
+  };
   observations: Record<string, Observation> & {
     http: Observation & { value: null | { transactions: Transaction[]; final_transaction_id: string } };
+    links: Observation & { value: Link[] | null };
+    rendering: Observation & { value: null | { rendered_url: string } };
   };
 };
 
@@ -32,15 +46,32 @@ type Diagnostic = {
 type ContractDocument = {
   run: {
     lifecycle: string;
+    started_at: string;
     finished_at: string | null;
+    stop_reason: string | null;
+    limitations: Limitation[];
+    scope: { seed_urls: string[] };
     coverage: { discovered: number; attempted: number; collected: number; failed: number; unattempted?: number };
   };
   pages: Page[];
-  diagnostics: Observation & { value: Diagnostic[] | null };
+  diagnostics: Observation & { value: Array<Diagnostic & { limitations: Limitation[] }> | null };
   errors: Array<{ id: string; page_id?: string; observation_id?: string }>;
 };
 
 const issue = (code: string, path: string, message: string): ValidationIssue => ({ code, path, message });
+const sensitiveQueryName = /^(?:x-amz-(?:signature|credential|security-token)|signature|sig|token|access_token|api_?key|auth)$/i;
+
+const isUnsafeUrl = (raw: string): boolean => {
+  const url = new URL(raw, "https://evidence.invalid/");
+  if (url.username !== "" || url.password !== "") return true;
+  return [...url.searchParams.keys()].some((name) => sensitiveQueryName.test(name));
+};
+
+const headerUrls = (name: string, raw: string): string[] => {
+  if (name === "location") return [raw];
+  if (name !== "link") return [];
+  return [...raw.matchAll(/<([^>]+)>/g)].flatMap((match) => match[1] ? [match[1]] : []);
+};
 
 const duplicateIssues = (
   values: Array<{ id: string; path: string }>,
@@ -86,6 +117,15 @@ export const validateEvidenceSemantics = (document: EvidenceDocument): Validatio
   if (!terminal.has(value.run.lifecycle) && value.run.finished_at !== null) {
     issues.push(issue("semantic.nonterminal_finished_at_forbidden", "/run/finished_at", "Nonterminal runs must not have finished_at."));
   }
+  if (value.run.lifecycle === "partial" && value.run.stop_reason === null) {
+    issues.push(issue("semantic.partial_stop_reason_required", "/run/stop_reason", "Partial runs require a stop reason."));
+  }
+  if (value.run.lifecycle === "partial" && value.run.limitations.length === 0) {
+    issues.push(issue("semantic.partial_limitation_required", "/run/limitations", "Partial runs require at least one limitation."));
+  }
+  if (value.run.finished_at !== null && Date.parse(value.run.finished_at) < Date.parse(value.run.started_at)) {
+    issues.push(issue("semantic.run_time_order_invalid", "/run/finished_at", "finished_at cannot be earlier than started_at."));
+  }
 
   const coverage = value.run.coverage;
   if (coverage.collected + coverage.failed !== coverage.attempted) {
@@ -117,10 +157,24 @@ export const validateEvidenceSemantics = (document: EvidenceDocument): Validatio
       const referenced = observationById.get(observationId);
       if (!referenced) {
         issues.push(issue("semantic.dangling_observation_reference", `/diagnostics/value/${diagnosticIndex}/observation_ids/${referenceIndex}`, "Diagnostic observation ID does not resolve."));
-      } else if (diagnostic.outcome === "pass" && !["observed", "partial"].includes(referenced.status)) {
+      } else if (diagnostic.outcome === "pass" && referenced.status !== "observed") {
         issues.push(issue("semantic.pass_requires_available_evidence", `/diagnostics/value/${diagnosticIndex}/outcome`, "A passing diagnostic requires available evidence."));
+        issues.push(issue("semantic.pass_requires_observed_page_evidence", `/diagnostics/value/${diagnosticIndex}/outcome`, "A passing diagnostic requires an observed page observation."));
+      } else if (diagnostic.outcome === "pass" && observationId === value.diagnostics.id) {
+        issues.push(issue("semantic.pass_requires_observed_page_evidence", `/diagnostics/value/${diagnosticIndex}/outcome`, "A diagnostic cannot use its own stage envelope as passing evidence."));
       }
     });
+    diagnostic.limitations.forEach((limitation, limitationIndex) => {
+      if (limitation.page_id !== undefined && !pageIds.has(limitation.page_id)) {
+        issues.push(issue("semantic.dangling_page_reference", `/diagnostics/value/${diagnosticIndex}/limitations/${limitationIndex}/page_id`, "Diagnostic limitation page_id does not resolve."));
+      }
+    });
+  });
+
+  value.run.limitations.forEach((limitation, limitationIndex) => {
+    if (limitation.page_id !== undefined && !pageIds.has(limitation.page_id)) {
+      issues.push(issue("semantic.dangling_page_reference", `/run/limitations/${limitationIndex}/page_id`, "Run limitation page_id does not resolve."));
+    }
   });
 
   value.errors.forEach((error, errorIndex) => {
@@ -133,9 +187,52 @@ export const validateEvidenceSemantics = (document: EvidenceDocument): Validatio
   });
 
   value.pages.forEach((page, pageIndex) => {
+    const urlCandidates = [
+      page.url_identity.discovered_url,
+      page.url_identity.requested_url,
+      page.url_identity.normalized_url,
+      page.url_identity.final_url,
+      ...page.url_identity.canonical_urls,
+    ];
+    urlCandidates.forEach((url, urlIndex) => {
+      if (isUnsafeUrl(url)) issues.push(issue("semantic.unsafe_url", `/pages/${pageIndex}/url_identity/${urlIndex}`, "Evidence URLs must not contain credentials or recognizable signing secrets."));
+    });
+
+    const links = page.observations.links.value ?? [];
+    links.forEach((link, linkIndex) => {
+      if (link.target_page_id !== null && !pageIds.has(link.target_page_id)) {
+        issues.push(issue("semantic.dangling_page_reference", `/pages/${pageIndex}/observations/links/value/${linkIndex}/target_page_id`, "Link target_page_id does not resolve."));
+      }
+      if (isUnsafeUrl(link.target_url)) {
+        issues.push(issue("semantic.unsafe_url", `/pages/${pageIndex}/observations/links/value/${linkIndex}/target_url`, "Evidence URLs must not contain credentials or recognizable signing secrets."));
+      }
+    });
+
+    const rendering = page.observations.rendering.value;
+    if (rendering !== null && isUnsafeUrl(rendering.rendered_url)) {
+      issues.push(issue("semantic.unsafe_url", `/pages/${pageIndex}/observations/rendering/value/rendered_url`, "Evidence URLs must not contain credentials or recognizable signing secrets."));
+    }
+
     const http = page.observations.http;
     if (http.status !== "observed" && http.status !== "partial" || http.value === null) return;
     const transactions = http.value.transactions;
+    const first = transactions[0];
+    if (first && first.request_url !== page.url_identity.requested_url) {
+      issues.push(issue("semantic.initial_request_url_mismatch", `/pages/${pageIndex}/observations/http/value/transactions/0/request_url`, "The first transaction must start at url_identity.requested_url."));
+    }
+    transactions.forEach((transaction, transactionIndex) => {
+      if (Date.parse(transaction.finished_at) < Date.parse(transaction.started_at)) {
+        issues.push(issue("semantic.transaction_time_order_invalid", `/pages/${pageIndex}/observations/http/value/transactions/${transactionIndex}/finished_at`, "Transaction finished_at cannot be earlier than started_at."));
+      }
+      [transaction.request_url, transaction.response_url, ...(transaction.redirect_to === null ? [] : [transaction.redirect_to])].forEach((url) => {
+        if (isUnsafeUrl(url)) issues.push(issue("semantic.unsafe_url", `/pages/${pageIndex}/observations/http/value/transactions/${transactionIndex}`, "Evidence URLs must not contain credentials or recognizable signing secrets."));
+      });
+      transaction.headers.forEach((header, headerIndex) => {
+        header.values.flatMap((headerValue) => headerUrls(header.name, headerValue)).forEach((url) => {
+          if (isUnsafeUrl(url)) issues.push(issue("semantic.sensitive_header_url", `/pages/${pageIndex}/observations/http/value/transactions/${transactionIndex}/headers/${headerIndex}`, "URL-bearing headers must redact credentials and recognizable signing secrets."));
+        });
+      });
+    });
     for (let index = 0; index < transactions.length - 1; index += 1) {
       const current = transactions[index];
       const next = transactions[index + 1];
@@ -147,6 +244,10 @@ export const validateEvidenceSemantics = (document: EvidenceDocument): Validatio
     if (final && (http.value.final_transaction_id !== final.id || final.response_url !== page.url_identity.final_url)) {
       issues.push(issue("semantic.final_url_mismatch", `/pages/${pageIndex}/url_identity/final_url`, "The final transaction and final URL must agree."));
     }
+  });
+
+  value.run.scope.seed_urls.forEach((url, index) => {
+    if (isUnsafeUrl(url)) issues.push(issue("semantic.unsafe_url", `/run/scope/seed_urls/${index}`, "Evidence URLs must not contain credentials or recognizable signing secrets."));
   });
 
   return issues;

@@ -22,4 +22,8 @@ export type ValidationResult =
   | { valid: true }
   | { valid: false; errors: ValidationIssue[] };
 
+export type EvidenceParseResult =
+  | { valid: true; document: EvidenceDocument }
+  | { valid: false; errors: ValidationIssue[] };
+
 export type EvidenceDocument = Record<string, unknown>;

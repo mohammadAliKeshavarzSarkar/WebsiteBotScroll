@@ -636,6 +636,13 @@
     "structuredDataItem": {
       "type": "object",
       "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "type": "object", "properties": { "parsed": { "const": true } }, "required": ["parsed"] },
+          "then": { "type": "object", "properties": { "error": { "type": "null" } } },
+          "else": { "type": "object", "properties": { "error": { "type": "string", "minLength": 1 } } }
+        }
+      ],
       "required": [
         "format",
         "parsed",
@@ -1052,6 +1059,7 @@
         "id",
         "rule_id",
         "rule_version",
+        "policy_version",
         "subject_page_id",
         "outcome",
         "observation_ids",
@@ -1065,6 +1073,9 @@
           "$ref": "#/$defs/nonEmptyString"
         },
         "rule_version": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "policy_version": {
           "$ref": "#/$defs/nonEmptyString"
         },
         "subject_page_id": {

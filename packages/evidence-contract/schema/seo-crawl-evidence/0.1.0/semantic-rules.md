@@ -26,10 +26,10 @@ HTTP transactions are ordered. Each redirect target must equal the next transact
 
 ## Diagnostics
 
-Diagnostics are optional and deterministic. Missing or unavailable required evidence cannot produce `pass`; use `inconclusive` or `not_applicable`. A technical result carries no strategic priority and grants no authorization to change a site.
+Diagnostics are optional and deterministic. Each diagnostic identifies both its rule version and the policy version used to interpret evidence. A `pass` requires at least one directly referenced page observation with status `observed`; partial or unavailable evidence and the diagnostics envelope itself cannot support a pass. Rule-specific prerequisites may narrow this further in later compatible versions. A technical result carries no strategic priority and grants no authorization to change a site.
 
 ## Serialization and privacy
 
-UTF-8 strings and repeated-header value order are preserved exactly. Producers do not coerce, default, strip, or reinterpret values. Raw HTML, cookies, credentials, authorization values, and signed URLs are outside version 0.1.0.
+UTF-8 strings and repeated-header value order are preserved exactly. Producers do not coerce, default, strip, or reinterpret values. Raw HTML, cookies, credentials, authorization values, and signed URLs are outside version 0.1.0. Exported URL fields reject userinfo and recognizable signing/query-secret names. Producers must redact sensitive header URL values that cannot be recognized generically before export.
 
 Duplicate JSON object member names must be rejected by the transport parser before schema validation because parsed JavaScript objects cannot retain duplicate members. The invalid duplicate-member fixture pins this transport requirement.

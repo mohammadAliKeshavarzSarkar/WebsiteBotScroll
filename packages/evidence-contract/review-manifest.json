@@ -5,7 +5,7 @@
     "dialect": "https://json-schema.org/draft/2020-12/schema",
     "owner": "WebsiteBotScroll",
     "schema_path": "packages/evidence-contract/schema/seo-crawl-evidence/0.1.0/schema.json",
-    "schema_sha256": "fa0839624a5b733cca40e239ca9c9eaeb5183d407d74acc3ccce7bf08f59b04a"
+    "schema_sha256": "857a6cb81ccf9002d9d1b58389e331e2432a11822ff24fc7755573a1f1f2fca9"
   },
   "checksum_algorithm": "SHA-256",
   "stage_boundary": {
@@ -19,9 +19,9 @@
   "raw_html_policy": "excluded by default",
   "deferred_capabilities": ["REST", "MCP", "browser rendering", "Python consumer", "historical comparison", "external search data", "performance measurements"],
   "fixtures": [
-    { "path": "packages/evidence-contract/fixtures/invalid/dangling-observation-reference.json", "sha256": "f2dac5e80898a8024bdc5fca0d311e9c27bfa6d7e853dab709f342fe336af869", "expected": "invalid" },
+    { "path": "packages/evidence-contract/fixtures/invalid/dangling-observation-reference.json", "sha256": "5ce897fb60df180abb99da21aa7ec731ea17e1e342363a3c59e51896205a7e57", "expected": "invalid" },
     { "path": "packages/evidence-contract/fixtures/invalid/duplicate-identities.json", "sha256": "a6c0c66e173a3102c28e40f7efadd520602b1ce8a14a8d02bc3d04bcb8f88b5c", "expected": "invalid" },
-    { "path": "packages/evidence-contract/fixtures/invalid/duplicate-structural-property.json", "sha256": "f9a0d0861499ee77f414b9322e81cd7365d8184654d6c54bdb4ac692ad1dc874", "expected": "invalid" },
+    { "path": "packages/evidence-contract/fixtures/invalid/duplicate-structural-property.json", "sha256": "e8fbced663ffd4a8e21b21fc7f1f5793e8afc32c34eb16d16924cff4871b6c07", "expected": "invalid", "validation_layer": "raw_json_parser" },
     { "path": "packages/evidence-contract/fixtures/invalid/failed-as-empty.json", "sha256": "90de8e806ed0c0bc1b4950d3114f3e6eb03325d3fa166d8f0e2ea900d7a768c5", "expected": "invalid" },
     { "path": "packages/evidence-contract/fixtures/invalid/inconsistent-coverage.json", "sha256": "9cd451db862e1b7eb1bcd0c229ce0ce4537c72782b55db9fa4f07b599d7db23c", "expected": "invalid" },
     { "path": "packages/evidence-contract/fixtures/invalid/invalid-status-value-pairing.json", "sha256": "7bc5e0fb1a7944e332e43903aae9200fbce4f4c8b6e67bfb8f620369d7b726e1", "expected": "invalid" },
@@ -30,13 +30,13 @@
     { "path": "packages/evidence-contract/fixtures/invalid/redirect-final-url-mismatch.json", "sha256": "3cbabe36839660cd74e80f53560e89e263177355c9318c76794936400c0e1869", "expected": "invalid" },
     { "path": "packages/evidence-contract/fixtures/invalid/unexpected-property.json", "sha256": "b059f1628ea09fe4d591ee49025c51b8ca6e0f85592fce5f4a223bc2613a3de2", "expected": "invalid" },
     { "path": "packages/evidence-contract/fixtures/invalid/unsupported-version.json", "sha256": "1f13deec2d352c266cc7898abe3fd72a4f53a43525fd071b34aa765593ba0344", "expected": "invalid" },
-    { "path": "packages/evidence-contract/fixtures/valid/complete-page.json", "sha256": "041cc76b7ab1029bce5fc8c4bd867c7866390158bc55e09ee60fbd3c071975db", "expected": "valid" },
+    { "path": "packages/evidence-contract/fixtures/valid/complete-page.json", "sha256": "f643dd00f5744284392df8f782740f315a84d26f3fb6ba2dad0c0eb9a4c96ae4", "expected": "valid" },
     { "path": "packages/evidence-contract/fixtures/valid/internal-links-uninspected.json", "sha256": "86d66c004c464c01df90acd328b412a8fe9f5c7ebfc973e8e3ede6f4b4f0e861", "expected": "valid" },
     { "path": "packages/evidence-contract/fixtures/valid/malformed-structured-data.json", "sha256": "260d3e5442aff76092d1a1351795776f8652cdead3ae45e481372f49b23d3ea4", "expected": "valid" },
-    { "path": "packages/evidence-contract/fixtures/valid/observed-absent-metadata.json", "sha256": "688cdd84fd3b37cc3060207d7b2787b8e41f3ef10b621c8fe0762cb1ef6af571", "expected": "valid" },
+    { "path": "packages/evidence-contract/fixtures/valid/observed-absent-metadata.json", "sha256": "5b2b23f76f65c8591b3d292347db309948f20256c2aea3bfd2d80928bcda56aa", "expected": "valid" },
     { "path": "packages/evidence-contract/fixtures/valid/partial-crawl.json", "sha256": "a17bcd24d18c00ba6ddc874e08b8904ec4978a568de42feeb8dc9181eb77b983", "expected": "valid" },
     { "path": "packages/evidence-contract/fixtures/valid/persian-utf8.json", "sha256": "c2cdfd8c8a9f9b18bba3044855515f7fe5a8dfd9fb672c8f159c8bccb32607ea", "expected": "valid" },
     { "path": "packages/evidence-contract/fixtures/valid/redirect-repeated-headers.json", "sha256": "062ab328a29288fd57f5319976f07053e1b36b7efb08ee6ed925452550b83d82", "expected": "valid" },
-    { "path": "packages/evidence-contract/fixtures/valid/rendering-not-collected.json", "sha256": "53ac05408a6092ced9d25399b2161dfd7d4515e2c79e3305b43f0cf14a1d0af6", "expected": "valid" }
+    { "path": "packages/evidence-contract/fixtures/valid/rendering-not-collected.json", "sha256": "5d3de656e50b28322313905779371308217a2e9cbc6e088ba0974a5b85310e54", "expected": "valid" }
   ]
 }
