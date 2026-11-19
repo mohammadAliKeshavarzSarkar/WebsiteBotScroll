@@ -1,0 +1,16 @@
+{
+  "name": "@website-bot-scroll/observation-schema",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/schema-policy.ts" },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@website-bot-scroll/domain": "workspace:*",
+    "ajv": "8.17.1"
+  }
+}

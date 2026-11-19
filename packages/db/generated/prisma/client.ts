@@ -112,6 +112,21 @@ export type EvidenceError = Prisma.EvidenceErrorModel
  */
 export type CrawlError = Prisma.CrawlErrorModel
 /**
+ * Model ObservationDefinition
+ * 
+ */
+export type ObservationDefinition = Prisma.ObservationDefinitionModel
+/**
+ * Model CollectorDefinition
+ * 
+ */
+export type CollectorDefinition = Prisma.CollectorDefinitionModel
+/**
+ * Model CollectorCapability
+ * 
+ */
+export type CollectorCapability = Prisma.CollectorCapabilityModel
+/**
  * Model DomainVerification
  * 
  */

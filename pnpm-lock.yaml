@@ -125,6 +125,9 @@ importers:
       '@website-bot-scroll/domain':
         specifier: workspace:*
         version: link:../domain
+      '@website-bot-scroll/observation-schema':
+        specifier: workspace:*
+        version: link:../observation-schema
       argon2:
         specifier: 0.45.2
         version: 0.45.2
@@ -149,6 +152,15 @@ importers:
       ajv-formats:
         specifier: 3.0.1
         version: 3.0.1(ajv@8.17.1)
+
+  packages/observation-schema:
+    dependencies:
+      '@website-bot-scroll/domain':
+        specifier: workspace:*
+        version: link:../domain
+      ajv:
+        specifier: 8.17.1
+        version: 8.17.1
 
   packages/queue:
     dependencies:

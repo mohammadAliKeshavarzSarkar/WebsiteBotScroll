@@ -274,6 +274,55 @@ model CrawlError {
   @@map("crawl_errors")
 }
 
+model ObservationDefinition {
+  id             String   @id @default(uuid()) @db.Uuid
+  key            String
+  version        String
+  schema         Json
+  schemaSha256   String   @map("schema_sha256") @db.Char(64)
+  scopes         Json
+  statuses       Json
+  sensitivity    String
+  retentionClass String   @map("retention_class")
+  status         String   @default("published")
+  createdAt      DateTime @default(now()) @map("created_at")
+  deprecatedAt   DateTime? @map("deprecated_at")
+  capabilities   CollectorCapability[]
+
+  @@unique([key, version])
+  @@index([key, status])
+  @@map("observation_definitions")
+}
+
+model CollectorDefinition {
+  id                        String   @id @default(uuid()) @db.Uuid
+  key                       String
+  version                   String
+  configurationSchema       Json     @map("configuration_schema")
+  configurationSchemaSha256 String   @map("configuration_schema_sha256") @db.Char(64)
+  executionMode             String   @map("execution_mode")
+  status                    String   @default("published")
+  createdAt                 DateTime @default(now()) @map("created_at")
+  deprecatedAt              DateTime? @map("deprecated_at")
+  capabilities              CollectorCapability[]
+
+  @@unique([key, version])
+  @@index([key, status])
+  @@map("collector_definitions")
+}
+
+model CollectorCapability {
+  collectorDefinitionId   String @map("collector_definition_id") @db.Uuid
+  observationDefinitionId String @map("observation_definition_id") @db.Uuid
+  position                Int
+  collector               CollectorDefinition @relation(fields: [collectorDefinitionId], references: [id], onDelete: Cascade)
+  observation             ObservationDefinition @relation(fields: [observationDefinitionId], references: [id], onDelete: Restrict)
+
+  @@id([collectorDefinitionId, observationDefinitionId])
+  @@unique([collectorDefinitionId, position])
+  @@map("collector_capabilities")
+}
+
 model DomainVerification {
   id        String    @id @default(uuid()) @db.Uuid
   siteId    String    @map("site_id") @db.Uuid

@@ -411,6 +411,9 @@ export const ModelName = {
   EvidenceLimitation: 'EvidenceLimitation',
   EvidenceError: 'EvidenceError',
   CrawlError: 'CrawlError',
+  ObservationDefinition: 'ObservationDefinition',
+  CollectorDefinition: 'CollectorDefinition',
+  CollectorCapability: 'CollectorCapability',
   DomainVerification: 'DomainVerification',
   AuditEvent: 'AuditEvent'
 } as const
@@ -428,7 +431,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "session" | "site" | "crawlRun" | "exportAuthorization" | "evidencePage" | "evidenceTransaction" | "evidenceHeader" | "evidenceHeaderValue" | "evidenceObservation" | "evidenceLimitation" | "evidenceError" | "crawlError" | "domainVerification" | "auditEvent"
+    modelProps: "organization" | "user" | "session" | "site" | "crawlRun" | "exportAuthorization" | "evidencePage" | "evidenceTransaction" | "evidenceHeader" | "evidenceHeaderValue" | "evidenceObservation" | "evidenceLimitation" | "evidenceError" | "crawlError" | "observationDefinition" | "collectorDefinition" | "collectorCapability" | "domainVerification" | "auditEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1468,6 +1471,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ObservationDefinition: {
+      payload: Prisma.$ObservationDefinitionPayload<ExtArgs>
+      fields: Prisma.ObservationDefinitionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ObservationDefinitionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationDefinitionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ObservationDefinitionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationDefinitionPayload>
+        }
+        findFirst: {
+          args: Prisma.ObservationDefinitionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationDefinitionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ObservationDefinitionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationDefinitionPayload>
+        }
+        findMany: {
+          args: Prisma.ObservationDefinitionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationDefinitionPayload>[]
+        }
+        create: {
+          args: Prisma.ObservationDefinitionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationDefinitionPayload>
+        }
+        createMany: {
+          args: Prisma.ObservationDefinitionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ObservationDefinitionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationDefinitionPayload>[]
+        }
+        delete: {
+          args: Prisma.ObservationDefinitionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationDefinitionPayload>
+        }
+        update: {
+          args: Prisma.ObservationDefinitionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationDefinitionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ObservationDefinitionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ObservationDefinitionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ObservationDefinitionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationDefinitionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ObservationDefinitionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationDefinitionPayload>
+        }
+        aggregate: {
+          args: Prisma.ObservationDefinitionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateObservationDefinition>
+        }
+        groupBy: {
+          args: Prisma.ObservationDefinitionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ObservationDefinitionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ObservationDefinitionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ObservationDefinitionCountAggregateOutputType> | number
+        }
+      }
+    }
+    CollectorDefinition: {
+      payload: Prisma.$CollectorDefinitionPayload<ExtArgs>
+      fields: Prisma.CollectorDefinitionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CollectorDefinitionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorDefinitionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CollectorDefinitionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorDefinitionPayload>
+        }
+        findFirst: {
+          args: Prisma.CollectorDefinitionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorDefinitionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CollectorDefinitionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorDefinitionPayload>
+        }
+        findMany: {
+          args: Prisma.CollectorDefinitionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorDefinitionPayload>[]
+        }
+        create: {
+          args: Prisma.CollectorDefinitionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorDefinitionPayload>
+        }
+        createMany: {
+          args: Prisma.CollectorDefinitionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CollectorDefinitionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorDefinitionPayload>[]
+        }
+        delete: {
+          args: Prisma.CollectorDefinitionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorDefinitionPayload>
+        }
+        update: {
+          args: Prisma.CollectorDefinitionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorDefinitionPayload>
+        }
+        deleteMany: {
+          args: Prisma.CollectorDefinitionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CollectorDefinitionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CollectorDefinitionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorDefinitionPayload>[]
+        }
+        upsert: {
+          args: Prisma.CollectorDefinitionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorDefinitionPayload>
+        }
+        aggregate: {
+          args: Prisma.CollectorDefinitionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCollectorDefinition>
+        }
+        groupBy: {
+          args: Prisma.CollectorDefinitionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CollectorDefinitionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CollectorDefinitionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CollectorDefinitionCountAggregateOutputType> | number
+        }
+      }
+    }
+    CollectorCapability: {
+      payload: Prisma.$CollectorCapabilityPayload<ExtArgs>
+      fields: Prisma.CollectorCapabilityFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CollectorCapabilityFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorCapabilityPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CollectorCapabilityFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorCapabilityPayload>
+        }
+        findFirst: {
+          args: Prisma.CollectorCapabilityFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorCapabilityPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CollectorCapabilityFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorCapabilityPayload>
+        }
+        findMany: {
+          args: Prisma.CollectorCapabilityFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorCapabilityPayload>[]
+        }
+        create: {
+          args: Prisma.CollectorCapabilityCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorCapabilityPayload>
+        }
+        createMany: {
+          args: Prisma.CollectorCapabilityCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CollectorCapabilityCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorCapabilityPayload>[]
+        }
+        delete: {
+          args: Prisma.CollectorCapabilityDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorCapabilityPayload>
+        }
+        update: {
+          args: Prisma.CollectorCapabilityUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorCapabilityPayload>
+        }
+        deleteMany: {
+          args: Prisma.CollectorCapabilityDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CollectorCapabilityUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CollectorCapabilityUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorCapabilityPayload>[]
+        }
+        upsert: {
+          args: Prisma.CollectorCapabilityUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectorCapabilityPayload>
+        }
+        aggregate: {
+          args: Prisma.CollectorCapabilityAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCollectorCapability>
+        }
+        groupBy: {
+          args: Prisma.CollectorCapabilityGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CollectorCapabilityGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CollectorCapabilityCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CollectorCapabilityCountAggregateOutputType> | number
+        }
+      }
+    }
     DomainVerification: {
       payload: Prisma.$DomainVerificationPayload<ExtArgs>
       fields: Prisma.DomainVerificationFieldRefs
@@ -1858,6 +2083,48 @@ export const CrawlErrorScalarFieldEnum = {
 export type CrawlErrorScalarFieldEnum = (typeof CrawlErrorScalarFieldEnum)[keyof typeof CrawlErrorScalarFieldEnum]
 
 
+export const ObservationDefinitionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  version: 'version',
+  schema: 'schema',
+  schemaSha256: 'schemaSha256',
+  scopes: 'scopes',
+  statuses: 'statuses',
+  sensitivity: 'sensitivity',
+  retentionClass: 'retentionClass',
+  status: 'status',
+  createdAt: 'createdAt',
+  deprecatedAt: 'deprecatedAt'
+} as const
+
+export type ObservationDefinitionScalarFieldEnum = (typeof ObservationDefinitionScalarFieldEnum)[keyof typeof ObservationDefinitionScalarFieldEnum]
+
+
+export const CollectorDefinitionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  version: 'version',
+  configurationSchema: 'configurationSchema',
+  configurationSchemaSha256: 'configurationSchemaSha256',
+  executionMode: 'executionMode',
+  status: 'status',
+  createdAt: 'createdAt',
+  deprecatedAt: 'deprecatedAt'
+} as const
+
+export type CollectorDefinitionScalarFieldEnum = (typeof CollectorDefinitionScalarFieldEnum)[keyof typeof CollectorDefinitionScalarFieldEnum]
+
+
+export const CollectorCapabilityScalarFieldEnum = {
+  collectorDefinitionId: 'collectorDefinitionId',
+  observationDefinitionId: 'observationDefinitionId',
+  position: 'position'
+} as const
+
+export type CollectorCapabilityScalarFieldEnum = (typeof CollectorCapabilityScalarFieldEnum)[keyof typeof CollectorCapabilityScalarFieldEnum]
+
+
 export const DomainVerificationScalarFieldEnum = {
   id: 'id',
   siteId: 'siteId',
@@ -2222,6 +2489,9 @@ export type GlobalOmitConfig = {
   evidenceLimitation?: Prisma.EvidenceLimitationOmit
   evidenceError?: Prisma.EvidenceErrorOmit
   crawlError?: Prisma.CrawlErrorOmit
+  observationDefinition?: Prisma.ObservationDefinitionOmit
+  collectorDefinition?: Prisma.CollectorDefinitionOmit
+  collectorCapability?: Prisma.CollectorCapabilityOmit
   domainVerification?: Prisma.DomainVerificationOmit
   auditEvent?: Prisma.AuditEventOmit
 }

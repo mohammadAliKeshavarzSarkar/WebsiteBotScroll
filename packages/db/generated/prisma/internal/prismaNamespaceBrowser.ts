@@ -65,6 +65,9 @@ export const ModelName = {
   EvidenceLimitation: 'EvidenceLimitation',
   EvidenceError: 'EvidenceError',
   CrawlError: 'CrawlError',
+  ObservationDefinition: 'ObservationDefinition',
+  CollectorDefinition: 'CollectorDefinition',
+  CollectorCapability: 'CollectorCapability',
   DomainVerification: 'DomainVerification',
   AuditEvent: 'AuditEvent'
 } as const
@@ -286,6 +289,48 @@ export const CrawlErrorScalarFieldEnum = {
 } as const
 
 export type CrawlErrorScalarFieldEnum = (typeof CrawlErrorScalarFieldEnum)[keyof typeof CrawlErrorScalarFieldEnum]
+
+
+export const ObservationDefinitionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  version: 'version',
+  schema: 'schema',
+  schemaSha256: 'schemaSha256',
+  scopes: 'scopes',
+  statuses: 'statuses',
+  sensitivity: 'sensitivity',
+  retentionClass: 'retentionClass',
+  status: 'status',
+  createdAt: 'createdAt',
+  deprecatedAt: 'deprecatedAt'
+} as const
+
+export type ObservationDefinitionScalarFieldEnum = (typeof ObservationDefinitionScalarFieldEnum)[keyof typeof ObservationDefinitionScalarFieldEnum]
+
+
+export const CollectorDefinitionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  version: 'version',
+  configurationSchema: 'configurationSchema',
+  configurationSchemaSha256: 'configurationSchemaSha256',
+  executionMode: 'executionMode',
+  status: 'status',
+  createdAt: 'createdAt',
+  deprecatedAt: 'deprecatedAt'
+} as const
+
+export type CollectorDefinitionScalarFieldEnum = (typeof CollectorDefinitionScalarFieldEnum)[keyof typeof CollectorDefinitionScalarFieldEnum]
+
+
+export const CollectorCapabilityScalarFieldEnum = {
+  collectorDefinitionId: 'collectorDefinitionId',
+  observationDefinitionId: 'observationDefinitionId',
+  position: 'position'
+} as const
+
+export type CollectorCapabilityScalarFieldEnum = (typeof CollectorCapabilityScalarFieldEnum)[keyof typeof CollectorCapabilityScalarFieldEnum]
 
 
 export const DomainVerificationScalarFieldEnum = {
