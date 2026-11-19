@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "@website-bot-scroll/config": "workspace:*",
+    "@website-bot-scroll/crawler": "workspace:*",
     "@website-bot-scroll/db": "workspace:*",
+    "@website-bot-scroll/domain": "workspace:*",
     "@website-bot-scroll/queue": "workspace:*"
   },
   "devDependencies": {

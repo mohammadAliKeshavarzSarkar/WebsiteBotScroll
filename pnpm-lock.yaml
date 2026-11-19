@@ -72,9 +72,15 @@ importers:
       '@website-bot-scroll/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@website-bot-scroll/crawler':
+        specifier: workspace:*
+        version: link:../../packages/crawler
       '@website-bot-scroll/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@website-bot-scroll/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@website-bot-scroll/queue':
         specifier: workspace:*
         version: link:../../packages/queue
