@@ -28,16 +28,19 @@ export type AggregateEvidencePage = {
 
 export type EvidencePageAvgAggregateOutputType = {
   position: number | null
+  depth: number | null
 }
 
 export type EvidencePageSumAggregateOutputType = {
   position: number | null
+  depth: number | null
 }
 
 export type EvidencePageMinAggregateOutputType = {
   id: string | null
   crawlRunId: string | null
   position: number | null
+  depth: number | null
   discoveredUrl: string | null
   requestedUrl: string | null
   normalizedUrl: string | null
@@ -49,6 +52,7 @@ export type EvidencePageMaxAggregateOutputType = {
   id: string | null
   crawlRunId: string | null
   position: number | null
+  depth: number | null
   discoveredUrl: string | null
   requestedUrl: string | null
   normalizedUrl: string | null
@@ -60,6 +64,7 @@ export type EvidencePageCountAggregateOutputType = {
   id: number
   crawlRunId: number
   position: number
+  depth: number
   discoveredUrl: number
   requestedUrl: number
   normalizedUrl: number
@@ -72,16 +77,19 @@ export type EvidencePageCountAggregateOutputType = {
 
 export type EvidencePageAvgAggregateInputType = {
   position?: true
+  depth?: true
 }
 
 export type EvidencePageSumAggregateInputType = {
   position?: true
+  depth?: true
 }
 
 export type EvidencePageMinAggregateInputType = {
   id?: true
   crawlRunId?: true
   position?: true
+  depth?: true
   discoveredUrl?: true
   requestedUrl?: true
   normalizedUrl?: true
@@ -93,6 +101,7 @@ export type EvidencePageMaxAggregateInputType = {
   id?: true
   crawlRunId?: true
   position?: true
+  depth?: true
   discoveredUrl?: true
   requestedUrl?: true
   normalizedUrl?: true
@@ -104,6 +113,7 @@ export type EvidencePageCountAggregateInputType = {
   id?: true
   crawlRunId?: true
   position?: true
+  depth?: true
   discoveredUrl?: true
   requestedUrl?: true
   normalizedUrl?: true
@@ -203,6 +213,7 @@ export type EvidencePageGroupByOutputType = {
   id: string
   crawlRunId: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -238,6 +249,7 @@ export type EvidencePageWhereInput = {
   id?: Prisma.StringFilter<"EvidencePage"> | string
   crawlRunId?: Prisma.UuidFilter<"EvidencePage"> | string
   position?: Prisma.IntFilter<"EvidencePage"> | number
+  depth?: Prisma.IntFilter<"EvidencePage"> | number
   discoveredUrl?: Prisma.StringFilter<"EvidencePage"> | string
   requestedUrl?: Prisma.StringFilter<"EvidencePage"> | string
   normalizedUrl?: Prisma.StringFilter<"EvidencePage"> | string
@@ -255,6 +267,7 @@ export type EvidencePageOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   crawlRunId?: Prisma.SortOrder
   position?: Prisma.SortOrder
+  depth?: Prisma.SortOrder
   discoveredUrl?: Prisma.SortOrder
   requestedUrl?: Prisma.SortOrder
   normalizedUrl?: Prisma.SortOrder
@@ -276,6 +289,7 @@ export type EvidencePageWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.EvidencePageWhereInput | Prisma.EvidencePageWhereInput[]
   crawlRunId?: Prisma.UuidFilter<"EvidencePage"> | string
   position?: Prisma.IntFilter<"EvidencePage"> | number
+  depth?: Prisma.IntFilter<"EvidencePage"> | number
   discoveredUrl?: Prisma.StringFilter<"EvidencePage"> | string
   requestedUrl?: Prisma.StringFilter<"EvidencePage"> | string
   normalizedUrl?: Prisma.StringFilter<"EvidencePage"> | string
@@ -293,6 +307,7 @@ export type EvidencePageOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   crawlRunId?: Prisma.SortOrder
   position?: Prisma.SortOrder
+  depth?: Prisma.SortOrder
   discoveredUrl?: Prisma.SortOrder
   requestedUrl?: Prisma.SortOrder
   normalizedUrl?: Prisma.SortOrder
@@ -313,6 +328,7 @@ export type EvidencePageScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"EvidencePage"> | string
   crawlRunId?: Prisma.UuidWithAggregatesFilter<"EvidencePage"> | string
   position?: Prisma.IntWithAggregatesFilter<"EvidencePage"> | number
+  depth?: Prisma.IntWithAggregatesFilter<"EvidencePage"> | number
   discoveredUrl?: Prisma.StringWithAggregatesFilter<"EvidencePage"> | string
   requestedUrl?: Prisma.StringWithAggregatesFilter<"EvidencePage"> | string
   normalizedUrl?: Prisma.StringWithAggregatesFilter<"EvidencePage"> | string
@@ -324,6 +340,7 @@ export type EvidencePageScalarWhereWithAggregatesInput = {
 export type EvidencePageCreateInput = {
   id: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -341,6 +358,7 @@ export type EvidencePageUncheckedCreateInput = {
   id: string
   crawlRunId: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -356,6 +374,7 @@ export type EvidencePageUncheckedCreateInput = {
 export type EvidencePageUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -373,6 +392,7 @@ export type EvidencePageUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   crawlRunId?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -389,6 +409,7 @@ export type EvidencePageCreateManyInput = {
   id: string
   crawlRunId: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -400,6 +421,7 @@ export type EvidencePageCreateManyInput = {
 export type EvidencePageUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -412,6 +434,7 @@ export type EvidencePageUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   crawlRunId?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -439,6 +462,7 @@ export type EvidencePageCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   crawlRunId?: Prisma.SortOrder
   position?: Prisma.SortOrder
+  depth?: Prisma.SortOrder
   discoveredUrl?: Prisma.SortOrder
   requestedUrl?: Prisma.SortOrder
   normalizedUrl?: Prisma.SortOrder
@@ -449,12 +473,14 @@ export type EvidencePageCountOrderByAggregateInput = {
 
 export type EvidencePageAvgOrderByAggregateInput = {
   position?: Prisma.SortOrder
+  depth?: Prisma.SortOrder
 }
 
 export type EvidencePageMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   crawlRunId?: Prisma.SortOrder
   position?: Prisma.SortOrder
+  depth?: Prisma.SortOrder
   discoveredUrl?: Prisma.SortOrder
   requestedUrl?: Prisma.SortOrder
   normalizedUrl?: Prisma.SortOrder
@@ -466,6 +492,7 @@ export type EvidencePageMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   crawlRunId?: Prisma.SortOrder
   position?: Prisma.SortOrder
+  depth?: Prisma.SortOrder
   discoveredUrl?: Prisma.SortOrder
   requestedUrl?: Prisma.SortOrder
   normalizedUrl?: Prisma.SortOrder
@@ -475,6 +502,7 @@ export type EvidencePageMinOrderByAggregateInput = {
 
 export type EvidencePageSumOrderByAggregateInput = {
   position?: Prisma.SortOrder
+  depth?: Prisma.SortOrder
 }
 
 export type EvidencePageScalarRelationFilter = {
@@ -592,6 +620,7 @@ export type EvidencePageUpdateOneWithoutErrorsNestedInput = {
 export type EvidencePageCreateWithoutCrawlRunInput = {
   id: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -607,6 +636,7 @@ export type EvidencePageCreateWithoutCrawlRunInput = {
 export type EvidencePageUncheckedCreateWithoutCrawlRunInput = {
   id: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -652,6 +682,7 @@ export type EvidencePageScalarWhereInput = {
   id?: Prisma.StringFilter<"EvidencePage"> | string
   crawlRunId?: Prisma.UuidFilter<"EvidencePage"> | string
   position?: Prisma.IntFilter<"EvidencePage"> | number
+  depth?: Prisma.IntFilter<"EvidencePage"> | number
   discoveredUrl?: Prisma.StringFilter<"EvidencePage"> | string
   requestedUrl?: Prisma.StringFilter<"EvidencePage"> | string
   normalizedUrl?: Prisma.StringFilter<"EvidencePage"> | string
@@ -663,6 +694,7 @@ export type EvidencePageScalarWhereInput = {
 export type EvidencePageCreateWithoutTransactionsInput = {
   id: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -679,6 +711,7 @@ export type EvidencePageUncheckedCreateWithoutTransactionsInput = {
   id: string
   crawlRunId: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -709,6 +742,7 @@ export type EvidencePageUpdateToOneWithWhereWithoutTransactionsInput = {
 export type EvidencePageUpdateWithoutTransactionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -725,6 +759,7 @@ export type EvidencePageUncheckedUpdateWithoutTransactionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   crawlRunId?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -739,6 +774,7 @@ export type EvidencePageUncheckedUpdateWithoutTransactionsInput = {
 export type EvidencePageCreateWithoutObservationsInput = {
   id: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -755,6 +791,7 @@ export type EvidencePageUncheckedCreateWithoutObservationsInput = {
   id: string
   crawlRunId: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -785,6 +822,7 @@ export type EvidencePageUpdateToOneWithWhereWithoutObservationsInput = {
 export type EvidencePageUpdateWithoutObservationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -801,6 +839,7 @@ export type EvidencePageUncheckedUpdateWithoutObservationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   crawlRunId?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -815,6 +854,7 @@ export type EvidencePageUncheckedUpdateWithoutObservationsInput = {
 export type EvidencePageCreateWithoutLimitationsInput = {
   id: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -831,6 +871,7 @@ export type EvidencePageUncheckedCreateWithoutLimitationsInput = {
   id: string
   crawlRunId: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -861,6 +902,7 @@ export type EvidencePageUpdateToOneWithWhereWithoutLimitationsInput = {
 export type EvidencePageUpdateWithoutLimitationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -877,6 +919,7 @@ export type EvidencePageUncheckedUpdateWithoutLimitationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   crawlRunId?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -891,6 +934,7 @@ export type EvidencePageUncheckedUpdateWithoutLimitationsInput = {
 export type EvidencePageCreateWithoutErrorsInput = {
   id: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -907,6 +951,7 @@ export type EvidencePageUncheckedCreateWithoutErrorsInput = {
   id: string
   crawlRunId: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -937,6 +982,7 @@ export type EvidencePageUpdateToOneWithWhereWithoutErrorsInput = {
 export type EvidencePageUpdateWithoutErrorsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -953,6 +999,7 @@ export type EvidencePageUncheckedUpdateWithoutErrorsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   crawlRunId?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -967,6 +1014,7 @@ export type EvidencePageUncheckedUpdateWithoutErrorsInput = {
 export type EvidencePageCreateManyCrawlRunInput = {
   id: string
   position: number
+  depth: number
   discoveredUrl: string
   requestedUrl: string
   normalizedUrl: string
@@ -978,6 +1026,7 @@ export type EvidencePageCreateManyCrawlRunInput = {
 export type EvidencePageUpdateWithoutCrawlRunInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -993,6 +1042,7 @@ export type EvidencePageUpdateWithoutCrawlRunInput = {
 export type EvidencePageUncheckedUpdateWithoutCrawlRunInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1008,6 +1058,7 @@ export type EvidencePageUncheckedUpdateWithoutCrawlRunInput = {
 export type EvidencePageUncheckedUpdateManyWithoutCrawlRunInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.IntFieldUpdateOperationsInput | number
+  depth?: Prisma.IntFieldUpdateOperationsInput | number
   discoveredUrl?: Prisma.StringFieldUpdateOperationsInput | string
   requestedUrl?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1078,6 +1129,7 @@ export type EvidencePageSelect<ExtArgs extends runtime.Types.Extensions.Internal
   id?: boolean
   crawlRunId?: boolean
   position?: boolean
+  depth?: boolean
   discoveredUrl?: boolean
   requestedUrl?: boolean
   normalizedUrl?: boolean
@@ -1096,6 +1148,7 @@ export type EvidencePageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   crawlRunId?: boolean
   position?: boolean
+  depth?: boolean
   discoveredUrl?: boolean
   requestedUrl?: boolean
   normalizedUrl?: boolean
@@ -1109,6 +1162,7 @@ export type EvidencePageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   crawlRunId?: boolean
   position?: boolean
+  depth?: boolean
   discoveredUrl?: boolean
   requestedUrl?: boolean
   normalizedUrl?: boolean
@@ -1122,6 +1176,7 @@ export type EvidencePageSelectScalar = {
   id?: boolean
   crawlRunId?: boolean
   position?: boolean
+  depth?: boolean
   discoveredUrl?: boolean
   requestedUrl?: boolean
   normalizedUrl?: boolean
@@ -1130,7 +1185,7 @@ export type EvidencePageSelectScalar = {
   createdAt?: boolean
 }
 
-export type EvidencePageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "crawlRunId" | "position" | "discoveredUrl" | "requestedUrl" | "normalizedUrl" | "finalUrl" | "canonicalUrls" | "createdAt", ExtArgs["result"]["evidencePage"]>
+export type EvidencePageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "crawlRunId" | "position" | "depth" | "discoveredUrl" | "requestedUrl" | "normalizedUrl" | "finalUrl" | "canonicalUrls" | "createdAt", ExtArgs["result"]["evidencePage"]>
 export type EvidencePageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   crawlRun?: boolean | Prisma.CrawlRunDefaultArgs<ExtArgs>
   transactions?: boolean | Prisma.EvidencePage$transactionsArgs<ExtArgs>
@@ -1159,6 +1214,7 @@ export type $EvidencePagePayload<ExtArgs extends runtime.Types.Extensions.Intern
     id: string
     crawlRunId: string
     position: number
+    depth: number
     discoveredUrl: string
     requestedUrl: string
     normalizedUrl: string
@@ -1596,6 +1652,7 @@ export interface EvidencePageFieldRefs {
   readonly id: Prisma.FieldRef<"EvidencePage", 'String'>
   readonly crawlRunId: Prisma.FieldRef<"EvidencePage", 'String'>
   readonly position: Prisma.FieldRef<"EvidencePage", 'Int'>
+  readonly depth: Prisma.FieldRef<"EvidencePage", 'Int'>
   readonly discoveredUrl: Prisma.FieldRef<"EvidencePage", 'String'>
   readonly requestedUrl: Prisma.FieldRef<"EvidencePage", 'String'>
   readonly normalizedUrl: Prisma.FieldRef<"EvidencePage", 'String'>

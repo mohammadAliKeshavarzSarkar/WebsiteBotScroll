@@ -11,6 +11,7 @@ import type { DatabaseClient } from "../client.js";
 export interface EvidencePageInput extends PageIdentityInput {
   id: string;
   position: number;
+  depth: number;
 }
 
 export interface CoverageInput {
@@ -74,6 +75,7 @@ export class EvidenceRepository {
     const comparable = {
       crawlRunId: runId,
       position: input.position,
+      depth: input.depth,
       discoveredUrl: input.discoveredUrl,
       requestedUrl: input.requestedUrl,
       normalizedUrl: input.normalizedUrl,

@@ -145,6 +145,7 @@ model EvidencePage {
   id             String       @id
   crawlRunId     String       @map("crawl_run_id") @db.Uuid
   position       Int
+  depth          Int
   discoveredUrl  String       @map("discovered_url")
   requestedUrl   String       @map("requested_url")
   normalizedUrl  String       @map("normalized_url")

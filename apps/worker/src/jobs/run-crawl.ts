@@ -91,7 +91,7 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
         evidenceContext: { runId: job.crawlRunId, pageId }, now, sleep: async () => undefined,
       });
       await dependencies.evidence.appendPage(job.organizationId, job.crawlRunId, {
-        id: pageId, position: collected, discoveredUrl: identity.discoveredUrl, requestedUrl: identity.requestedUrl,
+        id: pageId, position: collected, depth: next.depth, discoveredUrl: identity.discoveredUrl, requestedUrl: identity.requestedUrl,
         normalizedUrl: identity.normalizedUrl, finalUrl: result.url, canonicalUrls: [],
       });
       const transactions = buffered.filter((event): event is Extract<CrawlEvidenceEvent, { kind: "http_transaction" }> => event.kind === "http_transaction");

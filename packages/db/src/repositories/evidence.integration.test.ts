@@ -81,7 +81,7 @@ describeDatabase("EvidenceRepository", () => {
     await prisma.organization.create({ data: { id: otherOrganizationId, name: "Other" } });
 
     await expect(evidence.appendPage(otherOrganizationId, owner.runId, {
-      id: "page-1", position: 0, discoveredUrl: scope.seed_urls[0]!, requestedUrl: scope.seed_urls[0]!,
+      id: "page-1", position: 0, depth: 0, discoveredUrl: scope.seed_urls[0]!, requestedUrl: scope.seed_urls[0]!,
       normalizedUrl: scope.seed_urls[0]!, finalUrl: scope.seed_urls[0]!, canonicalUrls: [],
     })).rejects.toThrow("crawl run not found");
     await expect(evidence.loadFrozenRun(otherOrganizationId, owner.runId)).rejects.toThrow("frozen crawl run not found");
@@ -90,7 +90,7 @@ describeDatabase("EvidenceRepository", () => {
   it("preserves transaction and repeated-header order and makes stable appends idempotent", async () => {
     const run = await createRun();
     await evidence.appendPage(run.organizationId, run.runId, {
-      id: "page-1", position: 0, discoveredUrl: scope.seed_urls[0]!, requestedUrl: scope.seed_urls[0]!,
+      id: "page-1", position: 0, depth: 0, discoveredUrl: scope.seed_urls[0]!, requestedUrl: scope.seed_urls[0]!,
       normalizedUrl: scope.seed_urls[0]!, finalUrl: scope.seed_urls[0]!, canonicalUrls: [],
     });
     const transaction = {
@@ -111,7 +111,7 @@ describeDatabase("EvidenceRepository", () => {
   it("rejects mutation of an existing observation identity", async () => {
     const run = await createRun();
     await evidence.appendPage(run.organizationId, run.runId, {
-      id: "page-1", position: 0, discoveredUrl: scope.seed_urls[0]!, requestedUrl: scope.seed_urls[0]!,
+      id: "page-1", position: 0, depth: 0, discoveredUrl: scope.seed_urls[0]!, requestedUrl: scope.seed_urls[0]!,
       normalizedUrl: scope.seed_urls[0]!, finalUrl: scope.seed_urls[0]!, canonicalUrls: [],
     });
     const observation = {
@@ -127,7 +127,7 @@ describeDatabase("EvidenceRepository", () => {
   it("freezes a truthful partial run and preserves coverage and limitations", async () => {
     const run = await createRun({ status: "PARTIAL" });
     await evidence.appendPage(run.organizationId, run.runId, {
-      id: "page-1", position: 0, discoveredUrl: scope.seed_urls[0]!, requestedUrl: scope.seed_urls[0]!,
+      id: "page-1", position: 0, depth: 0, discoveredUrl: scope.seed_urls[0]!, requestedUrl: scope.seed_urls[0]!,
       normalizedUrl: scope.seed_urls[0]!, finalUrl: scope.seed_urls[0]!, canonicalUrls: [],
     });
     await evidence.appendLimitation(run.organizationId, run.runId, {

@@ -1750,6 +1750,7 @@ export const EvidencePageScalarFieldEnum = {
   id: 'id',
   crawlRunId: 'crawlRunId',
   position: 'position',
+  depth: 'depth',
   discoveredUrl: 'discoveredUrl',
   requestedUrl: 'requestedUrl',
   normalizedUrl: 'normalizedUrl',

@@ -133,7 +133,7 @@ describeDatabase("idempotent crawl orchestration", () => {
     } });
     const repository = new EvidenceRepository(prisma);
     await repository.appendPage(organizationId, crawlRunId, {
-      id: pageId, position: 0, discoveredUrl: pageUrl, requestedUrl: pageUrl, normalizedUrl: pageUrl, finalUrl: pageUrl, canonicalUrls: [],
+      id: pageId, position: 0, depth: 0, discoveredUrl: pageUrl, requestedUrl: pageUrl, normalizedUrl: pageUrl, finalUrl: pageUrl, canonicalUrls: [],
     });
     await repository.appendTransaction(organizationId, crawlRunId, pageId, 0, {
       id: "tx-persisted", requestUrl: pageUrl, responseUrl: pageUrl, method: "GET", statusCode: 200,
