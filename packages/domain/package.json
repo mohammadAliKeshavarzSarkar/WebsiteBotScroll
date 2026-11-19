@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./evidence": "./src/evidence.ts",
     "./ids": "./src/ids.ts",
     "./site": "./src/site.ts"
   },
