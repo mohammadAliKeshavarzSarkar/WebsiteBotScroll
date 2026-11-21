@@ -8,6 +8,8 @@
   },
   "exports": {
     "./evidence/events": "./src/evidence/events.ts",
+    "./evidence/definitions": "./src/evidence/definitions.ts",
+    "./evidence/platform-sink": "./src/evidence/platform-sink.ts",
     "./extract/html-observations": "./src/extract/html-observations.ts",
     "./url/normalize": "./src/url/normalize.ts",
     "./url/policy": "./src/url/policy.ts",

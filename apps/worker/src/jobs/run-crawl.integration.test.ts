@@ -6,6 +6,7 @@ import { createPrismaClient } from "@website-bot-scroll/db";
 import { EvidenceRepository } from "@website-bot-scroll/db/evidence";
 import type { DnsResolver } from "@website-bot-scroll/crawler/network/resolve-public";
 import type { HttpTransport } from "@website-bot-scroll/crawler/http/fetch-page";
+import { computeObservationParityDigest } from "@website-bot-scroll/crawler/evidence/platform-sink";
 import { processPage } from "./process-page.js";
 import { executeAuthorizedCrawl, finishCrawlRun, processRunCrawl } from "./run-crawl.js";
 
@@ -28,6 +29,8 @@ describeDatabase("idempotent crawl orchestration", () => {
     vi.clearAllMocks();
     await prisma.crawlError.deleteMany();
     await prisma.crawlRun.deleteMany();
+    await prisma.collectorDefinition.deleteMany();
+    await prisma.observationDefinition.deleteMany();
     await prisma.site.deleteMany();
     await prisma.organization.deleteMany();
     organizationId = randomUUID();
@@ -114,6 +117,13 @@ describeDatabase("idempotent crawl orchestration", () => {
     expect(frozen.pages).toHaveLength(1);
     expect(await prisma.evidenceTransaction.count({ where: { page: { crawlRunId } } })).toBe(1);
     expect(await prisma.evidenceObservation.count({ where: { page: { crawlRunId } } })).toBe(7);
+    const legacy = await prisma.evidenceObservation.findMany({ where: { page: { crawlRunId } }, orderBy: { id: "asc" } });
+    const platform = await prisma.platformObservation.findMany({ where: { crawlRunId }, orderBy: { sequence: "asc" }, include: { definition: true } });
+    expect(await prisma.observationSubject.count({ where: { crawlRunId } })).toBe(1);
+    expect(await prisma.observationExecution.findFirstOrThrow({ where: { crawlRunId } })).toMatchObject({ status: "completed", attempt: 0 });
+    expect(platform).toHaveLength(7);
+    expect(computeObservationParityDigest(legacy.map((row) => ({ method: row.method, status: row.status as never, value: row.value, reasons: row.reasons as string[], provenance: row.provenance as never, id: row.id }))))
+      .toBe(computeObservationParityDigest(platform.map((row) => ({ id: row.id, runId: row.crawlRunId, subjectId: row.subjectId, executionId: row.executionId, definitionKey: row.definition.key, definitionVersion: row.definition.version, sequence: row.sequence, status: row.status as never, payload: row.payload, reasons: row.reasons as string[], provenance: row.provenance as never, collectedAt: row.collectedAt.toISOString() }))));
   });
 
   it("resumes after persisted transaction evidence without refetching or duplicating it", async () => {
