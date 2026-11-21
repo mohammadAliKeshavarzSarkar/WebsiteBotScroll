@@ -123,6 +123,16 @@ export type ObservationExecution = Prisma.ObservationExecutionModel
  */
 export type PlatformObservation = Prisma.PlatformObservationModel
 /**
+ * Model EvidenceArtifact
+ * 
+ */
+export type EvidenceArtifact = Prisma.EvidenceArtifactModel
+/**
+ * Model ObservationArtifact
+ * 
+ */
+export type ObservationArtifact = Prisma.ObservationArtifactModel
+/**
  * Model DomainVerification
  * 
  */

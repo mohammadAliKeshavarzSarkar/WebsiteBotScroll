@@ -72,6 +72,8 @@ export const ModelName = {
   ObservationSubjectMember: 'ObservationSubjectMember',
   ObservationExecution: 'ObservationExecution',
   PlatformObservation: 'PlatformObservation',
+  EvidenceArtifact: 'EvidenceArtifact',
+  ObservationArtifact: 'ObservationArtifact',
   DomainVerification: 'DomainVerification',
   AuditEvent: 'AuditEvent'
 } as const
@@ -395,6 +397,34 @@ export const PlatformObservationScalarFieldEnum = {
 } as const
 
 export type PlatformObservationScalarFieldEnum = (typeof PlatformObservationScalarFieldEnum)[keyof typeof PlatformObservationScalarFieldEnum]
+
+
+export const EvidenceArtifactScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  crawlRunId: 'crawlRunId',
+  sha256: 'sha256',
+  byteLength: 'byteLength',
+  mediaType: 'mediaType',
+  locator: 'locator',
+  sensitivity: 'sensitivity',
+  retentionClass: 'retentionClass',
+  availability: 'availability',
+  pinnedAt: 'pinnedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EvidenceArtifactScalarFieldEnum = (typeof EvidenceArtifactScalarFieldEnum)[keyof typeof EvidenceArtifactScalarFieldEnum]
+
+
+export const ObservationArtifactScalarFieldEnum = {
+  observationId: 'observationId',
+  artifactId: 'artifactId',
+  position: 'position',
+  role: 'role'
+} as const
+
+export type ObservationArtifactScalarFieldEnum = (typeof ObservationArtifactScalarFieldEnum)[keyof typeof ObservationArtifactScalarFieldEnum]
 
 
 export const DomainVerificationScalarFieldEnum = {

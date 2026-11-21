@@ -22,6 +22,7 @@ model Organization {
   observationSubjects ObservationSubject[]
   observationExecutions ObservationExecution[]
   platformObservations PlatformObservation[]
+  evidenceArtifacts EvidenceArtifact[]
 
   @@map("organizations")
 }
@@ -124,6 +125,7 @@ model CrawlRun {
   observationSubjects ObservationSubject[]
   observationExecutions ObservationExecution[]
   platformObservations PlatformObservation[]
+  evidenceArtifacts EvidenceArtifact[]
 
   @@unique([siteId, idempotencyKey])
   @@index([organizationId, createdAt])
@@ -407,10 +409,46 @@ model PlatformObservation {
   subject                 ObservationSubject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
   execution               ObservationExecution @relation(fields: [executionId], references: [id], onDelete: Restrict)
   definition              ObservationDefinition @relation(fields: [observationDefinitionId], references: [id], onDelete: Restrict)
+  artifacts               ObservationArtifact[]
 
   @@unique([executionId, sequence])
   @@index([organizationId, crawlRunId, subjectId])
   @@map("platform_observations")
+}
+
+model EvidenceArtifact {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  crawlRunId     String   @map("crawl_run_id") @db.Uuid
+  sha256         String   @db.Char(64)
+  byteLength     Int      @map("byte_length")
+  mediaType      String   @map("media_type")
+  locator        String
+  sensitivity    String
+  retentionClass String   @map("retention_class")
+  availability   String   @default("available")
+  pinnedAt       DateTime? @map("pinned_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  crawlRun       CrawlRun @relation(fields: [crawlRunId], references: [id], onDelete: Cascade)
+  observations   ObservationArtifact[]
+
+  @@unique([organizationId, sha256])
+  @@index([organizationId, crawlRunId, availability])
+  @@map("evidence_artifacts")
+}
+
+model ObservationArtifact {
+  observationId String @map("observation_id")
+  artifactId    String @map("artifact_id") @db.Uuid
+  position      Int
+  role          String
+  observation   PlatformObservation @relation(fields: [observationId], references: [id], onDelete: Cascade)
+  artifact      EvidenceArtifact @relation(fields: [artifactId], references: [id], onDelete: Restrict)
+
+  @@id([observationId, artifactId])
+  @@unique([observationId, position])
+  @@map("observation_artifacts")
 }
 
 model DomainVerification {
