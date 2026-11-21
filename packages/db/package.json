@@ -9,6 +9,7 @@
     "./observation-records": "./src/repositories/observation-records.ts",
     "./artifacts": "./src/repositories/artifacts.ts",
     "./renderer-sessions": "./src/repositories/renderer-sessions.ts",
+    "./diagnostics": "./src/repositories/diagnostics.ts",
     "./sites": "./src/repositories/sites.ts"
   },
   "scripts": {

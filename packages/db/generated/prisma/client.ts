@@ -152,6 +152,31 @@ export type RendererSession = Prisma.RendererSessionModel
  */
 export type PlatformObservation = Prisma.PlatformObservationModel
 /**
+ * Model DiagnosticRuleDefinition
+ * 
+ */
+export type DiagnosticRuleDefinition = Prisma.DiagnosticRuleDefinitionModel
+/**
+ * Model DiagnosticRuleInput
+ * 
+ */
+export type DiagnosticRuleInput = Prisma.DiagnosticRuleInputModel
+/**
+ * Model DiagnosticExecution
+ * 
+ */
+export type DiagnosticExecution = Prisma.DiagnosticExecutionModel
+/**
+ * Model DiagnosticResult
+ * 
+ */
+export type DiagnosticResult = Prisma.DiagnosticResultModel
+/**
+ * Model DiagnosticResultInput
+ * 
+ */
+export type DiagnosticResultInput = Prisma.DiagnosticResultInputModel
+/**
  * Model EvidenceArtifact
  * 
  */

@@ -228,6 +228,7 @@ export type ObservationDefinitionWhereInput = {
   deprecatedAt?: Prisma.DateTimeNullableFilter<"ObservationDefinition"> | Date | string | null
   capabilities?: Prisma.CollectorCapabilityListRelationFilter
   observations?: Prisma.PlatformObservationListRelationFilter
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputListRelationFilter
 }
 
 export type ObservationDefinitionOrderByWithRelationInput = {
@@ -245,6 +246,7 @@ export type ObservationDefinitionOrderByWithRelationInput = {
   deprecatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   capabilities?: Prisma.CollectorCapabilityOrderByRelationAggregateInput
   observations?: Prisma.PlatformObservationOrderByRelationAggregateInput
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputOrderByRelationAggregateInput
 }
 
 export type ObservationDefinitionWhereUniqueInput = Prisma.AtLeast<{
@@ -266,6 +268,7 @@ export type ObservationDefinitionWhereUniqueInput = Prisma.AtLeast<{
   deprecatedAt?: Prisma.DateTimeNullableFilter<"ObservationDefinition"> | Date | string | null
   capabilities?: Prisma.CollectorCapabilityListRelationFilter
   observations?: Prisma.PlatformObservationListRelationFilter
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputListRelationFilter
 }, "id" | "key_version">
 
 export type ObservationDefinitionOrderByWithAggregationInput = {
@@ -319,6 +322,7 @@ export type ObservationDefinitionCreateInput = {
   deprecatedAt?: Date | string | null
   capabilities?: Prisma.CollectorCapabilityCreateNestedManyWithoutObservationInput
   observations?: Prisma.PlatformObservationCreateNestedManyWithoutDefinitionInput
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputCreateNestedManyWithoutObservationInput
 }
 
 export type ObservationDefinitionUncheckedCreateInput = {
@@ -336,6 +340,7 @@ export type ObservationDefinitionUncheckedCreateInput = {
   deprecatedAt?: Date | string | null
   capabilities?: Prisma.CollectorCapabilityUncheckedCreateNestedManyWithoutObservationInput
   observations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutDefinitionInput
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputUncheckedCreateNestedManyWithoutObservationInput
 }
 
 export type ObservationDefinitionUpdateInput = {
@@ -353,6 +358,7 @@ export type ObservationDefinitionUpdateInput = {
   deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   capabilities?: Prisma.CollectorCapabilityUpdateManyWithoutObservationNestedInput
   observations?: Prisma.PlatformObservationUpdateManyWithoutDefinitionNestedInput
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputUpdateManyWithoutObservationNestedInput
 }
 
 export type ObservationDefinitionUncheckedUpdateInput = {
@@ -370,6 +376,7 @@ export type ObservationDefinitionUncheckedUpdateInput = {
   deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   capabilities?: Prisma.CollectorCapabilityUncheckedUpdateManyWithoutObservationNestedInput
   observations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutDefinitionNestedInput
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputUncheckedUpdateManyWithoutObservationNestedInput
 }
 
 export type ObservationDefinitionCreateManyInput = {
@@ -494,6 +501,20 @@ export type ObservationDefinitionUpdateOneRequiredWithoutObservationsNestedInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ObservationDefinitionUpdateToOneWithWhereWithoutObservationsInput, Prisma.ObservationDefinitionUpdateWithoutObservationsInput>, Prisma.ObservationDefinitionUncheckedUpdateWithoutObservationsInput>
 }
 
+export type ObservationDefinitionCreateNestedOneWithoutDiagnosticRuleInputsInput = {
+  create?: Prisma.XOR<Prisma.ObservationDefinitionCreateWithoutDiagnosticRuleInputsInput, Prisma.ObservationDefinitionUncheckedCreateWithoutDiagnosticRuleInputsInput>
+  connectOrCreate?: Prisma.ObservationDefinitionCreateOrConnectWithoutDiagnosticRuleInputsInput
+  connect?: Prisma.ObservationDefinitionWhereUniqueInput
+}
+
+export type ObservationDefinitionUpdateOneRequiredWithoutDiagnosticRuleInputsNestedInput = {
+  create?: Prisma.XOR<Prisma.ObservationDefinitionCreateWithoutDiagnosticRuleInputsInput, Prisma.ObservationDefinitionUncheckedCreateWithoutDiagnosticRuleInputsInput>
+  connectOrCreate?: Prisma.ObservationDefinitionCreateOrConnectWithoutDiagnosticRuleInputsInput
+  upsert?: Prisma.ObservationDefinitionUpsertWithoutDiagnosticRuleInputsInput
+  connect?: Prisma.ObservationDefinitionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ObservationDefinitionUpdateToOneWithWhereWithoutDiagnosticRuleInputsInput, Prisma.ObservationDefinitionUpdateWithoutDiagnosticRuleInputsInput>, Prisma.ObservationDefinitionUncheckedUpdateWithoutDiagnosticRuleInputsInput>
+}
+
 export type ObservationDefinitionCreateWithoutCapabilitiesInput = {
   id?: string
   key: string
@@ -508,6 +529,7 @@ export type ObservationDefinitionCreateWithoutCapabilitiesInput = {
   createdAt?: Date | string
   deprecatedAt?: Date | string | null
   observations?: Prisma.PlatformObservationCreateNestedManyWithoutDefinitionInput
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputCreateNestedManyWithoutObservationInput
 }
 
 export type ObservationDefinitionUncheckedCreateWithoutCapabilitiesInput = {
@@ -524,6 +546,7 @@ export type ObservationDefinitionUncheckedCreateWithoutCapabilitiesInput = {
   createdAt?: Date | string
   deprecatedAt?: Date | string | null
   observations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutDefinitionInput
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputUncheckedCreateNestedManyWithoutObservationInput
 }
 
 export type ObservationDefinitionCreateOrConnectWithoutCapabilitiesInput = {
@@ -556,6 +579,7 @@ export type ObservationDefinitionUpdateWithoutCapabilitiesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   observations?: Prisma.PlatformObservationUpdateManyWithoutDefinitionNestedInput
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputUpdateManyWithoutObservationNestedInput
 }
 
 export type ObservationDefinitionUncheckedUpdateWithoutCapabilitiesInput = {
@@ -572,6 +596,7 @@ export type ObservationDefinitionUncheckedUpdateWithoutCapabilitiesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   observations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutDefinitionNestedInput
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputUncheckedUpdateManyWithoutObservationNestedInput
 }
 
 export type ObservationDefinitionCreateWithoutObservationsInput = {
@@ -588,6 +613,7 @@ export type ObservationDefinitionCreateWithoutObservationsInput = {
   createdAt?: Date | string
   deprecatedAt?: Date | string | null
   capabilities?: Prisma.CollectorCapabilityCreateNestedManyWithoutObservationInput
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputCreateNestedManyWithoutObservationInput
 }
 
 export type ObservationDefinitionUncheckedCreateWithoutObservationsInput = {
@@ -604,6 +630,7 @@ export type ObservationDefinitionUncheckedCreateWithoutObservationsInput = {
   createdAt?: Date | string
   deprecatedAt?: Date | string | null
   capabilities?: Prisma.CollectorCapabilityUncheckedCreateNestedManyWithoutObservationInput
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputUncheckedCreateNestedManyWithoutObservationInput
 }
 
 export type ObservationDefinitionCreateOrConnectWithoutObservationsInput = {
@@ -636,6 +663,7 @@ export type ObservationDefinitionUpdateWithoutObservationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   capabilities?: Prisma.CollectorCapabilityUpdateManyWithoutObservationNestedInput
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputUpdateManyWithoutObservationNestedInput
 }
 
 export type ObservationDefinitionUncheckedUpdateWithoutObservationsInput = {
@@ -652,6 +680,91 @@ export type ObservationDefinitionUncheckedUpdateWithoutObservationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   capabilities?: Prisma.CollectorCapabilityUncheckedUpdateManyWithoutObservationNestedInput
+  diagnosticRuleInputs?: Prisma.DiagnosticRuleInputUncheckedUpdateManyWithoutObservationNestedInput
+}
+
+export type ObservationDefinitionCreateWithoutDiagnosticRuleInputsInput = {
+  id?: string
+  key: string
+  version: string
+  schema: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  schemaSha256: string
+  scopes: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  statuses: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  sensitivity: string
+  retentionClass: string
+  status?: string
+  createdAt?: Date | string
+  deprecatedAt?: Date | string | null
+  capabilities?: Prisma.CollectorCapabilityCreateNestedManyWithoutObservationInput
+  observations?: Prisma.PlatformObservationCreateNestedManyWithoutDefinitionInput
+}
+
+export type ObservationDefinitionUncheckedCreateWithoutDiagnosticRuleInputsInput = {
+  id?: string
+  key: string
+  version: string
+  schema: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  schemaSha256: string
+  scopes: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  statuses: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  sensitivity: string
+  retentionClass: string
+  status?: string
+  createdAt?: Date | string
+  deprecatedAt?: Date | string | null
+  capabilities?: Prisma.CollectorCapabilityUncheckedCreateNestedManyWithoutObservationInput
+  observations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutDefinitionInput
+}
+
+export type ObservationDefinitionCreateOrConnectWithoutDiagnosticRuleInputsInput = {
+  where: Prisma.ObservationDefinitionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ObservationDefinitionCreateWithoutDiagnosticRuleInputsInput, Prisma.ObservationDefinitionUncheckedCreateWithoutDiagnosticRuleInputsInput>
+}
+
+export type ObservationDefinitionUpsertWithoutDiagnosticRuleInputsInput = {
+  update: Prisma.XOR<Prisma.ObservationDefinitionUpdateWithoutDiagnosticRuleInputsInput, Prisma.ObservationDefinitionUncheckedUpdateWithoutDiagnosticRuleInputsInput>
+  create: Prisma.XOR<Prisma.ObservationDefinitionCreateWithoutDiagnosticRuleInputsInput, Prisma.ObservationDefinitionUncheckedCreateWithoutDiagnosticRuleInputsInput>
+  where?: Prisma.ObservationDefinitionWhereInput
+}
+
+export type ObservationDefinitionUpdateToOneWithWhereWithoutDiagnosticRuleInputsInput = {
+  where?: Prisma.ObservationDefinitionWhereInput
+  data: Prisma.XOR<Prisma.ObservationDefinitionUpdateWithoutDiagnosticRuleInputsInput, Prisma.ObservationDefinitionUncheckedUpdateWithoutDiagnosticRuleInputsInput>
+}
+
+export type ObservationDefinitionUpdateWithoutDiagnosticRuleInputsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  schema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  schemaSha256?: Prisma.StringFieldUpdateOperationsInput | string
+  scopes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  statuses?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  sensitivity?: Prisma.StringFieldUpdateOperationsInput | string
+  retentionClass?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  capabilities?: Prisma.CollectorCapabilityUpdateManyWithoutObservationNestedInput
+  observations?: Prisma.PlatformObservationUpdateManyWithoutDefinitionNestedInput
+}
+
+export type ObservationDefinitionUncheckedUpdateWithoutDiagnosticRuleInputsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  schema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  schemaSha256?: Prisma.StringFieldUpdateOperationsInput | string
+  scopes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  statuses?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  sensitivity?: Prisma.StringFieldUpdateOperationsInput | string
+  retentionClass?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  capabilities?: Prisma.CollectorCapabilityUncheckedUpdateManyWithoutObservationNestedInput
+  observations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutDefinitionNestedInput
 }
 
 
@@ -662,11 +775,13 @@ export type ObservationDefinitionUncheckedUpdateWithoutObservationsInput = {
 export type ObservationDefinitionCountOutputType = {
   capabilities: number
   observations: number
+  diagnosticRuleInputs: number
 }
 
 export type ObservationDefinitionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   capabilities?: boolean | ObservationDefinitionCountOutputTypeCountCapabilitiesArgs
   observations?: boolean | ObservationDefinitionCountOutputTypeCountObservationsArgs
+  diagnosticRuleInputs?: boolean | ObservationDefinitionCountOutputTypeCountDiagnosticRuleInputsArgs
 }
 
 /**
@@ -693,6 +808,13 @@ export type ObservationDefinitionCountOutputTypeCountObservationsArgs<ExtArgs ex
   where?: Prisma.PlatformObservationWhereInput
 }
 
+/**
+ * ObservationDefinitionCountOutputType without action
+ */
+export type ObservationDefinitionCountOutputTypeCountDiagnosticRuleInputsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DiagnosticRuleInputWhereInput
+}
+
 
 export type ObservationDefinitionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -709,6 +831,7 @@ export type ObservationDefinitionSelect<ExtArgs extends runtime.Types.Extensions
   deprecatedAt?: boolean
   capabilities?: boolean | Prisma.ObservationDefinition$capabilitiesArgs<ExtArgs>
   observations?: boolean | Prisma.ObservationDefinition$observationsArgs<ExtArgs>
+  diagnosticRuleInputs?: boolean | Prisma.ObservationDefinition$diagnosticRuleInputsArgs<ExtArgs>
   _count?: boolean | Prisma.ObservationDefinitionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["observationDefinition"]>
 
@@ -761,6 +884,7 @@ export type ObservationDefinitionOmit<ExtArgs extends runtime.Types.Extensions.I
 export type ObservationDefinitionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   capabilities?: boolean | Prisma.ObservationDefinition$capabilitiesArgs<ExtArgs>
   observations?: boolean | Prisma.ObservationDefinition$observationsArgs<ExtArgs>
+  diagnosticRuleInputs?: boolean | Prisma.ObservationDefinition$diagnosticRuleInputsArgs<ExtArgs>
   _count?: boolean | Prisma.ObservationDefinitionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ObservationDefinitionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -771,6 +895,7 @@ export type $ObservationDefinitionPayload<ExtArgs extends runtime.Types.Extensio
   objects: {
     capabilities: Prisma.$CollectorCapabilityPayload<ExtArgs>[]
     observations: Prisma.$PlatformObservationPayload<ExtArgs>[]
+    diagnosticRuleInputs: Prisma.$DiagnosticRuleInputPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1181,6 +1306,7 @@ export interface Prisma__ObservationDefinitionClient<T, Null = never, ExtArgs ex
   readonly [Symbol.toStringTag]: "PrismaPromise"
   capabilities<T extends Prisma.ObservationDefinition$capabilitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ObservationDefinition$capabilitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CollectorCapabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   observations<T extends Prisma.ObservationDefinition$observationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ObservationDefinition$observationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformObservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  diagnosticRuleInputs<T extends Prisma.ObservationDefinition$diagnosticRuleInputsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ObservationDefinition$diagnosticRuleInputsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiagnosticRuleInputPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1660,6 +1786,30 @@ export type ObservationDefinition$observationsArgs<ExtArgs extends runtime.Types
   take?: number
   skip?: number
   distinct?: Prisma.PlatformObservationScalarFieldEnum | Prisma.PlatformObservationScalarFieldEnum[]
+}
+
+/**
+ * ObservationDefinition.diagnosticRuleInputs
+ */
+export type ObservationDefinition$diagnosticRuleInputsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DiagnosticRuleInput
+   */
+  select?: Prisma.DiagnosticRuleInputSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DiagnosticRuleInput
+   */
+  omit?: Prisma.DiagnosticRuleInputOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DiagnosticRuleInputInclude<ExtArgs> | null
+  where?: Prisma.DiagnosticRuleInputWhereInput
+  orderBy?: Prisma.DiagnosticRuleInputOrderByWithRelationInput | Prisma.DiagnosticRuleInputOrderByWithRelationInput[]
+  cursor?: Prisma.DiagnosticRuleInputWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DiagnosticRuleInputScalarFieldEnum | Prisma.DiagnosticRuleInputScalarFieldEnum[]
 }
 
 /**
