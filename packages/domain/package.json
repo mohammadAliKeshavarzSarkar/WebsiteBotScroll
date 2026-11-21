@@ -6,6 +6,7 @@
     "./evidence": "./src/evidence.ts",
     "./evidence-artifact": "./src/evidence-artifact.ts",
     "./observation-platform": "./src/observation-platform.ts",
+    "./renderer-session": "./src/renderer-session.ts",
     "./ids": "./src/ids.ts",
     "./site": "./src/site.ts"
   },

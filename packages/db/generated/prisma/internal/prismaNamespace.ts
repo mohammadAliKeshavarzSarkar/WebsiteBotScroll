@@ -417,6 +417,7 @@ export const ModelName = {
   ObservationSubject: 'ObservationSubject',
   ObservationSubjectMember: 'ObservationSubjectMember',
   ObservationExecution: 'ObservationExecution',
+  RendererSession: 'RendererSession',
   PlatformObservation: 'PlatformObservation',
   EvidenceArtifact: 'EvidenceArtifact',
   ObservationArtifact: 'ObservationArtifact',
@@ -437,7 +438,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "session" | "site" | "crawlRun" | "exportAuthorization" | "evidencePage" | "evidenceTransaction" | "evidenceHeader" | "evidenceHeaderValue" | "evidenceObservation" | "evidenceLimitation" | "evidenceError" | "crawlError" | "observationDefinition" | "collectorDefinition" | "collectorCapability" | "observationSubject" | "observationSubjectMember" | "observationExecution" | "platformObservation" | "evidenceArtifact" | "observationArtifact" | "domainVerification" | "auditEvent"
+    modelProps: "organization" | "user" | "session" | "site" | "crawlRun" | "exportAuthorization" | "evidencePage" | "evidenceTransaction" | "evidenceHeader" | "evidenceHeaderValue" | "evidenceObservation" | "evidenceLimitation" | "evidenceError" | "crawlError" | "observationDefinition" | "collectorDefinition" | "collectorCapability" | "observationSubject" | "observationSubjectMember" | "observationExecution" | "rendererSession" | "platformObservation" | "evidenceArtifact" | "observationArtifact" | "domainVerification" | "auditEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1921,6 +1922,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RendererSession: {
+      payload: Prisma.$RendererSessionPayload<ExtArgs>
+      fields: Prisma.RendererSessionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RendererSessionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RendererSessionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RendererSessionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RendererSessionPayload>
+        }
+        findFirst: {
+          args: Prisma.RendererSessionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RendererSessionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RendererSessionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RendererSessionPayload>
+        }
+        findMany: {
+          args: Prisma.RendererSessionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RendererSessionPayload>[]
+        }
+        create: {
+          args: Prisma.RendererSessionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RendererSessionPayload>
+        }
+        createMany: {
+          args: Prisma.RendererSessionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RendererSessionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RendererSessionPayload>[]
+        }
+        delete: {
+          args: Prisma.RendererSessionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RendererSessionPayload>
+        }
+        update: {
+          args: Prisma.RendererSessionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RendererSessionPayload>
+        }
+        deleteMany: {
+          args: Prisma.RendererSessionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RendererSessionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RendererSessionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RendererSessionPayload>[]
+        }
+        upsert: {
+          args: Prisma.RendererSessionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RendererSessionPayload>
+        }
+        aggregate: {
+          args: Prisma.RendererSessionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRendererSession>
+        }
+        groupBy: {
+          args: Prisma.RendererSessionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RendererSessionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RendererSessionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RendererSessionCountAggregateOutputType> | number
+        }
+      }
+    }
     PlatformObservation: {
       payload: Prisma.$PlatformObservationPayload<ExtArgs>
       fields: Prisma.PlatformObservationFieldRefs
@@ -2616,6 +2691,22 @@ export const ObservationExecutionScalarFieldEnum = {
 export type ObservationExecutionScalarFieldEnum = (typeof ObservationExecutionScalarFieldEnum)[keyof typeof ObservationExecutionScalarFieldEnum]
 
 
+export const RendererSessionScalarFieldEnum = {
+  executionId: 'executionId',
+  engine: 'engine',
+  engineVersion: 'engineVersion',
+  viewportWidth: 'viewportWidth',
+  viewportHeight: 'viewportHeight',
+  deviceScaleFactor: 'deviceScaleFactor',
+  locale: 'locale',
+  userAgent: 'userAgent',
+  timingPolicy: 'timingPolicy',
+  createdAt: 'createdAt'
+} as const
+
+export type RendererSessionScalarFieldEnum = (typeof RendererSessionScalarFieldEnum)[keyof typeof RendererSessionScalarFieldEnum]
+
+
 export const PlatformObservationScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
@@ -3033,6 +3124,7 @@ export type GlobalOmitConfig = {
   observationSubject?: Prisma.ObservationSubjectOmit
   observationSubjectMember?: Prisma.ObservationSubjectMemberOmit
   observationExecution?: Prisma.ObservationExecutionOmit
+  rendererSession?: Prisma.RendererSessionOmit
   platformObservation?: Prisma.PlatformObservationOmit
   evidenceArtifact?: Prisma.EvidenceArtifactOmit
   observationArtifact?: Prisma.ObservationArtifactOmit
