@@ -142,6 +142,11 @@ export type ObservationSubjectMember = Prisma.ObservationSubjectMemberModel
  */
 export type ObservationExecution = Prisma.ObservationExecutionModel
 /**
+ * Model RendererSession
+ * 
+ */
+export type RendererSession = Prisma.RendererSessionModel
+/**
  * Model PlatformObservation
  * 
  */

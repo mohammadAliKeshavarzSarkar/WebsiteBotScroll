@@ -384,10 +384,27 @@ model ObservationExecution {
   parent                ObservationExecution? @relation("ExecutionChildren", fields: [parentExecutionId], references: [id], onDelete: Restrict)
   children              ObservationExecution[] @relation("ExecutionChildren")
   observations          PlatformObservation[]
+  rendererSession       RendererSession?
 
   @@unique([crawlRunId, stableKey, attempt])
   @@index([organizationId, crawlRunId, status])
   @@map("observation_executions")
+}
+
+model RendererSession {
+  executionId          String   @id @map("execution_id")
+  engine               String
+  engineVersion        String   @map("engine_version")
+  viewportWidth        Int      @map("viewport_width")
+  viewportHeight       Int      @map("viewport_height")
+  deviceScaleFactor    Float    @map("device_scale_factor")
+  locale               String
+  userAgent            String   @map("user_agent")
+  timingPolicy         Json     @map("timing_policy")
+  createdAt            DateTime @default(now()) @map("created_at")
+  execution            ObservationExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+
+  @@map("renderer_sessions")
 }
 
 model PlatformObservation {

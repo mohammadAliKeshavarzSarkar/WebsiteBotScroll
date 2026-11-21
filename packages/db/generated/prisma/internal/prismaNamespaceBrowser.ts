@@ -71,6 +71,7 @@ export const ModelName = {
   ObservationSubject: 'ObservationSubject',
   ObservationSubjectMember: 'ObservationSubjectMember',
   ObservationExecution: 'ObservationExecution',
+  RendererSession: 'RendererSession',
   PlatformObservation: 'PlatformObservation',
   EvidenceArtifact: 'EvidenceArtifact',
   ObservationArtifact: 'ObservationArtifact',
@@ -378,6 +379,22 @@ export const ObservationExecutionScalarFieldEnum = {
 } as const
 
 export type ObservationExecutionScalarFieldEnum = (typeof ObservationExecutionScalarFieldEnum)[keyof typeof ObservationExecutionScalarFieldEnum]
+
+
+export const RendererSessionScalarFieldEnum = {
+  executionId: 'executionId',
+  engine: 'engine',
+  engineVersion: 'engineVersion',
+  viewportWidth: 'viewportWidth',
+  viewportHeight: 'viewportHeight',
+  deviceScaleFactor: 'deviceScaleFactor',
+  locale: 'locale',
+  userAgent: 'userAgent',
+  timingPolicy: 'timingPolicy',
+  createdAt: 'createdAt'
+} as const
+
+export type RendererSessionScalarFieldEnum = (typeof RendererSessionScalarFieldEnum)[keyof typeof RendererSessionScalarFieldEnum]
 
 
 export const PlatformObservationScalarFieldEnum = {
