@@ -227,6 +227,7 @@ export type ObservationDefinitionWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"ObservationDefinition"> | Date | string
   deprecatedAt?: Prisma.DateTimeNullableFilter<"ObservationDefinition"> | Date | string | null
   capabilities?: Prisma.CollectorCapabilityListRelationFilter
+  observations?: Prisma.PlatformObservationListRelationFilter
 }
 
 export type ObservationDefinitionOrderByWithRelationInput = {
@@ -243,6 +244,7 @@ export type ObservationDefinitionOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   deprecatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   capabilities?: Prisma.CollectorCapabilityOrderByRelationAggregateInput
+  observations?: Prisma.PlatformObservationOrderByRelationAggregateInput
 }
 
 export type ObservationDefinitionWhereUniqueInput = Prisma.AtLeast<{
@@ -263,6 +265,7 @@ export type ObservationDefinitionWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"ObservationDefinition"> | Date | string
   deprecatedAt?: Prisma.DateTimeNullableFilter<"ObservationDefinition"> | Date | string | null
   capabilities?: Prisma.CollectorCapabilityListRelationFilter
+  observations?: Prisma.PlatformObservationListRelationFilter
 }, "id" | "key_version">
 
 export type ObservationDefinitionOrderByWithAggregationInput = {
@@ -315,6 +318,7 @@ export type ObservationDefinitionCreateInput = {
   createdAt?: Date | string
   deprecatedAt?: Date | string | null
   capabilities?: Prisma.CollectorCapabilityCreateNestedManyWithoutObservationInput
+  observations?: Prisma.PlatformObservationCreateNestedManyWithoutDefinitionInput
 }
 
 export type ObservationDefinitionUncheckedCreateInput = {
@@ -331,6 +335,7 @@ export type ObservationDefinitionUncheckedCreateInput = {
   createdAt?: Date | string
   deprecatedAt?: Date | string | null
   capabilities?: Prisma.CollectorCapabilityUncheckedCreateNestedManyWithoutObservationInput
+  observations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutDefinitionInput
 }
 
 export type ObservationDefinitionUpdateInput = {
@@ -347,6 +352,7 @@ export type ObservationDefinitionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   capabilities?: Prisma.CollectorCapabilityUpdateManyWithoutObservationNestedInput
+  observations?: Prisma.PlatformObservationUpdateManyWithoutDefinitionNestedInput
 }
 
 export type ObservationDefinitionUncheckedUpdateInput = {
@@ -363,6 +369,7 @@ export type ObservationDefinitionUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   capabilities?: Prisma.CollectorCapabilityUncheckedUpdateManyWithoutObservationNestedInput
+  observations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutDefinitionNestedInput
 }
 
 export type ObservationDefinitionCreateManyInput = {
@@ -473,6 +480,20 @@ export type ObservationDefinitionUpdateOneRequiredWithoutCapabilitiesNestedInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ObservationDefinitionUpdateToOneWithWhereWithoutCapabilitiesInput, Prisma.ObservationDefinitionUpdateWithoutCapabilitiesInput>, Prisma.ObservationDefinitionUncheckedUpdateWithoutCapabilitiesInput>
 }
 
+export type ObservationDefinitionCreateNestedOneWithoutObservationsInput = {
+  create?: Prisma.XOR<Prisma.ObservationDefinitionCreateWithoutObservationsInput, Prisma.ObservationDefinitionUncheckedCreateWithoutObservationsInput>
+  connectOrCreate?: Prisma.ObservationDefinitionCreateOrConnectWithoutObservationsInput
+  connect?: Prisma.ObservationDefinitionWhereUniqueInput
+}
+
+export type ObservationDefinitionUpdateOneRequiredWithoutObservationsNestedInput = {
+  create?: Prisma.XOR<Prisma.ObservationDefinitionCreateWithoutObservationsInput, Prisma.ObservationDefinitionUncheckedCreateWithoutObservationsInput>
+  connectOrCreate?: Prisma.ObservationDefinitionCreateOrConnectWithoutObservationsInput
+  upsert?: Prisma.ObservationDefinitionUpsertWithoutObservationsInput
+  connect?: Prisma.ObservationDefinitionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ObservationDefinitionUpdateToOneWithWhereWithoutObservationsInput, Prisma.ObservationDefinitionUpdateWithoutObservationsInput>, Prisma.ObservationDefinitionUncheckedUpdateWithoutObservationsInput>
+}
+
 export type ObservationDefinitionCreateWithoutCapabilitiesInput = {
   id?: string
   key: string
@@ -486,6 +507,7 @@ export type ObservationDefinitionCreateWithoutCapabilitiesInput = {
   status?: string
   createdAt?: Date | string
   deprecatedAt?: Date | string | null
+  observations?: Prisma.PlatformObservationCreateNestedManyWithoutDefinitionInput
 }
 
 export type ObservationDefinitionUncheckedCreateWithoutCapabilitiesInput = {
@@ -501,6 +523,7 @@ export type ObservationDefinitionUncheckedCreateWithoutCapabilitiesInput = {
   status?: string
   createdAt?: Date | string
   deprecatedAt?: Date | string | null
+  observations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutDefinitionInput
 }
 
 export type ObservationDefinitionCreateOrConnectWithoutCapabilitiesInput = {
@@ -532,6 +555,7 @@ export type ObservationDefinitionUpdateWithoutCapabilitiesInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  observations?: Prisma.PlatformObservationUpdateManyWithoutDefinitionNestedInput
 }
 
 export type ObservationDefinitionUncheckedUpdateWithoutCapabilitiesInput = {
@@ -547,6 +571,87 @@ export type ObservationDefinitionUncheckedUpdateWithoutCapabilitiesInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  observations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutDefinitionNestedInput
+}
+
+export type ObservationDefinitionCreateWithoutObservationsInput = {
+  id?: string
+  key: string
+  version: string
+  schema: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  schemaSha256: string
+  scopes: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  statuses: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  sensitivity: string
+  retentionClass: string
+  status?: string
+  createdAt?: Date | string
+  deprecatedAt?: Date | string | null
+  capabilities?: Prisma.CollectorCapabilityCreateNestedManyWithoutObservationInput
+}
+
+export type ObservationDefinitionUncheckedCreateWithoutObservationsInput = {
+  id?: string
+  key: string
+  version: string
+  schema: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  schemaSha256: string
+  scopes: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  statuses: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  sensitivity: string
+  retentionClass: string
+  status?: string
+  createdAt?: Date | string
+  deprecatedAt?: Date | string | null
+  capabilities?: Prisma.CollectorCapabilityUncheckedCreateNestedManyWithoutObservationInput
+}
+
+export type ObservationDefinitionCreateOrConnectWithoutObservationsInput = {
+  where: Prisma.ObservationDefinitionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ObservationDefinitionCreateWithoutObservationsInput, Prisma.ObservationDefinitionUncheckedCreateWithoutObservationsInput>
+}
+
+export type ObservationDefinitionUpsertWithoutObservationsInput = {
+  update: Prisma.XOR<Prisma.ObservationDefinitionUpdateWithoutObservationsInput, Prisma.ObservationDefinitionUncheckedUpdateWithoutObservationsInput>
+  create: Prisma.XOR<Prisma.ObservationDefinitionCreateWithoutObservationsInput, Prisma.ObservationDefinitionUncheckedCreateWithoutObservationsInput>
+  where?: Prisma.ObservationDefinitionWhereInput
+}
+
+export type ObservationDefinitionUpdateToOneWithWhereWithoutObservationsInput = {
+  where?: Prisma.ObservationDefinitionWhereInput
+  data: Prisma.XOR<Prisma.ObservationDefinitionUpdateWithoutObservationsInput, Prisma.ObservationDefinitionUncheckedUpdateWithoutObservationsInput>
+}
+
+export type ObservationDefinitionUpdateWithoutObservationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  schema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  schemaSha256?: Prisma.StringFieldUpdateOperationsInput | string
+  scopes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  statuses?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  sensitivity?: Prisma.StringFieldUpdateOperationsInput | string
+  retentionClass?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  capabilities?: Prisma.CollectorCapabilityUpdateManyWithoutObservationNestedInput
+}
+
+export type ObservationDefinitionUncheckedUpdateWithoutObservationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  schema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  schemaSha256?: Prisma.StringFieldUpdateOperationsInput | string
+  scopes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  statuses?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  sensitivity?: Prisma.StringFieldUpdateOperationsInput | string
+  retentionClass?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  capabilities?: Prisma.CollectorCapabilityUncheckedUpdateManyWithoutObservationNestedInput
 }
 
 
@@ -556,10 +661,12 @@ export type ObservationDefinitionUncheckedUpdateWithoutCapabilitiesInput = {
 
 export type ObservationDefinitionCountOutputType = {
   capabilities: number
+  observations: number
 }
 
 export type ObservationDefinitionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   capabilities?: boolean | ObservationDefinitionCountOutputTypeCountCapabilitiesArgs
+  observations?: boolean | ObservationDefinitionCountOutputTypeCountObservationsArgs
 }
 
 /**
@@ -579,6 +686,13 @@ export type ObservationDefinitionCountOutputTypeCountCapabilitiesArgs<ExtArgs ex
   where?: Prisma.CollectorCapabilityWhereInput
 }
 
+/**
+ * ObservationDefinitionCountOutputType without action
+ */
+export type ObservationDefinitionCountOutputTypeCountObservationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlatformObservationWhereInput
+}
+
 
 export type ObservationDefinitionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -594,6 +708,7 @@ export type ObservationDefinitionSelect<ExtArgs extends runtime.Types.Extensions
   createdAt?: boolean
   deprecatedAt?: boolean
   capabilities?: boolean | Prisma.ObservationDefinition$capabilitiesArgs<ExtArgs>
+  observations?: boolean | Prisma.ObservationDefinition$observationsArgs<ExtArgs>
   _count?: boolean | Prisma.ObservationDefinitionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["observationDefinition"]>
 
@@ -645,6 +760,7 @@ export type ObservationDefinitionSelectScalar = {
 export type ObservationDefinitionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "key" | "version" | "schema" | "schemaSha256" | "scopes" | "statuses" | "sensitivity" | "retentionClass" | "status" | "createdAt" | "deprecatedAt", ExtArgs["result"]["observationDefinition"]>
 export type ObservationDefinitionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   capabilities?: boolean | Prisma.ObservationDefinition$capabilitiesArgs<ExtArgs>
+  observations?: boolean | Prisma.ObservationDefinition$observationsArgs<ExtArgs>
   _count?: boolean | Prisma.ObservationDefinitionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ObservationDefinitionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -654,6 +770,7 @@ export type $ObservationDefinitionPayload<ExtArgs extends runtime.Types.Extensio
   name: "ObservationDefinition"
   objects: {
     capabilities: Prisma.$CollectorCapabilityPayload<ExtArgs>[]
+    observations: Prisma.$PlatformObservationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1063,6 +1180,7 @@ readonly fields: ObservationDefinitionFieldRefs;
 export interface Prisma__ObservationDefinitionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   capabilities<T extends Prisma.ObservationDefinition$capabilitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ObservationDefinition$capabilitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CollectorCapabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  observations<T extends Prisma.ObservationDefinition$observationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ObservationDefinition$observationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformObservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1518,6 +1636,30 @@ export type ObservationDefinition$capabilitiesArgs<ExtArgs extends runtime.Types
   take?: number
   skip?: number
   distinct?: Prisma.CollectorCapabilityScalarFieldEnum | Prisma.CollectorCapabilityScalarFieldEnum[]
+}
+
+/**
+ * ObservationDefinition.observations
+ */
+export type ObservationDefinition$observationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatformObservation
+   */
+  select?: Prisma.PlatformObservationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatformObservation
+   */
+  omit?: Prisma.PlatformObservationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlatformObservationInclude<ExtArgs> | null
+  where?: Prisma.PlatformObservationWhereInput
+  orderBy?: Prisma.PlatformObservationOrderByWithRelationInput | Prisma.PlatformObservationOrderByWithRelationInput[]
+  cursor?: Prisma.PlatformObservationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PlatformObservationScalarFieldEnum | Prisma.PlatformObservationScalarFieldEnum[]
 }
 
 /**

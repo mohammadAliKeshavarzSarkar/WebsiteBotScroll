@@ -211,6 +211,7 @@ export type CollectorDefinitionWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"CollectorDefinition"> | Date | string
   deprecatedAt?: Prisma.DateTimeNullableFilter<"CollectorDefinition"> | Date | string | null
   capabilities?: Prisma.CollectorCapabilityListRelationFilter
+  executions?: Prisma.ObservationExecutionListRelationFilter
 }
 
 export type CollectorDefinitionOrderByWithRelationInput = {
@@ -224,6 +225,7 @@ export type CollectorDefinitionOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   deprecatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   capabilities?: Prisma.CollectorCapabilityOrderByRelationAggregateInput
+  executions?: Prisma.ObservationExecutionOrderByRelationAggregateInput
 }
 
 export type CollectorDefinitionWhereUniqueInput = Prisma.AtLeast<{
@@ -241,6 +243,7 @@ export type CollectorDefinitionWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"CollectorDefinition"> | Date | string
   deprecatedAt?: Prisma.DateTimeNullableFilter<"CollectorDefinition"> | Date | string | null
   capabilities?: Prisma.CollectorCapabilityListRelationFilter
+  executions?: Prisma.ObservationExecutionListRelationFilter
 }, "id" | "key_version">
 
 export type CollectorDefinitionOrderByWithAggregationInput = {
@@ -284,6 +287,7 @@ export type CollectorDefinitionCreateInput = {
   createdAt?: Date | string
   deprecatedAt?: Date | string | null
   capabilities?: Prisma.CollectorCapabilityCreateNestedManyWithoutCollectorInput
+  executions?: Prisma.ObservationExecutionCreateNestedManyWithoutCollectorInput
 }
 
 export type CollectorDefinitionUncheckedCreateInput = {
@@ -297,6 +301,7 @@ export type CollectorDefinitionUncheckedCreateInput = {
   createdAt?: Date | string
   deprecatedAt?: Date | string | null
   capabilities?: Prisma.CollectorCapabilityUncheckedCreateNestedManyWithoutCollectorInput
+  executions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutCollectorInput
 }
 
 export type CollectorDefinitionUpdateInput = {
@@ -310,6 +315,7 @@ export type CollectorDefinitionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   capabilities?: Prisma.CollectorCapabilityUpdateManyWithoutCollectorNestedInput
+  executions?: Prisma.ObservationExecutionUpdateManyWithoutCollectorNestedInput
 }
 
 export type CollectorDefinitionUncheckedUpdateInput = {
@@ -323,6 +329,7 @@ export type CollectorDefinitionUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   capabilities?: Prisma.CollectorCapabilityUncheckedUpdateManyWithoutCollectorNestedInput
+  executions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutCollectorNestedInput
 }
 
 export type CollectorDefinitionCreateManyInput = {
@@ -419,6 +426,20 @@ export type CollectorDefinitionUpdateOneRequiredWithoutCapabilitiesNestedInput =
   update?: Prisma.XOR<Prisma.XOR<Prisma.CollectorDefinitionUpdateToOneWithWhereWithoutCapabilitiesInput, Prisma.CollectorDefinitionUpdateWithoutCapabilitiesInput>, Prisma.CollectorDefinitionUncheckedUpdateWithoutCapabilitiesInput>
 }
 
+export type CollectorDefinitionCreateNestedOneWithoutExecutionsInput = {
+  create?: Prisma.XOR<Prisma.CollectorDefinitionCreateWithoutExecutionsInput, Prisma.CollectorDefinitionUncheckedCreateWithoutExecutionsInput>
+  connectOrCreate?: Prisma.CollectorDefinitionCreateOrConnectWithoutExecutionsInput
+  connect?: Prisma.CollectorDefinitionWhereUniqueInput
+}
+
+export type CollectorDefinitionUpdateOneRequiredWithoutExecutionsNestedInput = {
+  create?: Prisma.XOR<Prisma.CollectorDefinitionCreateWithoutExecutionsInput, Prisma.CollectorDefinitionUncheckedCreateWithoutExecutionsInput>
+  connectOrCreate?: Prisma.CollectorDefinitionCreateOrConnectWithoutExecutionsInput
+  upsert?: Prisma.CollectorDefinitionUpsertWithoutExecutionsInput
+  connect?: Prisma.CollectorDefinitionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CollectorDefinitionUpdateToOneWithWhereWithoutExecutionsInput, Prisma.CollectorDefinitionUpdateWithoutExecutionsInput>, Prisma.CollectorDefinitionUncheckedUpdateWithoutExecutionsInput>
+}
+
 export type CollectorDefinitionCreateWithoutCapabilitiesInput = {
   id?: string
   key: string
@@ -429,6 +450,7 @@ export type CollectorDefinitionCreateWithoutCapabilitiesInput = {
   status?: string
   createdAt?: Date | string
   deprecatedAt?: Date | string | null
+  executions?: Prisma.ObservationExecutionCreateNestedManyWithoutCollectorInput
 }
 
 export type CollectorDefinitionUncheckedCreateWithoutCapabilitiesInput = {
@@ -441,6 +463,7 @@ export type CollectorDefinitionUncheckedCreateWithoutCapabilitiesInput = {
   status?: string
   createdAt?: Date | string
   deprecatedAt?: Date | string | null
+  executions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutCollectorInput
 }
 
 export type CollectorDefinitionCreateOrConnectWithoutCapabilitiesInput = {
@@ -469,6 +492,7 @@ export type CollectorDefinitionUpdateWithoutCapabilitiesInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  executions?: Prisma.ObservationExecutionUpdateManyWithoutCollectorNestedInput
 }
 
 export type CollectorDefinitionUncheckedUpdateWithoutCapabilitiesInput = {
@@ -481,6 +505,75 @@ export type CollectorDefinitionUncheckedUpdateWithoutCapabilitiesInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  executions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutCollectorNestedInput
+}
+
+export type CollectorDefinitionCreateWithoutExecutionsInput = {
+  id?: string
+  key: string
+  version: string
+  configurationSchema: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  configurationSchemaSha256: string
+  executionMode: string
+  status?: string
+  createdAt?: Date | string
+  deprecatedAt?: Date | string | null
+  capabilities?: Prisma.CollectorCapabilityCreateNestedManyWithoutCollectorInput
+}
+
+export type CollectorDefinitionUncheckedCreateWithoutExecutionsInput = {
+  id?: string
+  key: string
+  version: string
+  configurationSchema: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  configurationSchemaSha256: string
+  executionMode: string
+  status?: string
+  createdAt?: Date | string
+  deprecatedAt?: Date | string | null
+  capabilities?: Prisma.CollectorCapabilityUncheckedCreateNestedManyWithoutCollectorInput
+}
+
+export type CollectorDefinitionCreateOrConnectWithoutExecutionsInput = {
+  where: Prisma.CollectorDefinitionWhereUniqueInput
+  create: Prisma.XOR<Prisma.CollectorDefinitionCreateWithoutExecutionsInput, Prisma.CollectorDefinitionUncheckedCreateWithoutExecutionsInput>
+}
+
+export type CollectorDefinitionUpsertWithoutExecutionsInput = {
+  update: Prisma.XOR<Prisma.CollectorDefinitionUpdateWithoutExecutionsInput, Prisma.CollectorDefinitionUncheckedUpdateWithoutExecutionsInput>
+  create: Prisma.XOR<Prisma.CollectorDefinitionCreateWithoutExecutionsInput, Prisma.CollectorDefinitionUncheckedCreateWithoutExecutionsInput>
+  where?: Prisma.CollectorDefinitionWhereInput
+}
+
+export type CollectorDefinitionUpdateToOneWithWhereWithoutExecutionsInput = {
+  where?: Prisma.CollectorDefinitionWhereInput
+  data: Prisma.XOR<Prisma.CollectorDefinitionUpdateWithoutExecutionsInput, Prisma.CollectorDefinitionUncheckedUpdateWithoutExecutionsInput>
+}
+
+export type CollectorDefinitionUpdateWithoutExecutionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  configurationSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  configurationSchemaSha256?: Prisma.StringFieldUpdateOperationsInput | string
+  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  capabilities?: Prisma.CollectorCapabilityUpdateManyWithoutCollectorNestedInput
+}
+
+export type CollectorDefinitionUncheckedUpdateWithoutExecutionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  configurationSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  configurationSchemaSha256?: Prisma.StringFieldUpdateOperationsInput | string
+  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deprecatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  capabilities?: Prisma.CollectorCapabilityUncheckedUpdateManyWithoutCollectorNestedInput
 }
 
 
@@ -490,10 +583,12 @@ export type CollectorDefinitionUncheckedUpdateWithoutCapabilitiesInput = {
 
 export type CollectorDefinitionCountOutputType = {
   capabilities: number
+  executions: number
 }
 
 export type CollectorDefinitionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   capabilities?: boolean | CollectorDefinitionCountOutputTypeCountCapabilitiesArgs
+  executions?: boolean | CollectorDefinitionCountOutputTypeCountExecutionsArgs
 }
 
 /**
@@ -513,6 +608,13 @@ export type CollectorDefinitionCountOutputTypeCountCapabilitiesArgs<ExtArgs exte
   where?: Prisma.CollectorCapabilityWhereInput
 }
 
+/**
+ * CollectorDefinitionCountOutputType without action
+ */
+export type CollectorDefinitionCountOutputTypeCountExecutionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ObservationExecutionWhereInput
+}
+
 
 export type CollectorDefinitionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -525,6 +627,7 @@ export type CollectorDefinitionSelect<ExtArgs extends runtime.Types.Extensions.I
   createdAt?: boolean
   deprecatedAt?: boolean
   capabilities?: boolean | Prisma.CollectorDefinition$capabilitiesArgs<ExtArgs>
+  executions?: boolean | Prisma.CollectorDefinition$executionsArgs<ExtArgs>
   _count?: boolean | Prisma.CollectorDefinitionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["collectorDefinition"]>
 
@@ -567,6 +670,7 @@ export type CollectorDefinitionSelectScalar = {
 export type CollectorDefinitionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "key" | "version" | "configurationSchema" | "configurationSchemaSha256" | "executionMode" | "status" | "createdAt" | "deprecatedAt", ExtArgs["result"]["collectorDefinition"]>
 export type CollectorDefinitionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   capabilities?: boolean | Prisma.CollectorDefinition$capabilitiesArgs<ExtArgs>
+  executions?: boolean | Prisma.CollectorDefinition$executionsArgs<ExtArgs>
   _count?: boolean | Prisma.CollectorDefinitionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CollectorDefinitionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -576,6 +680,7 @@ export type $CollectorDefinitionPayload<ExtArgs extends runtime.Types.Extensions
   name: "CollectorDefinition"
   objects: {
     capabilities: Prisma.$CollectorCapabilityPayload<ExtArgs>[]
+    executions: Prisma.$ObservationExecutionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -982,6 +1087,7 @@ readonly fields: CollectorDefinitionFieldRefs;
 export interface Prisma__CollectorDefinitionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   capabilities<T extends Prisma.CollectorDefinition$capabilitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CollectorDefinition$capabilitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CollectorCapabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  executions<T extends Prisma.CollectorDefinition$executionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CollectorDefinition$executionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ObservationExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1434,6 +1540,30 @@ export type CollectorDefinition$capabilitiesArgs<ExtArgs extends runtime.Types.E
   take?: number
   skip?: number
   distinct?: Prisma.CollectorCapabilityScalarFieldEnum | Prisma.CollectorCapabilityScalarFieldEnum[]
+}
+
+/**
+ * CollectorDefinition.executions
+ */
+export type CollectorDefinition$executionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ObservationExecution
+   */
+  select?: Prisma.ObservationExecutionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ObservationExecution
+   */
+  omit?: Prisma.ObservationExecutionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ObservationExecutionInclude<ExtArgs> | null
+  where?: Prisma.ObservationExecutionWhereInput
+  orderBy?: Prisma.ObservationExecutionOrderByWithRelationInput | Prisma.ObservationExecutionOrderByWithRelationInput[]
+  cursor?: Prisma.ObservationExecutionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ObservationExecutionScalarFieldEnum | Prisma.ObservationExecutionScalarFieldEnum[]
 }
 
 /**

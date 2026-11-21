@@ -403,6 +403,9 @@ export type CrawlRunWhereInput = {
   evidencePages?: Prisma.EvidencePageListRelationFilter
   evidenceLimitations?: Prisma.EvidenceLimitationListRelationFilter
   evidenceErrors?: Prisma.EvidenceErrorListRelationFilter
+  observationSubjects?: Prisma.ObservationSubjectListRelationFilter
+  observationExecutions?: Prisma.ObservationExecutionListRelationFilter
+  platformObservations?: Prisma.PlatformObservationListRelationFilter
 }
 
 export type CrawlRunOrderByWithRelationInput = {
@@ -440,6 +443,9 @@ export type CrawlRunOrderByWithRelationInput = {
   evidencePages?: Prisma.EvidencePageOrderByRelationAggregateInput
   evidenceLimitations?: Prisma.EvidenceLimitationOrderByRelationAggregateInput
   evidenceErrors?: Prisma.EvidenceErrorOrderByRelationAggregateInput
+  observationSubjects?: Prisma.ObservationSubjectOrderByRelationAggregateInput
+  observationExecutions?: Prisma.ObservationExecutionOrderByRelationAggregateInput
+  platformObservations?: Prisma.PlatformObservationOrderByRelationAggregateInput
 }
 
 export type CrawlRunWhereUniqueInput = Prisma.AtLeast<{
@@ -481,6 +487,9 @@ export type CrawlRunWhereUniqueInput = Prisma.AtLeast<{
   evidencePages?: Prisma.EvidencePageListRelationFilter
   evidenceLimitations?: Prisma.EvidenceLimitationListRelationFilter
   evidenceErrors?: Prisma.EvidenceErrorListRelationFilter
+  observationSubjects?: Prisma.ObservationSubjectListRelationFilter
+  observationExecutions?: Prisma.ObservationExecutionListRelationFilter
+  platformObservations?: Prisma.PlatformObservationListRelationFilter
 }, "id" | "activeSiteKey" | "siteId_idempotencyKey">
 
 export type CrawlRunOrderByWithAggregationInput = {
@@ -583,6 +592,9 @@ export type CrawlRunCreateInput = {
   evidencePages?: Prisma.EvidencePageCreateNestedManyWithoutCrawlRunInput
   evidenceLimitations?: Prisma.EvidenceLimitationCreateNestedManyWithoutCrawlRunInput
   evidenceErrors?: Prisma.EvidenceErrorCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateInput = {
@@ -617,6 +629,9 @@ export type CrawlRunUncheckedCreateInput = {
   evidencePages?: Prisma.EvidencePageUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceLimitations?: Prisma.EvidenceLimitationUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceErrors?: Prisma.EvidenceErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunUpdateInput = {
@@ -651,6 +666,9 @@ export type CrawlRunUpdateInput = {
   evidencePages?: Prisma.EvidencePageUpdateManyWithoutCrawlRunNestedInput
   evidenceLimitations?: Prisma.EvidenceLimitationUpdateManyWithoutCrawlRunNestedInput
   evidenceErrors?: Prisma.EvidenceErrorUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateInput = {
@@ -685,6 +703,9 @@ export type CrawlRunUncheckedUpdateInput = {
   evidencePages?: Prisma.EvidencePageUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceLimitations?: Prisma.EvidenceLimitationUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceErrors?: Prisma.EvidenceErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateManyInput = {
@@ -1108,6 +1129,48 @@ export type CrawlRunUpdateOneRequiredWithoutErrorsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CrawlRunUpdateToOneWithWhereWithoutErrorsInput, Prisma.CrawlRunUpdateWithoutErrorsInput>, Prisma.CrawlRunUncheckedUpdateWithoutErrorsInput>
 }
 
+export type CrawlRunCreateNestedOneWithoutObservationSubjectsInput = {
+  create?: Prisma.XOR<Prisma.CrawlRunCreateWithoutObservationSubjectsInput, Prisma.CrawlRunUncheckedCreateWithoutObservationSubjectsInput>
+  connectOrCreate?: Prisma.CrawlRunCreateOrConnectWithoutObservationSubjectsInput
+  connect?: Prisma.CrawlRunWhereUniqueInput
+}
+
+export type CrawlRunUpdateOneRequiredWithoutObservationSubjectsNestedInput = {
+  create?: Prisma.XOR<Prisma.CrawlRunCreateWithoutObservationSubjectsInput, Prisma.CrawlRunUncheckedCreateWithoutObservationSubjectsInput>
+  connectOrCreate?: Prisma.CrawlRunCreateOrConnectWithoutObservationSubjectsInput
+  upsert?: Prisma.CrawlRunUpsertWithoutObservationSubjectsInput
+  connect?: Prisma.CrawlRunWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CrawlRunUpdateToOneWithWhereWithoutObservationSubjectsInput, Prisma.CrawlRunUpdateWithoutObservationSubjectsInput>, Prisma.CrawlRunUncheckedUpdateWithoutObservationSubjectsInput>
+}
+
+export type CrawlRunCreateNestedOneWithoutObservationExecutionsInput = {
+  create?: Prisma.XOR<Prisma.CrawlRunCreateWithoutObservationExecutionsInput, Prisma.CrawlRunUncheckedCreateWithoutObservationExecutionsInput>
+  connectOrCreate?: Prisma.CrawlRunCreateOrConnectWithoutObservationExecutionsInput
+  connect?: Prisma.CrawlRunWhereUniqueInput
+}
+
+export type CrawlRunUpdateOneRequiredWithoutObservationExecutionsNestedInput = {
+  create?: Prisma.XOR<Prisma.CrawlRunCreateWithoutObservationExecutionsInput, Prisma.CrawlRunUncheckedCreateWithoutObservationExecutionsInput>
+  connectOrCreate?: Prisma.CrawlRunCreateOrConnectWithoutObservationExecutionsInput
+  upsert?: Prisma.CrawlRunUpsertWithoutObservationExecutionsInput
+  connect?: Prisma.CrawlRunWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CrawlRunUpdateToOneWithWhereWithoutObservationExecutionsInput, Prisma.CrawlRunUpdateWithoutObservationExecutionsInput>, Prisma.CrawlRunUncheckedUpdateWithoutObservationExecutionsInput>
+}
+
+export type CrawlRunCreateNestedOneWithoutPlatformObservationsInput = {
+  create?: Prisma.XOR<Prisma.CrawlRunCreateWithoutPlatformObservationsInput, Prisma.CrawlRunUncheckedCreateWithoutPlatformObservationsInput>
+  connectOrCreate?: Prisma.CrawlRunCreateOrConnectWithoutPlatformObservationsInput
+  connect?: Prisma.CrawlRunWhereUniqueInput
+}
+
+export type CrawlRunUpdateOneRequiredWithoutPlatformObservationsNestedInput = {
+  create?: Prisma.XOR<Prisma.CrawlRunCreateWithoutPlatformObservationsInput, Prisma.CrawlRunUncheckedCreateWithoutPlatformObservationsInput>
+  connectOrCreate?: Prisma.CrawlRunCreateOrConnectWithoutPlatformObservationsInput
+  upsert?: Prisma.CrawlRunUpsertWithoutPlatformObservationsInput
+  connect?: Prisma.CrawlRunWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CrawlRunUpdateToOneWithWhereWithoutPlatformObservationsInput, Prisma.CrawlRunUpdateWithoutPlatformObservationsInput>, Prisma.CrawlRunUncheckedUpdateWithoutPlatformObservationsInput>
+}
+
 export type CrawlRunCreateWithoutOrganizationInput = {
   id?: string
   trigger: $Enums.CrawlTrigger
@@ -1139,6 +1202,9 @@ export type CrawlRunCreateWithoutOrganizationInput = {
   evidencePages?: Prisma.EvidencePageCreateNestedManyWithoutCrawlRunInput
   evidenceLimitations?: Prisma.EvidenceLimitationCreateNestedManyWithoutCrawlRunInput
   evidenceErrors?: Prisma.EvidenceErrorCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutOrganizationInput = {
@@ -1172,6 +1238,9 @@ export type CrawlRunUncheckedCreateWithoutOrganizationInput = {
   evidencePages?: Prisma.EvidencePageUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceLimitations?: Prisma.EvidenceLimitationUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceErrors?: Prisma.EvidenceErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutOrganizationInput = {
@@ -1264,6 +1333,9 @@ export type CrawlRunCreateWithoutSiteInput = {
   evidencePages?: Prisma.EvidencePageCreateNestedManyWithoutCrawlRunInput
   evidenceLimitations?: Prisma.EvidenceLimitationCreateNestedManyWithoutCrawlRunInput
   evidenceErrors?: Prisma.EvidenceErrorCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutSiteInput = {
@@ -1297,6 +1369,9 @@ export type CrawlRunUncheckedCreateWithoutSiteInput = {
   evidencePages?: Prisma.EvidencePageUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceLimitations?: Prisma.EvidenceLimitationUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceErrors?: Prisma.EvidenceErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutSiteInput = {
@@ -1356,6 +1431,9 @@ export type CrawlRunCreateWithoutAuthorizationInput = {
   evidencePages?: Prisma.EvidencePageCreateNestedManyWithoutCrawlRunInput
   evidenceLimitations?: Prisma.EvidenceLimitationCreateNestedManyWithoutCrawlRunInput
   evidenceErrors?: Prisma.EvidenceErrorCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutAuthorizationInput = {
@@ -1389,6 +1467,9 @@ export type CrawlRunUncheckedCreateWithoutAuthorizationInput = {
   evidencePages?: Prisma.EvidencePageUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceLimitations?: Prisma.EvidenceLimitationUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceErrors?: Prisma.EvidenceErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutAuthorizationInput = {
@@ -1448,6 +1529,9 @@ export type CrawlRunCreateWithoutEvidencePagesInput = {
   errors?: Prisma.CrawlErrorCreateNestedManyWithoutCrawlRunInput
   evidenceLimitations?: Prisma.EvidenceLimitationCreateNestedManyWithoutCrawlRunInput
   evidenceErrors?: Prisma.EvidenceErrorCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutEvidencePagesInput = {
@@ -1481,6 +1565,9 @@ export type CrawlRunUncheckedCreateWithoutEvidencePagesInput = {
   errors?: Prisma.CrawlErrorUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceLimitations?: Prisma.EvidenceLimitationUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceErrors?: Prisma.EvidenceErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutEvidencePagesInput = {
@@ -1530,6 +1617,9 @@ export type CrawlRunUpdateWithoutEvidencePagesInput = {
   errors?: Prisma.CrawlErrorUpdateManyWithoutCrawlRunNestedInput
   evidenceLimitations?: Prisma.EvidenceLimitationUpdateManyWithoutCrawlRunNestedInput
   evidenceErrors?: Prisma.EvidenceErrorUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutEvidencePagesInput = {
@@ -1563,6 +1653,9 @@ export type CrawlRunUncheckedUpdateWithoutEvidencePagesInput = {
   errors?: Prisma.CrawlErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceLimitations?: Prisma.EvidenceLimitationUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceErrors?: Prisma.EvidenceErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateWithoutEvidenceLimitationsInput = {
@@ -1596,6 +1689,9 @@ export type CrawlRunCreateWithoutEvidenceLimitationsInput = {
   errors?: Prisma.CrawlErrorCreateNestedManyWithoutCrawlRunInput
   evidencePages?: Prisma.EvidencePageCreateNestedManyWithoutCrawlRunInput
   evidenceErrors?: Prisma.EvidenceErrorCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutEvidenceLimitationsInput = {
@@ -1629,6 +1725,9 @@ export type CrawlRunUncheckedCreateWithoutEvidenceLimitationsInput = {
   errors?: Prisma.CrawlErrorUncheckedCreateNestedManyWithoutCrawlRunInput
   evidencePages?: Prisma.EvidencePageUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceErrors?: Prisma.EvidenceErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutEvidenceLimitationsInput = {
@@ -1678,6 +1777,9 @@ export type CrawlRunUpdateWithoutEvidenceLimitationsInput = {
   errors?: Prisma.CrawlErrorUpdateManyWithoutCrawlRunNestedInput
   evidencePages?: Prisma.EvidencePageUpdateManyWithoutCrawlRunNestedInput
   evidenceErrors?: Prisma.EvidenceErrorUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutEvidenceLimitationsInput = {
@@ -1711,6 +1813,9 @@ export type CrawlRunUncheckedUpdateWithoutEvidenceLimitationsInput = {
   errors?: Prisma.CrawlErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidencePages?: Prisma.EvidencePageUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceErrors?: Prisma.EvidenceErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateWithoutEvidenceErrorsInput = {
@@ -1744,6 +1849,9 @@ export type CrawlRunCreateWithoutEvidenceErrorsInput = {
   errors?: Prisma.CrawlErrorCreateNestedManyWithoutCrawlRunInput
   evidencePages?: Prisma.EvidencePageCreateNestedManyWithoutCrawlRunInput
   evidenceLimitations?: Prisma.EvidenceLimitationCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutEvidenceErrorsInput = {
@@ -1777,6 +1885,9 @@ export type CrawlRunUncheckedCreateWithoutEvidenceErrorsInput = {
   errors?: Prisma.CrawlErrorUncheckedCreateNestedManyWithoutCrawlRunInput
   evidencePages?: Prisma.EvidencePageUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceLimitations?: Prisma.EvidenceLimitationUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutEvidenceErrorsInput = {
@@ -1826,6 +1937,9 @@ export type CrawlRunUpdateWithoutEvidenceErrorsInput = {
   errors?: Prisma.CrawlErrorUpdateManyWithoutCrawlRunNestedInput
   evidencePages?: Prisma.EvidencePageUpdateManyWithoutCrawlRunNestedInput
   evidenceLimitations?: Prisma.EvidenceLimitationUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutEvidenceErrorsInput = {
@@ -1859,6 +1973,9 @@ export type CrawlRunUncheckedUpdateWithoutEvidenceErrorsInput = {
   errors?: Prisma.CrawlErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidencePages?: Prisma.EvidencePageUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceLimitations?: Prisma.EvidenceLimitationUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateWithoutErrorsInput = {
@@ -1892,6 +2009,9 @@ export type CrawlRunCreateWithoutErrorsInput = {
   evidencePages?: Prisma.EvidencePageCreateNestedManyWithoutCrawlRunInput
   evidenceLimitations?: Prisma.EvidenceLimitationCreateNestedManyWithoutCrawlRunInput
   evidenceErrors?: Prisma.EvidenceErrorCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutErrorsInput = {
@@ -1925,6 +2045,9 @@ export type CrawlRunUncheckedCreateWithoutErrorsInput = {
   evidencePages?: Prisma.EvidencePageUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceLimitations?: Prisma.EvidenceLimitationUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceErrors?: Prisma.EvidenceErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutErrorsInput = {
@@ -1974,6 +2097,9 @@ export type CrawlRunUpdateWithoutErrorsInput = {
   evidencePages?: Prisma.EvidencePageUpdateManyWithoutCrawlRunNestedInput
   evidenceLimitations?: Prisma.EvidenceLimitationUpdateManyWithoutCrawlRunNestedInput
   evidenceErrors?: Prisma.EvidenceErrorUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutErrorsInput = {
@@ -2007,6 +2133,489 @@ export type CrawlRunUncheckedUpdateWithoutErrorsInput = {
   evidencePages?: Prisma.EvidencePageUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceLimitations?: Prisma.EvidenceLimitationUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceErrors?: Prisma.EvidenceErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutCrawlRunNestedInput
+}
+
+export type CrawlRunCreateWithoutObservationSubjectsInput = {
+  id?: string
+  trigger: $Enums.CrawlTrigger
+  idempotencyKey: string
+  status?: $Enums.CrawlStatus
+  activeSiteKey?: string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: number
+  startedAt?: Date | string | null
+  finishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: string | null
+  normalizationPolicyVersion?: string | null
+  extractorVersion?: string | null
+  discoveredCount?: number
+  attemptedCount?: number
+  collectedCount?: number
+  failedCount?: number
+  unattemptedCount?: number | null
+  stopReason?: string | null
+  frozenAt?: Date | string | null
+  organization: Prisma.OrganizationCreateNestedOneWithoutCrawlRunsInput
+  site: Prisma.SiteCreateNestedOneWithoutCrawlRunsInput
+  authorization?: Prisma.ExportAuthorizationCreateNestedOneWithoutCrawlRunsInput
+  errors?: Prisma.CrawlErrorCreateNestedManyWithoutCrawlRunInput
+  evidencePages?: Prisma.EvidencePageCreateNestedManyWithoutCrawlRunInput
+  evidenceLimitations?: Prisma.EvidenceLimitationCreateNestedManyWithoutCrawlRunInput
+  evidenceErrors?: Prisma.EvidenceErrorCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutCrawlRunInput
+}
+
+export type CrawlRunUncheckedCreateWithoutObservationSubjectsInput = {
+  id?: string
+  organizationId: string
+  siteId: string
+  trigger: $Enums.CrawlTrigger
+  idempotencyKey: string
+  status?: $Enums.CrawlStatus
+  activeSiteKey?: string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: number
+  startedAt?: Date | string | null
+  finishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  authorizationId?: string | null
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: string | null
+  normalizationPolicyVersion?: string | null
+  extractorVersion?: string | null
+  discoveredCount?: number
+  attemptedCount?: number
+  collectedCount?: number
+  failedCount?: number
+  unattemptedCount?: number | null
+  stopReason?: string | null
+  frozenAt?: Date | string | null
+  errors?: Prisma.CrawlErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  evidencePages?: Prisma.EvidencePageUncheckedCreateNestedManyWithoutCrawlRunInput
+  evidenceLimitations?: Prisma.EvidenceLimitationUncheckedCreateNestedManyWithoutCrawlRunInput
+  evidenceErrors?: Prisma.EvidenceErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutCrawlRunInput
+}
+
+export type CrawlRunCreateOrConnectWithoutObservationSubjectsInput = {
+  where: Prisma.CrawlRunWhereUniqueInput
+  create: Prisma.XOR<Prisma.CrawlRunCreateWithoutObservationSubjectsInput, Prisma.CrawlRunUncheckedCreateWithoutObservationSubjectsInput>
+}
+
+export type CrawlRunUpsertWithoutObservationSubjectsInput = {
+  update: Prisma.XOR<Prisma.CrawlRunUpdateWithoutObservationSubjectsInput, Prisma.CrawlRunUncheckedUpdateWithoutObservationSubjectsInput>
+  create: Prisma.XOR<Prisma.CrawlRunCreateWithoutObservationSubjectsInput, Prisma.CrawlRunUncheckedCreateWithoutObservationSubjectsInput>
+  where?: Prisma.CrawlRunWhereInput
+}
+
+export type CrawlRunUpdateToOneWithWhereWithoutObservationSubjectsInput = {
+  where?: Prisma.CrawlRunWhereInput
+  data: Prisma.XOR<Prisma.CrawlRunUpdateWithoutObservationSubjectsInput, Prisma.CrawlRunUncheckedUpdateWithoutObservationSubjectsInput>
+}
+
+export type CrawlRunUpdateWithoutObservationSubjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  trigger?: Prisma.EnumCrawlTriggerFieldUpdateOperationsInput | $Enums.CrawlTrigger
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCrawlStatusFieldUpdateOperationsInput | $Enums.CrawlStatus
+  activeSiteKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizationPolicyVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extractorVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discoveredCount?: Prisma.IntFieldUpdateOperationsInput | number
+  attemptedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  collectedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  failedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  unattemptedCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  stopReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutCrawlRunsNestedInput
+  site?: Prisma.SiteUpdateOneRequiredWithoutCrawlRunsNestedInput
+  authorization?: Prisma.ExportAuthorizationUpdateOneWithoutCrawlRunsNestedInput
+  errors?: Prisma.CrawlErrorUpdateManyWithoutCrawlRunNestedInput
+  evidencePages?: Prisma.EvidencePageUpdateManyWithoutCrawlRunNestedInput
+  evidenceLimitations?: Prisma.EvidenceLimitationUpdateManyWithoutCrawlRunNestedInput
+  evidenceErrors?: Prisma.EvidenceErrorUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUpdateManyWithoutCrawlRunNestedInput
+}
+
+export type CrawlRunUncheckedUpdateWithoutObservationSubjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  siteId?: Prisma.StringFieldUpdateOperationsInput | string
+  trigger?: Prisma.EnumCrawlTriggerFieldUpdateOperationsInput | $Enums.CrawlTrigger
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCrawlStatusFieldUpdateOperationsInput | $Enums.CrawlStatus
+  activeSiteKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  authorizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizationPolicyVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extractorVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discoveredCount?: Prisma.IntFieldUpdateOperationsInput | number
+  attemptedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  collectedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  failedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  unattemptedCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  stopReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  errors?: Prisma.CrawlErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  evidencePages?: Prisma.EvidencePageUncheckedUpdateManyWithoutCrawlRunNestedInput
+  evidenceLimitations?: Prisma.EvidenceLimitationUncheckedUpdateManyWithoutCrawlRunNestedInput
+  evidenceErrors?: Prisma.EvidenceErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutCrawlRunNestedInput
+}
+
+export type CrawlRunCreateWithoutObservationExecutionsInput = {
+  id?: string
+  trigger: $Enums.CrawlTrigger
+  idempotencyKey: string
+  status?: $Enums.CrawlStatus
+  activeSiteKey?: string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: number
+  startedAt?: Date | string | null
+  finishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: string | null
+  normalizationPolicyVersion?: string | null
+  extractorVersion?: string | null
+  discoveredCount?: number
+  attemptedCount?: number
+  collectedCount?: number
+  failedCount?: number
+  unattemptedCount?: number | null
+  stopReason?: string | null
+  frozenAt?: Date | string | null
+  organization: Prisma.OrganizationCreateNestedOneWithoutCrawlRunsInput
+  site: Prisma.SiteCreateNestedOneWithoutCrawlRunsInput
+  authorization?: Prisma.ExportAuthorizationCreateNestedOneWithoutCrawlRunsInput
+  errors?: Prisma.CrawlErrorCreateNestedManyWithoutCrawlRunInput
+  evidencePages?: Prisma.EvidencePageCreateNestedManyWithoutCrawlRunInput
+  evidenceLimitations?: Prisma.EvidenceLimitationCreateNestedManyWithoutCrawlRunInput
+  evidenceErrors?: Prisma.EvidenceErrorCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutCrawlRunInput
+}
+
+export type CrawlRunUncheckedCreateWithoutObservationExecutionsInput = {
+  id?: string
+  organizationId: string
+  siteId: string
+  trigger: $Enums.CrawlTrigger
+  idempotencyKey: string
+  status?: $Enums.CrawlStatus
+  activeSiteKey?: string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: number
+  startedAt?: Date | string | null
+  finishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  authorizationId?: string | null
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: string | null
+  normalizationPolicyVersion?: string | null
+  extractorVersion?: string | null
+  discoveredCount?: number
+  attemptedCount?: number
+  collectedCount?: number
+  failedCount?: number
+  unattemptedCount?: number | null
+  stopReason?: string | null
+  frozenAt?: Date | string | null
+  errors?: Prisma.CrawlErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  evidencePages?: Prisma.EvidencePageUncheckedCreateNestedManyWithoutCrawlRunInput
+  evidenceLimitations?: Prisma.EvidenceLimitationUncheckedCreateNestedManyWithoutCrawlRunInput
+  evidenceErrors?: Prisma.EvidenceErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutCrawlRunInput
+}
+
+export type CrawlRunCreateOrConnectWithoutObservationExecutionsInput = {
+  where: Prisma.CrawlRunWhereUniqueInput
+  create: Prisma.XOR<Prisma.CrawlRunCreateWithoutObservationExecutionsInput, Prisma.CrawlRunUncheckedCreateWithoutObservationExecutionsInput>
+}
+
+export type CrawlRunUpsertWithoutObservationExecutionsInput = {
+  update: Prisma.XOR<Prisma.CrawlRunUpdateWithoutObservationExecutionsInput, Prisma.CrawlRunUncheckedUpdateWithoutObservationExecutionsInput>
+  create: Prisma.XOR<Prisma.CrawlRunCreateWithoutObservationExecutionsInput, Prisma.CrawlRunUncheckedCreateWithoutObservationExecutionsInput>
+  where?: Prisma.CrawlRunWhereInput
+}
+
+export type CrawlRunUpdateToOneWithWhereWithoutObservationExecutionsInput = {
+  where?: Prisma.CrawlRunWhereInput
+  data: Prisma.XOR<Prisma.CrawlRunUpdateWithoutObservationExecutionsInput, Prisma.CrawlRunUncheckedUpdateWithoutObservationExecutionsInput>
+}
+
+export type CrawlRunUpdateWithoutObservationExecutionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  trigger?: Prisma.EnumCrawlTriggerFieldUpdateOperationsInput | $Enums.CrawlTrigger
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCrawlStatusFieldUpdateOperationsInput | $Enums.CrawlStatus
+  activeSiteKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizationPolicyVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extractorVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discoveredCount?: Prisma.IntFieldUpdateOperationsInput | number
+  attemptedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  collectedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  failedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  unattemptedCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  stopReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutCrawlRunsNestedInput
+  site?: Prisma.SiteUpdateOneRequiredWithoutCrawlRunsNestedInput
+  authorization?: Prisma.ExportAuthorizationUpdateOneWithoutCrawlRunsNestedInput
+  errors?: Prisma.CrawlErrorUpdateManyWithoutCrawlRunNestedInput
+  evidencePages?: Prisma.EvidencePageUpdateManyWithoutCrawlRunNestedInput
+  evidenceLimitations?: Prisma.EvidenceLimitationUpdateManyWithoutCrawlRunNestedInput
+  evidenceErrors?: Prisma.EvidenceErrorUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUpdateManyWithoutCrawlRunNestedInput
+}
+
+export type CrawlRunUncheckedUpdateWithoutObservationExecutionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  siteId?: Prisma.StringFieldUpdateOperationsInput | string
+  trigger?: Prisma.EnumCrawlTriggerFieldUpdateOperationsInput | $Enums.CrawlTrigger
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCrawlStatusFieldUpdateOperationsInput | $Enums.CrawlStatus
+  activeSiteKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  authorizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizationPolicyVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extractorVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discoveredCount?: Prisma.IntFieldUpdateOperationsInput | number
+  attemptedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  collectedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  failedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  unattemptedCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  stopReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  errors?: Prisma.CrawlErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  evidencePages?: Prisma.EvidencePageUncheckedUpdateManyWithoutCrawlRunNestedInput
+  evidenceLimitations?: Prisma.EvidenceLimitationUncheckedUpdateManyWithoutCrawlRunNestedInput
+  evidenceErrors?: Prisma.EvidenceErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutCrawlRunNestedInput
+}
+
+export type CrawlRunCreateWithoutPlatformObservationsInput = {
+  id?: string
+  trigger: $Enums.CrawlTrigger
+  idempotencyKey: string
+  status?: $Enums.CrawlStatus
+  activeSiteKey?: string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: number
+  startedAt?: Date | string | null
+  finishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: string | null
+  normalizationPolicyVersion?: string | null
+  extractorVersion?: string | null
+  discoveredCount?: number
+  attemptedCount?: number
+  collectedCount?: number
+  failedCount?: number
+  unattemptedCount?: number | null
+  stopReason?: string | null
+  frozenAt?: Date | string | null
+  organization: Prisma.OrganizationCreateNestedOneWithoutCrawlRunsInput
+  site: Prisma.SiteCreateNestedOneWithoutCrawlRunsInput
+  authorization?: Prisma.ExportAuthorizationCreateNestedOneWithoutCrawlRunsInput
+  errors?: Prisma.CrawlErrorCreateNestedManyWithoutCrawlRunInput
+  evidencePages?: Prisma.EvidencePageCreateNestedManyWithoutCrawlRunInput
+  evidenceLimitations?: Prisma.EvidenceLimitationCreateNestedManyWithoutCrawlRunInput
+  evidenceErrors?: Prisma.EvidenceErrorCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionCreateNestedManyWithoutCrawlRunInput
+}
+
+export type CrawlRunUncheckedCreateWithoutPlatformObservationsInput = {
+  id?: string
+  organizationId: string
+  siteId: string
+  trigger: $Enums.CrawlTrigger
+  idempotencyKey: string
+  status?: $Enums.CrawlStatus
+  activeSiteKey?: string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: number
+  startedAt?: Date | string | null
+  finishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  authorizationId?: string | null
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: string | null
+  normalizationPolicyVersion?: string | null
+  extractorVersion?: string | null
+  discoveredCount?: number
+  attemptedCount?: number
+  collectedCount?: number
+  failedCount?: number
+  unattemptedCount?: number | null
+  stopReason?: string | null
+  frozenAt?: Date | string | null
+  errors?: Prisma.CrawlErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  evidencePages?: Prisma.EvidencePageUncheckedCreateNestedManyWithoutCrawlRunInput
+  evidenceLimitations?: Prisma.EvidenceLimitationUncheckedCreateNestedManyWithoutCrawlRunInput
+  evidenceErrors?: Prisma.EvidenceErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
+}
+
+export type CrawlRunCreateOrConnectWithoutPlatformObservationsInput = {
+  where: Prisma.CrawlRunWhereUniqueInput
+  create: Prisma.XOR<Prisma.CrawlRunCreateWithoutPlatformObservationsInput, Prisma.CrawlRunUncheckedCreateWithoutPlatformObservationsInput>
+}
+
+export type CrawlRunUpsertWithoutPlatformObservationsInput = {
+  update: Prisma.XOR<Prisma.CrawlRunUpdateWithoutPlatformObservationsInput, Prisma.CrawlRunUncheckedUpdateWithoutPlatformObservationsInput>
+  create: Prisma.XOR<Prisma.CrawlRunCreateWithoutPlatformObservationsInput, Prisma.CrawlRunUncheckedCreateWithoutPlatformObservationsInput>
+  where?: Prisma.CrawlRunWhereInput
+}
+
+export type CrawlRunUpdateToOneWithWhereWithoutPlatformObservationsInput = {
+  where?: Prisma.CrawlRunWhereInput
+  data: Prisma.XOR<Prisma.CrawlRunUpdateWithoutPlatformObservationsInput, Prisma.CrawlRunUncheckedUpdateWithoutPlatformObservationsInput>
+}
+
+export type CrawlRunUpdateWithoutPlatformObservationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  trigger?: Prisma.EnumCrawlTriggerFieldUpdateOperationsInput | $Enums.CrawlTrigger
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCrawlStatusFieldUpdateOperationsInput | $Enums.CrawlStatus
+  activeSiteKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizationPolicyVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extractorVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discoveredCount?: Prisma.IntFieldUpdateOperationsInput | number
+  attemptedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  collectedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  failedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  unattemptedCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  stopReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutCrawlRunsNestedInput
+  site?: Prisma.SiteUpdateOneRequiredWithoutCrawlRunsNestedInput
+  authorization?: Prisma.ExportAuthorizationUpdateOneWithoutCrawlRunsNestedInput
+  errors?: Prisma.CrawlErrorUpdateManyWithoutCrawlRunNestedInput
+  evidencePages?: Prisma.EvidencePageUpdateManyWithoutCrawlRunNestedInput
+  evidenceLimitations?: Prisma.EvidenceLimitationUpdateManyWithoutCrawlRunNestedInput
+  evidenceErrors?: Prisma.EvidenceErrorUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUpdateManyWithoutCrawlRunNestedInput
+}
+
+export type CrawlRunUncheckedUpdateWithoutPlatformObservationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  siteId?: Prisma.StringFieldUpdateOperationsInput | string
+  trigger?: Prisma.EnumCrawlTriggerFieldUpdateOperationsInput | $Enums.CrawlTrigger
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCrawlStatusFieldUpdateOperationsInput | $Enums.CrawlStatus
+  activeSiteKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  authorizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizationPolicyVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extractorVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discoveredCount?: Prisma.IntFieldUpdateOperationsInput | number
+  attemptedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  collectedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  failedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  unattemptedCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  stopReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  errors?: Prisma.CrawlErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  evidencePages?: Prisma.EvidencePageUncheckedUpdateManyWithoutCrawlRunNestedInput
+  evidenceLimitations?: Prisma.EvidenceLimitationUncheckedUpdateManyWithoutCrawlRunNestedInput
+  evidenceErrors?: Prisma.EvidenceErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateManyOrganizationInput = {
@@ -2069,6 +2678,9 @@ export type CrawlRunUpdateWithoutOrganizationInput = {
   evidencePages?: Prisma.EvidencePageUpdateManyWithoutCrawlRunNestedInput
   evidenceLimitations?: Prisma.EvidenceLimitationUpdateManyWithoutCrawlRunNestedInput
   evidenceErrors?: Prisma.EvidenceErrorUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutOrganizationInput = {
@@ -2102,6 +2714,9 @@ export type CrawlRunUncheckedUpdateWithoutOrganizationInput = {
   evidencePages?: Prisma.EvidencePageUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceLimitations?: Prisma.EvidenceLimitationUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceErrors?: Prisma.EvidenceErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateManyWithoutOrganizationInput = {
@@ -2193,6 +2808,9 @@ export type CrawlRunUpdateWithoutSiteInput = {
   evidencePages?: Prisma.EvidencePageUpdateManyWithoutCrawlRunNestedInput
   evidenceLimitations?: Prisma.EvidenceLimitationUpdateManyWithoutCrawlRunNestedInput
   evidenceErrors?: Prisma.EvidenceErrorUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutSiteInput = {
@@ -2226,6 +2844,9 @@ export type CrawlRunUncheckedUpdateWithoutSiteInput = {
   evidencePages?: Prisma.EvidencePageUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceLimitations?: Prisma.EvidenceLimitationUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceErrors?: Prisma.EvidenceErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateManyWithoutSiteInput = {
@@ -2317,6 +2938,9 @@ export type CrawlRunUpdateWithoutAuthorizationInput = {
   evidencePages?: Prisma.EvidencePageUpdateManyWithoutCrawlRunNestedInput
   evidenceLimitations?: Prisma.EvidenceLimitationUpdateManyWithoutCrawlRunNestedInput
   evidenceErrors?: Prisma.EvidenceErrorUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutAuthorizationInput = {
@@ -2350,6 +2974,9 @@ export type CrawlRunUncheckedUpdateWithoutAuthorizationInput = {
   evidencePages?: Prisma.EvidencePageUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceLimitations?: Prisma.EvidenceLimitationUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceErrors?: Prisma.EvidenceErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateManyWithoutAuthorizationInput = {
@@ -2391,6 +3018,9 @@ export type CrawlRunCountOutputType = {
   evidencePages: number
   evidenceLimitations: number
   evidenceErrors: number
+  observationSubjects: number
+  observationExecutions: number
+  platformObservations: number
 }
 
 export type CrawlRunCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2398,6 +3028,9 @@ export type CrawlRunCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   evidencePages?: boolean | CrawlRunCountOutputTypeCountEvidencePagesArgs
   evidenceLimitations?: boolean | CrawlRunCountOutputTypeCountEvidenceLimitationsArgs
   evidenceErrors?: boolean | CrawlRunCountOutputTypeCountEvidenceErrorsArgs
+  observationSubjects?: boolean | CrawlRunCountOutputTypeCountObservationSubjectsArgs
+  observationExecutions?: boolean | CrawlRunCountOutputTypeCountObservationExecutionsArgs
+  platformObservations?: boolean | CrawlRunCountOutputTypeCountPlatformObservationsArgs
 }
 
 /**
@@ -2438,6 +3071,27 @@ export type CrawlRunCountOutputTypeCountEvidenceErrorsArgs<ExtArgs extends runti
   where?: Prisma.EvidenceErrorWhereInput
 }
 
+/**
+ * CrawlRunCountOutputType without action
+ */
+export type CrawlRunCountOutputTypeCountObservationSubjectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ObservationSubjectWhereInput
+}
+
+/**
+ * CrawlRunCountOutputType without action
+ */
+export type CrawlRunCountOutputTypeCountObservationExecutionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ObservationExecutionWhereInput
+}
+
+/**
+ * CrawlRunCountOutputType without action
+ */
+export type CrawlRunCountOutputTypeCountPlatformObservationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlatformObservationWhereInput
+}
+
 
 export type CrawlRunSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2474,6 +3128,9 @@ export type CrawlRunSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   evidencePages?: boolean | Prisma.CrawlRun$evidencePagesArgs<ExtArgs>
   evidenceLimitations?: boolean | Prisma.CrawlRun$evidenceLimitationsArgs<ExtArgs>
   evidenceErrors?: boolean | Prisma.CrawlRun$evidenceErrorsArgs<ExtArgs>
+  observationSubjects?: boolean | Prisma.CrawlRun$observationSubjectsArgs<ExtArgs>
+  observationExecutions?: boolean | Prisma.CrawlRun$observationExecutionsArgs<ExtArgs>
+  platformObservations?: boolean | Prisma.CrawlRun$platformObservationsArgs<ExtArgs>
   _count?: boolean | Prisma.CrawlRunCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["crawlRun"]>
 
@@ -2582,6 +3239,9 @@ export type CrawlRunInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   evidencePages?: boolean | Prisma.CrawlRun$evidencePagesArgs<ExtArgs>
   evidenceLimitations?: boolean | Prisma.CrawlRun$evidenceLimitationsArgs<ExtArgs>
   evidenceErrors?: boolean | Prisma.CrawlRun$evidenceErrorsArgs<ExtArgs>
+  observationSubjects?: boolean | Prisma.CrawlRun$observationSubjectsArgs<ExtArgs>
+  observationExecutions?: boolean | Prisma.CrawlRun$observationExecutionsArgs<ExtArgs>
+  platformObservations?: boolean | Prisma.CrawlRun$platformObservationsArgs<ExtArgs>
   _count?: boolean | Prisma.CrawlRunCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CrawlRunIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2605,6 +3265,9 @@ export type $CrawlRunPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     evidencePages: Prisma.$EvidencePagePayload<ExtArgs>[]
     evidenceLimitations: Prisma.$EvidenceLimitationPayload<ExtArgs>[]
     evidenceErrors: Prisma.$EvidenceErrorPayload<ExtArgs>[]
+    observationSubjects: Prisma.$ObservationSubjectPayload<ExtArgs>[]
+    observationExecutions: Prisma.$ObservationExecutionPayload<ExtArgs>[]
+    platformObservations: Prisma.$PlatformObservationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3035,6 +3698,9 @@ export interface Prisma__CrawlRunClient<T, Null = never, ExtArgs extends runtime
   evidencePages<T extends Prisma.CrawlRun$evidencePagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CrawlRun$evidencePagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidencePagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   evidenceLimitations<T extends Prisma.CrawlRun$evidenceLimitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CrawlRun$evidenceLimitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidenceLimitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   evidenceErrors<T extends Prisma.CrawlRun$evidenceErrorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CrawlRun$evidenceErrorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidenceErrorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  observationSubjects<T extends Prisma.CrawlRun$observationSubjectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CrawlRun$observationSubjectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ObservationSubjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  observationExecutions<T extends Prisma.CrawlRun$observationExecutionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CrawlRun$observationExecutionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ObservationExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  platformObservations<T extends Prisma.CrawlRun$platformObservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CrawlRun$platformObservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformObservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3604,6 +4270,78 @@ export type CrawlRun$evidenceErrorsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.EvidenceErrorScalarFieldEnum | Prisma.EvidenceErrorScalarFieldEnum[]
+}
+
+/**
+ * CrawlRun.observationSubjects
+ */
+export type CrawlRun$observationSubjectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ObservationSubject
+   */
+  select?: Prisma.ObservationSubjectSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ObservationSubject
+   */
+  omit?: Prisma.ObservationSubjectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ObservationSubjectInclude<ExtArgs> | null
+  where?: Prisma.ObservationSubjectWhereInput
+  orderBy?: Prisma.ObservationSubjectOrderByWithRelationInput | Prisma.ObservationSubjectOrderByWithRelationInput[]
+  cursor?: Prisma.ObservationSubjectWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ObservationSubjectScalarFieldEnum | Prisma.ObservationSubjectScalarFieldEnum[]
+}
+
+/**
+ * CrawlRun.observationExecutions
+ */
+export type CrawlRun$observationExecutionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ObservationExecution
+   */
+  select?: Prisma.ObservationExecutionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ObservationExecution
+   */
+  omit?: Prisma.ObservationExecutionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ObservationExecutionInclude<ExtArgs> | null
+  where?: Prisma.ObservationExecutionWhereInput
+  orderBy?: Prisma.ObservationExecutionOrderByWithRelationInput | Prisma.ObservationExecutionOrderByWithRelationInput[]
+  cursor?: Prisma.ObservationExecutionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ObservationExecutionScalarFieldEnum | Prisma.ObservationExecutionScalarFieldEnum[]
+}
+
+/**
+ * CrawlRun.platformObservations
+ */
+export type CrawlRun$platformObservationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatformObservation
+   */
+  select?: Prisma.PlatformObservationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatformObservation
+   */
+  omit?: Prisma.PlatformObservationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlatformObservationInclude<ExtArgs> | null
+  where?: Prisma.PlatformObservationWhereInput
+  orderBy?: Prisma.PlatformObservationOrderByWithRelationInput | Prisma.PlatformObservationOrderByWithRelationInput[]
+  cursor?: Prisma.PlatformObservationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PlatformObservationScalarFieldEnum | Prisma.PlatformObservationScalarFieldEnum[]
 }
 
 /**

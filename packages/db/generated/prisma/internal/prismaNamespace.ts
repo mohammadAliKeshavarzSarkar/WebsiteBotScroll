@@ -414,6 +414,10 @@ export const ModelName = {
   ObservationDefinition: 'ObservationDefinition',
   CollectorDefinition: 'CollectorDefinition',
   CollectorCapability: 'CollectorCapability',
+  ObservationSubject: 'ObservationSubject',
+  ObservationSubjectMember: 'ObservationSubjectMember',
+  ObservationExecution: 'ObservationExecution',
+  PlatformObservation: 'PlatformObservation',
   DomainVerification: 'DomainVerification',
   AuditEvent: 'AuditEvent'
 } as const
@@ -431,7 +435,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "session" | "site" | "crawlRun" | "exportAuthorization" | "evidencePage" | "evidenceTransaction" | "evidenceHeader" | "evidenceHeaderValue" | "evidenceObservation" | "evidenceLimitation" | "evidenceError" | "crawlError" | "observationDefinition" | "collectorDefinition" | "collectorCapability" | "domainVerification" | "auditEvent"
+    modelProps: "organization" | "user" | "session" | "site" | "crawlRun" | "exportAuthorization" | "evidencePage" | "evidenceTransaction" | "evidenceHeader" | "evidenceHeaderValue" | "evidenceObservation" | "evidenceLimitation" | "evidenceError" | "crawlError" | "observationDefinition" | "collectorDefinition" | "collectorCapability" | "observationSubject" | "observationSubjectMember" | "observationExecution" | "platformObservation" | "domainVerification" | "auditEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1693,6 +1697,302 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ObservationSubject: {
+      payload: Prisma.$ObservationSubjectPayload<ExtArgs>
+      fields: Prisma.ObservationSubjectFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ObservationSubjectFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ObservationSubjectFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectPayload>
+        }
+        findFirst: {
+          args: Prisma.ObservationSubjectFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ObservationSubjectFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectPayload>
+        }
+        findMany: {
+          args: Prisma.ObservationSubjectFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectPayload>[]
+        }
+        create: {
+          args: Prisma.ObservationSubjectCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectPayload>
+        }
+        createMany: {
+          args: Prisma.ObservationSubjectCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ObservationSubjectCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectPayload>[]
+        }
+        delete: {
+          args: Prisma.ObservationSubjectDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectPayload>
+        }
+        update: {
+          args: Prisma.ObservationSubjectUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectPayload>
+        }
+        deleteMany: {
+          args: Prisma.ObservationSubjectDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ObservationSubjectUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ObservationSubjectUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectPayload>[]
+        }
+        upsert: {
+          args: Prisma.ObservationSubjectUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectPayload>
+        }
+        aggregate: {
+          args: Prisma.ObservationSubjectAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateObservationSubject>
+        }
+        groupBy: {
+          args: Prisma.ObservationSubjectGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ObservationSubjectGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ObservationSubjectCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ObservationSubjectCountAggregateOutputType> | number
+        }
+      }
+    }
+    ObservationSubjectMember: {
+      payload: Prisma.$ObservationSubjectMemberPayload<ExtArgs>
+      fields: Prisma.ObservationSubjectMemberFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ObservationSubjectMemberFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectMemberPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ObservationSubjectMemberFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectMemberPayload>
+        }
+        findFirst: {
+          args: Prisma.ObservationSubjectMemberFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectMemberPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ObservationSubjectMemberFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectMemberPayload>
+        }
+        findMany: {
+          args: Prisma.ObservationSubjectMemberFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectMemberPayload>[]
+        }
+        create: {
+          args: Prisma.ObservationSubjectMemberCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectMemberPayload>
+        }
+        createMany: {
+          args: Prisma.ObservationSubjectMemberCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ObservationSubjectMemberCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectMemberPayload>[]
+        }
+        delete: {
+          args: Prisma.ObservationSubjectMemberDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectMemberPayload>
+        }
+        update: {
+          args: Prisma.ObservationSubjectMemberUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectMemberPayload>
+        }
+        deleteMany: {
+          args: Prisma.ObservationSubjectMemberDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ObservationSubjectMemberUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ObservationSubjectMemberUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectMemberPayload>[]
+        }
+        upsert: {
+          args: Prisma.ObservationSubjectMemberUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationSubjectMemberPayload>
+        }
+        aggregate: {
+          args: Prisma.ObservationSubjectMemberAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateObservationSubjectMember>
+        }
+        groupBy: {
+          args: Prisma.ObservationSubjectMemberGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ObservationSubjectMemberGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ObservationSubjectMemberCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ObservationSubjectMemberCountAggregateOutputType> | number
+        }
+      }
+    }
+    ObservationExecution: {
+      payload: Prisma.$ObservationExecutionPayload<ExtArgs>
+      fields: Prisma.ObservationExecutionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ObservationExecutionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationExecutionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ObservationExecutionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationExecutionPayload>
+        }
+        findFirst: {
+          args: Prisma.ObservationExecutionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationExecutionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ObservationExecutionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationExecutionPayload>
+        }
+        findMany: {
+          args: Prisma.ObservationExecutionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationExecutionPayload>[]
+        }
+        create: {
+          args: Prisma.ObservationExecutionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationExecutionPayload>
+        }
+        createMany: {
+          args: Prisma.ObservationExecutionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ObservationExecutionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationExecutionPayload>[]
+        }
+        delete: {
+          args: Prisma.ObservationExecutionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationExecutionPayload>
+        }
+        update: {
+          args: Prisma.ObservationExecutionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationExecutionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ObservationExecutionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ObservationExecutionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ObservationExecutionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationExecutionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ObservationExecutionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservationExecutionPayload>
+        }
+        aggregate: {
+          args: Prisma.ObservationExecutionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateObservationExecution>
+        }
+        groupBy: {
+          args: Prisma.ObservationExecutionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ObservationExecutionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ObservationExecutionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ObservationExecutionCountAggregateOutputType> | number
+        }
+      }
+    }
+    PlatformObservation: {
+      payload: Prisma.$PlatformObservationPayload<ExtArgs>
+      fields: Prisma.PlatformObservationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PlatformObservationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformObservationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PlatformObservationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformObservationPayload>
+        }
+        findFirst: {
+          args: Prisma.PlatformObservationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformObservationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PlatformObservationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformObservationPayload>
+        }
+        findMany: {
+          args: Prisma.PlatformObservationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformObservationPayload>[]
+        }
+        create: {
+          args: Prisma.PlatformObservationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformObservationPayload>
+        }
+        createMany: {
+          args: Prisma.PlatformObservationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PlatformObservationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformObservationPayload>[]
+        }
+        delete: {
+          args: Prisma.PlatformObservationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformObservationPayload>
+        }
+        update: {
+          args: Prisma.PlatformObservationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformObservationPayload>
+        }
+        deleteMany: {
+          args: Prisma.PlatformObservationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PlatformObservationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PlatformObservationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformObservationPayload>[]
+        }
+        upsert: {
+          args: Prisma.PlatformObservationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformObservationPayload>
+        }
+        aggregate: {
+          args: Prisma.PlatformObservationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePlatformObservation>
+        }
+        groupBy: {
+          args: Prisma.PlatformObservationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlatformObservationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PlatformObservationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlatformObservationCountAggregateOutputType> | number
+        }
+      }
+    }
     DomainVerification: {
       payload: Prisma.$DomainVerificationPayload<ExtArgs>
       fields: Prisma.DomainVerificationFieldRefs
@@ -2125,6 +2425,66 @@ export const CollectorCapabilityScalarFieldEnum = {
 export type CollectorCapabilityScalarFieldEnum = (typeof CollectorCapabilityScalarFieldEnum)[keyof typeof CollectorCapabilityScalarFieldEnum]
 
 
+export const ObservationSubjectScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  crawlRunId: 'crawlRunId',
+  position: 'position',
+  kind: 'kind',
+  identity: 'identity',
+  createdAt: 'createdAt'
+} as const
+
+export type ObservationSubjectScalarFieldEnum = (typeof ObservationSubjectScalarFieldEnum)[keyof typeof ObservationSubjectScalarFieldEnum]
+
+
+export const ObservationSubjectMemberScalarFieldEnum = {
+  subjectId: 'subjectId',
+  memberSubjectId: 'memberSubjectId',
+  position: 'position'
+} as const
+
+export type ObservationSubjectMemberScalarFieldEnum = (typeof ObservationSubjectMemberScalarFieldEnum)[keyof typeof ObservationSubjectMemberScalarFieldEnum]
+
+
+export const ObservationExecutionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  crawlRunId: 'crawlRunId',
+  collectorDefinitionId: 'collectorDefinitionId',
+  parentExecutionId: 'parentExecutionId',
+  stableKey: 'stableKey',
+  attempt: 'attempt',
+  trigger: 'trigger',
+  configuration: 'configuration',
+  status: 'status',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
+  error: 'error'
+} as const
+
+export type ObservationExecutionScalarFieldEnum = (typeof ObservationExecutionScalarFieldEnum)[keyof typeof ObservationExecutionScalarFieldEnum]
+
+
+export const PlatformObservationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  crawlRunId: 'crawlRunId',
+  subjectId: 'subjectId',
+  executionId: 'executionId',
+  observationDefinitionId: 'observationDefinitionId',
+  sequence: 'sequence',
+  status: 'status',
+  payload: 'payload',
+  reasons: 'reasons',
+  provenance: 'provenance',
+  collectedAt: 'collectedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PlatformObservationScalarFieldEnum = (typeof PlatformObservationScalarFieldEnum)[keyof typeof PlatformObservationScalarFieldEnum]
+
+
 export const DomainVerificationScalarFieldEnum = {
   id: 'id',
   siteId: 'siteId',
@@ -2492,6 +2852,10 @@ export type GlobalOmitConfig = {
   observationDefinition?: Prisma.ObservationDefinitionOmit
   collectorDefinition?: Prisma.CollectorDefinitionOmit
   collectorCapability?: Prisma.CollectorCapabilityOmit
+  observationSubject?: Prisma.ObservationSubjectOmit
+  observationSubjectMember?: Prisma.ObservationSubjectMemberOmit
+  observationExecution?: Prisma.ObservationExecutionOmit
+  platformObservation?: Prisma.PlatformObservationOmit
   domainVerification?: Prisma.DomainVerificationOmit
   auditEvent?: Prisma.AuditEventOmit
 }

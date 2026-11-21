@@ -19,6 +19,9 @@ model Organization {
   events    AuditEvent[]
   crawlRuns CrawlRun[]
   exportAuthorizations ExportAuthorization[]
+  observationSubjects ObservationSubject[]
+  observationExecutions ObservationExecution[]
+  platformObservations PlatformObservation[]
 
   @@map("organizations")
 }
@@ -118,6 +121,9 @@ model CrawlRun {
   evidencePages  EvidencePage[]
   evidenceLimitations EvidenceLimitation[]
   evidenceErrors EvidenceError[]
+  observationSubjects ObservationSubject[]
+  observationExecutions ObservationExecution[]
+  platformObservations PlatformObservation[]
 
   @@unique([siteId, idempotencyKey])
   @@index([organizationId, createdAt])
@@ -288,6 +294,7 @@ model ObservationDefinition {
   createdAt      DateTime @default(now()) @map("created_at")
   deprecatedAt   DateTime? @map("deprecated_at")
   capabilities   CollectorCapability[]
+  observations   PlatformObservation[]
 
   @@unique([key, version])
   @@index([key, status])
@@ -305,6 +312,7 @@ model CollectorDefinition {
   createdAt                 DateTime @default(now()) @map("created_at")
   deprecatedAt              DateTime? @map("deprecated_at")
   capabilities              CollectorCapability[]
+  executions                ObservationExecution[]
 
   @@unique([key, version])
   @@index([key, status])
@@ -321,6 +329,88 @@ model CollectorCapability {
   @@id([collectorDefinitionId, observationDefinitionId])
   @@unique([collectorDefinitionId, position])
   @@map("collector_capabilities")
+}
+
+model ObservationSubject {
+  id             String   @id
+  organizationId String   @map("organization_id") @db.Uuid
+  crawlRunId     String   @map("crawl_run_id") @db.Uuid
+  position       Int
+  kind           String
+  identity       Json
+  createdAt      DateTime @default(now()) @map("created_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  crawlRun       CrawlRun @relation(fields: [crawlRunId], references: [id], onDelete: Cascade)
+  observations   PlatformObservation[]
+  members        ObservationSubjectMember[] @relation("SubjectContainer")
+  memberOf       ObservationSubjectMember[] @relation("SubjectMember")
+
+  @@unique([crawlRunId, position])
+  @@index([organizationId, crawlRunId, kind])
+  @@map("observation_subjects")
+}
+
+model ObservationSubjectMember {
+  subjectId       String @map("subject_id")
+  memberSubjectId String @map("member_subject_id")
+  position        Int
+  subject         ObservationSubject @relation("SubjectContainer", fields: [subjectId], references: [id], onDelete: Cascade)
+  memberSubject   ObservationSubject @relation("SubjectMember", fields: [memberSubjectId], references: [id], onDelete: Restrict)
+
+  @@id([subjectId, memberSubjectId])
+  @@unique([subjectId, position])
+  @@map("observation_subject_members")
+}
+
+model ObservationExecution {
+  id                    String   @id
+  organizationId        String   @map("organization_id") @db.Uuid
+  crawlRunId            String   @map("crawl_run_id") @db.Uuid
+  collectorDefinitionId String   @map("collector_definition_id") @db.Uuid
+  parentExecutionId     String?  @map("parent_execution_id")
+  stableKey             String   @map("stable_key")
+  attempt               Int
+  trigger               String
+  configuration         Json
+  status                String   @default("running")
+  startedAt             DateTime @map("started_at")
+  finishedAt            DateTime? @map("finished_at")
+  error                  Json?
+  organization          Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  crawlRun              CrawlRun @relation(fields: [crawlRunId], references: [id], onDelete: Cascade)
+  collector             CollectorDefinition @relation(fields: [collectorDefinitionId], references: [id], onDelete: Restrict)
+  parent                ObservationExecution? @relation("ExecutionChildren", fields: [parentExecutionId], references: [id], onDelete: Restrict)
+  children              ObservationExecution[] @relation("ExecutionChildren")
+  observations          PlatformObservation[]
+
+  @@unique([crawlRunId, stableKey, attempt])
+  @@index([organizationId, crawlRunId, status])
+  @@map("observation_executions")
+}
+
+model PlatformObservation {
+  id                      String   @id
+  organizationId          String   @map("organization_id") @db.Uuid
+  crawlRunId              String   @map("crawl_run_id") @db.Uuid
+  subjectId               String   @map("subject_id")
+  executionId             String   @map("execution_id")
+  observationDefinitionId String   @map("observation_definition_id") @db.Uuid
+  sequence                Int
+  status                  String
+  payload                 Json?
+  reasons                 Json
+  provenance              Json
+  collectedAt             DateTime @map("collected_at")
+  createdAt               DateTime @default(now()) @map("created_at")
+  organization            Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  crawlRun                CrawlRun @relation(fields: [crawlRunId], references: [id], onDelete: Cascade)
+  subject                 ObservationSubject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  execution               ObservationExecution @relation(fields: [executionId], references: [id], onDelete: Restrict)
+  definition              ObservationDefinition @relation(fields: [observationDefinitionId], references: [id], onDelete: Restrict)
+
+  @@unique([executionId, sequence])
+  @@index([organizationId, crawlRunId, subjectId])
+  @@map("platform_observations")
 }
 
 model DomainVerification {

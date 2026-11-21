@@ -127,6 +127,26 @@ export type CollectorDefinition = Prisma.CollectorDefinitionModel
  */
 export type CollectorCapability = Prisma.CollectorCapabilityModel
 /**
+ * Model ObservationSubject
+ * 
+ */
+export type ObservationSubject = Prisma.ObservationSubjectModel
+/**
+ * Model ObservationSubjectMember
+ * 
+ */
+export type ObservationSubjectMember = Prisma.ObservationSubjectMemberModel
+/**
+ * Model ObservationExecution
+ * 
+ */
+export type ObservationExecution = Prisma.ObservationExecutionModel
+/**
+ * Model PlatformObservation
+ * 
+ */
+export type PlatformObservation = Prisma.PlatformObservationModel
+/**
  * Model DomainVerification
  * 
  */
