@@ -1,11 +1,15 @@
 import type { DatabaseClient } from "@website-bot-scroll/db";
 import { EvidenceRepository } from "@website-bot-scroll/db/evidence";
+import { DefinitionRepository } from "@website-bot-scroll/db/definitions";
+import { ObservationRepository } from "@website-bot-scroll/db/observation-records";
 import { createEvidenceId, defineObservation } from "@website-bot-scroll/domain/evidence";
 import { fetchPage, type HttpTransport } from "@website-bot-scroll/crawler/http/fetch-page";
 import type { DnsResolver } from "@website-bot-scroll/crawler/network/resolve-public";
 import { extractHtmlObservations } from "@website-bot-scroll/crawler/extract/html-observations";
 import { normalizeUrlIdentity } from "@website-bot-scroll/crawler/url/normalize";
 import type { CrawlEvidenceEvent, EvidenceSink } from "@website-bot-scroll/crawler/evidence/events";
+import { PLATFORM_CRAWLER_DEFINITION, PLATFORM_OBSERVATION_DEFINITIONS } from "@website-bot-scroll/crawler/evidence/definitions";
+import { buildPlatformPageBatch } from "@website-bot-scroll/crawler/evidence/platform-sink";
 import { runCrawlJobSchema, terminalCrawlStatusSchema, type RunCrawlJob, type TerminalCrawlStatus } from "@website-bot-scroll/queue/contracts";
 
 export interface CrawlDependencies {
@@ -59,6 +63,9 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
       coverage: { discovered: stored.discoveredCount, attempted: stored.attemptedCount, collected: stored.collectedCount, failed: stored.failedCount, unattempted: stored.unattemptedCount ?? 0 },
     };
   }
+  const definitions = new DefinitionRepository(dependencies.prisma, { canPublish: true });
+  for (const definition of PLATFORM_OBSERVATION_DEFINITIONS) await definitions.publishObservationDefinition(definition);
+  await definitions.publishCollectorDefinition(PLATFORM_CRAWLER_DEFINITION);
   await processRunCrawl(job, dependencies.prisma);
   const scope = stored.scope as { seed_urls?: unknown; allowed_hosts?: unknown } | null;
   const seedUrls = Array.isArray(scope?.seed_urls) ? scope.seed_urls.filter((value): value is string => typeof value === "string") : [];
@@ -90,33 +97,41 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
         maxDecompressedBytes: job.limits.maxResponseBytes, evidenceSink,
         evidenceContext: { runId: job.crawlRunId, pageId }, now, sleep: async () => undefined,
       });
-      await dependencies.evidence.appendPage(job.organizationId, job.crawlRunId, {
-        id: pageId, position: collected, depth: next.depth, discoveredUrl: identity.discoveredUrl, requestedUrl: identity.requestedUrl,
-        normalizedUrl: identity.normalizedUrl, finalUrl: result.url, canonicalUrls: [],
-      });
       const transactions = buffered.filter((event): event is Extract<CrawlEvidenceEvent, { kind: "http_transaction" }> => event.kind === "http_transaction");
-      for (const [position, event] of transactions.entries()) {
-        await dependencies.evidence.appendTransaction(job.organizationId, job.crawlRunId, pageId, position, event.transaction);
-      }
-      for (const event of buffered.filter((item): item is Extract<CrawlEvidenceEvent, { kind: "collection_error" }> => item.kind === "collection_error")) {
-        await dependencies.evidence.appendError(job.organizationId, job.crawlRunId, {
+      const collectionErrors = buffered.filter((item): item is Extract<CrawlEvidenceEvent, { kind: "collection_error" }> => item.kind === "collection_error");
+      const httpStatus = result.kind === "html" || result.kind === "non-html" || result.kind === "rate-limited" ? "observed" : "partial";
+      const httpObservation = defineObservation({
+        id: createEvidenceId("observation", [job.crawlRunId, pageId, "http"]), method: "http", status: httpStatus,
+        value: { transactions: transactions.map(({ transaction }) => transaction.id), final_transaction_id: transactions.at(-1)?.transaction.id },
+        reasons: httpStatus === "partial" ? [`http_${result.kind}`] : [], provenance: { collector: "http", version: job.producerVersion, collectedAt: now().toISOString() },
+      });
+      const extractedObservations = result.kind === "html" ? extractHtmlObservations({
+        runId: job.crawlRunId, pageId, pageUrl: result.url, html: result.body, collectedAt: now().toISOString(),
+        extractorVersion: job.extractorVersion, hashMethodVersion: "sha256-visible-text/1",
+      }) : [];
+      const pageObservations = [httpObservation, ...extractedObservations];
+      const platformBatch = buildPlatformPageBatch({ organizationId: job.organizationId, runId: job.crawlRunId, pageId, attempt: 0, observations: pageObservations });
+      await dependencies.prisma.$transaction(async (transaction) => {
+        const client = transaction as unknown as DatabaseClient;
+        const legacy = new EvidenceRepository(client);
+        const platform = new ObservationRepository(client);
+        await legacy.appendPage(job.organizationId, job.crawlRunId, {
+          id: pageId, position: collected, depth: next.depth, discoveredUrl: identity.discoveredUrl, requestedUrl: identity.requestedUrl,
+          normalizedUrl: identity.normalizedUrl, finalUrl: result.url, canonicalUrls: [],
+        });
+        for (const [position, event] of transactions.entries()) await legacy.appendTransaction(job.organizationId, job.crawlRunId, pageId, position, event.transaction);
+        for (const event of collectionErrors) await legacy.appendError(job.organizationId, job.crawlRunId, {
           id: createEvidenceId("error", [job.crawlRunId, pageId, event.stage, event.occurredAt]), stage: event.stage,
           code: event.code, message: event.message, occurredAt: event.occurredAt, retryable: event.retryable, pageId,
         });
-      }
-      const httpStatus = result.kind === "html" || result.kind === "non-html" || result.kind === "rate-limited" ? "observed" : "partial";
-      await dependencies.evidence.appendObservation(job.organizationId, job.crawlRunId, pageId, defineObservation({
-        id: createEvidenceId("observation", [job.crawlRunId, pageId, "http"]), method: "http", status: httpStatus,
-        value: { transactions: transactions.map(({ transaction }) => transaction.id), final_transaction_id: transactions.at(-1)?.transaction.id },
-        reasons: [], provenance: { collector: "http", version: job.producerVersion, collectedAt: now().toISOString() },
-      }));
+        for (const observation of pageObservations) await legacy.appendObservation(job.organizationId, job.crawlRunId, pageId, observation);
+        await platform.appendSubject(job.organizationId, platformBatch.subject);
+        await platform.startExecution(job.organizationId, platformBatch.execution);
+        for (const observation of platformBatch.records) await platform.appendObservation(job.organizationId, observation);
+        await platform.finishExecution(job.organizationId, { executionId: platformBatch.execution.id, status: "completed", finishedAt: now().toISOString() });
+      });
       if (result.kind === "html") {
-        const observations = extractHtmlObservations({
-          runId: job.crawlRunId, pageId, pageUrl: result.url, html: result.body, collectedAt: now().toISOString(),
-          extractorVersion: job.extractorVersion, hashMethodVersion: "sha256-visible-text/1",
-        });
-        for (const observation of observations) await dependencies.evidence.appendObservation(job.organizationId, job.crawlRunId, pageId, observation);
-        const links = observations.find(({ method }) => method === "links")?.value;
+        const links = extractedObservations.find(({ method }) => method === "links")?.value;
         if (next.depth < job.limits.maxDepth && Array.isArray(links)) {
           for (const link of links) {
             if (link && typeof link === "object" && "target_url" in link && typeof link.target_url === "string") {

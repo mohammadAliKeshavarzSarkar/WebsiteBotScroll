@@ -6,6 +6,8 @@
     ".": "./src/client.ts",
     "./evidence": "./src/repositories/evidence.ts",
     "./definitions": "./src/repositories/definitions.ts",
+    "./observation-records": "./src/repositories/observation-records.ts",
+    "./artifacts": "./src/repositories/artifacts.ts",
     "./sites": "./src/repositories/sites.ts"
   },
   "scripts": {

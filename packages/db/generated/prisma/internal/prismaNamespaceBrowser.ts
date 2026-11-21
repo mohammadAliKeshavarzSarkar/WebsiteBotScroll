@@ -68,6 +68,12 @@ export const ModelName = {
   ObservationDefinition: 'ObservationDefinition',
   CollectorDefinition: 'CollectorDefinition',
   CollectorCapability: 'CollectorCapability',
+  ObservationSubject: 'ObservationSubject',
+  ObservationSubjectMember: 'ObservationSubjectMember',
+  ObservationExecution: 'ObservationExecution',
+  PlatformObservation: 'PlatformObservation',
+  EvidenceArtifact: 'EvidenceArtifact',
+  ObservationArtifact: 'ObservationArtifact',
   DomainVerification: 'DomainVerification',
   AuditEvent: 'AuditEvent'
 } as const
@@ -331,6 +337,94 @@ export const CollectorCapabilityScalarFieldEnum = {
 } as const
 
 export type CollectorCapabilityScalarFieldEnum = (typeof CollectorCapabilityScalarFieldEnum)[keyof typeof CollectorCapabilityScalarFieldEnum]
+
+
+export const ObservationSubjectScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  crawlRunId: 'crawlRunId',
+  position: 'position',
+  kind: 'kind',
+  identity: 'identity',
+  createdAt: 'createdAt'
+} as const
+
+export type ObservationSubjectScalarFieldEnum = (typeof ObservationSubjectScalarFieldEnum)[keyof typeof ObservationSubjectScalarFieldEnum]
+
+
+export const ObservationSubjectMemberScalarFieldEnum = {
+  subjectId: 'subjectId',
+  memberSubjectId: 'memberSubjectId',
+  position: 'position'
+} as const
+
+export type ObservationSubjectMemberScalarFieldEnum = (typeof ObservationSubjectMemberScalarFieldEnum)[keyof typeof ObservationSubjectMemberScalarFieldEnum]
+
+
+export const ObservationExecutionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  crawlRunId: 'crawlRunId',
+  collectorDefinitionId: 'collectorDefinitionId',
+  parentExecutionId: 'parentExecutionId',
+  stableKey: 'stableKey',
+  attempt: 'attempt',
+  trigger: 'trigger',
+  configuration: 'configuration',
+  status: 'status',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
+  error: 'error'
+} as const
+
+export type ObservationExecutionScalarFieldEnum = (typeof ObservationExecutionScalarFieldEnum)[keyof typeof ObservationExecutionScalarFieldEnum]
+
+
+export const PlatformObservationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  crawlRunId: 'crawlRunId',
+  subjectId: 'subjectId',
+  executionId: 'executionId',
+  observationDefinitionId: 'observationDefinitionId',
+  sequence: 'sequence',
+  status: 'status',
+  payload: 'payload',
+  reasons: 'reasons',
+  provenance: 'provenance',
+  collectedAt: 'collectedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PlatformObservationScalarFieldEnum = (typeof PlatformObservationScalarFieldEnum)[keyof typeof PlatformObservationScalarFieldEnum]
+
+
+export const EvidenceArtifactScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  crawlRunId: 'crawlRunId',
+  sha256: 'sha256',
+  byteLength: 'byteLength',
+  mediaType: 'mediaType',
+  locator: 'locator',
+  sensitivity: 'sensitivity',
+  retentionClass: 'retentionClass',
+  availability: 'availability',
+  pinnedAt: 'pinnedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EvidenceArtifactScalarFieldEnum = (typeof EvidenceArtifactScalarFieldEnum)[keyof typeof EvidenceArtifactScalarFieldEnum]
+
+
+export const ObservationArtifactScalarFieldEnum = {
+  observationId: 'observationId',
+  artifactId: 'artifactId',
+  position: 'position',
+  role: 'role'
+} as const
+
+export type ObservationArtifactScalarFieldEnum = (typeof ObservationArtifactScalarFieldEnum)[keyof typeof ObservationArtifactScalarFieldEnum]
 
 
 export const DomainVerificationScalarFieldEnum = {

@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   defineObservationDefinition,
   defineCollectorDefinition,
+  createPlatformRecordId,
+  defineObservationRecord,
   PLATFORM_LIMITS,
 } from "./observation-platform.js";
 
@@ -40,5 +42,19 @@ describe("observation platform definitions", () => {
     expect(() => defineCollectorDefinition({
       key: "crawler.html", version: "1.0.0", configurationSchema: { type: "object" }, capabilities: [], executionMode: "worker",
     })).toThrow("capability");
+  });
+
+  it("creates namespace-separated stable platform record IDs", () => {
+    expect(createPlatformRecordId("subject", ["run-1", "page-1"]))
+      .toBe(createPlatformRecordId("subject", ["run-1", "page-1"]));
+    expect(createPlatformRecordId("subject", ["run-1", "page-1"]))
+      .not.toBe(createPlatformRecordId("execution", ["run-1", "page-1"]));
+  });
+
+  it("enforces available and unavailable observation state pairings", () => {
+    expect(defineObservationRecord({ status: "observed", payload: { title: "Example" }, reasons: [] }).payload).toEqual({ title: "Example" });
+    expect(() => defineObservationRecord({ status: "partial", payload: { title: "Example" }, reasons: [] })).toThrow("reason");
+    expect(() => defineObservationRecord({ status: "failed", payload: {}, reasons: ["fetch_failed"] })).toThrow("null payload");
+    expect(defineObservationRecord({ status: "not_collected", payload: null, reasons: ["disabled"] }).payload).toBeNull();
   });
 });
