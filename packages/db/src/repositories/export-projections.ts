@@ -1,6 +1,5 @@
 import { createHash } from "node:crypto";
 import { defineExportProjection, type ExportProjectionDefinitionInput } from "@website-bot-scroll/domain/export-projection";
-import { buildNeutralSnapshot } from "@website-bot-scroll/evidence-producer/platform-snapshot";
 import { Prisma } from "../../generated/prisma/client.js";
 import type { DatabaseClient } from "../client.js";
 
@@ -8,6 +7,7 @@ const json = (value: unknown): Prisma.InputJsonValue => value as Prisma.InputJso
 const stable = (value: unknown): unknown => Array.isArray(value) ? value.map(stable) : value !== null && typeof value === "object"
   ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => [key, stable(item)])) : value;
 const same = (a: unknown, b: unknown) => JSON.stringify(stable(a)) === JSON.stringify(stable(b));
+const buildSnapshotBytes = (snapshot: unknown) => { const bytes = Buffer.from(`${JSON.stringify(stable(snapshot))}\n`, "utf8"); return { bytes, sha256: createHash("sha256").update(bytes).digest("hex") }; };
 
 export class SnapshotRepository {
   constructor(private readonly prisma: DatabaseClient) {}
@@ -21,7 +21,7 @@ export class SnapshotRepository {
       if (!["COMPLETED", "PARTIAL", "FAILED", "CANCELLED"].includes(run.status) || !run.finishedAt) throw new Error("crawl run must be terminal");
       if (run.collectedCount + run.failedCount !== run.attemptedCount || run.attemptedCount > run.discoveredCount || run.unattemptedCount !== run.discoveredCount - run.attemptedCount) throw new Error("coverage is inconsistent");
       if (!run.producerVersion || !/^[a-f0-9]{40}$/.test(run.producerVersion)) throw new Error("exact producer revision is required");
-      const [activeObservation, activeDiagnostic, unavailableArtifact, subjects, observationExecutions, observations, diagnosticExecutions, diagnosticResults, artifacts] = await Promise.all([
+      const [activeObservation, activeDiagnostic, unavailableArtifact, subjects, observationExecutions, observations, diagnosticExecutions, diagnosticResults, artifacts, evidencePages, evidenceLimitations, evidenceErrors] = await Promise.all([
         tx.observationExecution.findFirst({ where: { crawlRunId: runId, status: { in: ["pending", "running"] } } }),
         tx.diagnosticExecution.findFirst({ where: { crawlRunId: runId, status: { in: ["pending", "running"] } } }),
         tx.evidenceArtifact.findFirst({ where: { crawlRunId: runId, availability: { not: "available" } } }),
@@ -31,11 +31,14 @@ export class SnapshotRepository {
         tx.diagnosticExecution.findMany({ where: { crawlRunId: runId }, orderBy: [{ stableKey: "asc" }, { attempt: "asc" }], include: { rule: true } }),
         tx.diagnosticResult.findMany({ where: { crawlRunId: runId }, orderBy: [{ executionId: "asc" }, { sequence: "asc" }], include: { inputs: { orderBy: { position: "asc" } } } }),
         tx.evidenceArtifact.findMany({ where: { crawlRunId: runId }, orderBy: { sha256: "asc" } }),
+        tx.evidencePage.findMany({ where: { crawlRunId: runId }, orderBy: { position: "asc" }, include: { transactions: { orderBy: { position: "asc" }, include: { headers: { orderBy: { position: "asc" }, include: { values: { orderBy: { position: "asc" } } } } } } } }),
+        tx.evidenceLimitation.findMany({ where: { crawlRunId: runId }, orderBy: { id: "asc" } }),
+        tx.evidenceError.findMany({ where: { crawlRunId: runId }, orderBy: { id: "asc" } }),
       ]);
       if (activeObservation || activeDiagnostic) throw new Error("active execution prevents freeze");
       if (unavailableArtifact) throw new Error("artifact unavailable");
-      const payload = { run: { id: run.id, organizationId, siteId: run.siteId, status: run.status, producerRevision: run.producerVersion, coverage: { discovered: run.discoveredCount, attempted: run.attemptedCount, collected: run.collectedCount, failed: run.failedCount, unattempted: run.unattemptedCount } }, subjects, observationExecutions, observations, diagnosticExecutions, diagnosticResults, artifacts };
-      const built = buildNeutralSnapshot(payload);
+      const payload = { run: { id: run.id, organizationId, siteId: run.siteId, authorizationRef: run.authorizationId, trigger: run.trigger.toLowerCase(), status: run.status.toLowerCase(), startedAt: run.startedAt?.toISOString(), finishedAt: run.finishedAt.toISOString(), scope: run.scope, limits: run.limits, producerRevision: run.producerVersion, normalizationPolicyVersion: run.normalizationPolicyVersion, extractorVersion: run.extractorVersion, stopReason: run.stopReason, coverage: { discovered: run.discoveredCount, attempted: run.attemptedCount, collected: run.collectedCount, failed: run.failedCount, unattempted: run.unattemptedCount } }, subjects, observationExecutions, observations, diagnosticExecutions, diagnosticResults, artifacts, evidencePages, evidenceLimitations, evidenceErrors };
+      const built = buildSnapshotBytes(payload);
       const snapshot = await tx.platformSnapshot.create({ data: { organizationId, crawlRunId: runId, producerRevision: run.producerVersion, sha256: built.sha256, payload: json(JSON.parse(built.bytes.toString("utf8"))) } });
       await tx.crawlRun.update({ where: { id: runId }, data: { frozenAt: snapshot.frozenAt } });
       return snapshot;

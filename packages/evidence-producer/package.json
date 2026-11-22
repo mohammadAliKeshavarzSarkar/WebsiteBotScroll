@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "exports": { "./platform-snapshot": "./src/platform-snapshot.ts" },
-  "scripts": { "test": "vitest run", "typecheck": "tsc --noEmit", "lint": "eslint src test" },
-  "dependencies": { "@website-bot-scroll/domain": "workspace:*" },
-  "devDependencies": { "typescript": "^5.9.3", "vitest": "^4.0.8" }
+  "exports": { "./platform-snapshot": "./src/platform-snapshot.ts", "./build-document": "./src/build-document.ts", "./serialize": "./src/serialize.ts", "./exchange-profile": "./src/exchange-profile.ts", "./exchange-manifest": "./src/exchange-manifest.ts", "./export-run": "./src/export-run.ts", "./verify-exchange": "./src/verify-exchange.ts" },
+  "scripts": { "test": "vitest run", "typecheck": "tsc --noEmit", "lint": "eslint src test", "evidence:export": "tsx src/cli-export.ts", "evidence:verify": "tsx src/cli-verify.ts" },
+  "dependencies": { "@website-bot-scroll/db": "workspace:*", "@website-bot-scroll/domain": "workspace:*", "@website-bot-scroll/evidence-contract": "workspace:*" },
+  "devDependencies": { "tsx": "4.20.6", "typescript": "^5.9.3", "vitest": "^4.0.8" }
 }

@@ -189,6 +189,23 @@ docs/superpowers     Product specification and phased implementation plan
 
 Stage A.1 defines the reviewable `seo-crawl-evidence` 0.1.0 boundary without coupling this repository to an SEO intelligence engine. See the [interoperability architecture](docs/architecture/evidence-interoperability.md), [evidence preservation gaps](docs/architecture/evidence-preservation-gaps.md), and the package's machine-readable [review manifest](packages/evidence-contract/review-manifest.json).
 
+### Export and verify a frozen evidence snapshot
+
+Load the private database URL in PowerShell, then export with the exact reviewed producer commit:
+
+```powershell
+$env:DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/website_bot_scroll"
+pnpm --filter @website-bot-scroll/evidence-producer evidence:export -- <organization-id> <snapshot-id> D:\Private\WebsiteBotScrollExchange <40-character-producer-commit>
+```
+
+The destination must be private and the generated evidence and manifest files must not already exist. Verify the delivered pair without modifying either file:
+
+```powershell
+pnpm --filter @website-bot-scroll/evidence-producer evidence:verify -- D:\Private\WebsiteBotScrollExchange\<run-id>.evidence.json D:\Private\WebsiteBotScrollExchange\<run-id>.manifest.json
+```
+
+The verifier checks the exact evidence byte length and SHA-256 before parsing, then independently replays canonical validation, exchange-profile preflight, and type-sensitive manifest consistency.
+
 ## Troubleshooting
 
 ### Environment validation fails

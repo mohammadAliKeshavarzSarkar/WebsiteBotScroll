@@ -27,6 +27,7 @@ describeDatabase("idempotent crawl orchestration", () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    await prisma.$executeRawUnsafe('TRUNCATE TABLE "platform_snapshots" CASCADE');
     await prisma.crawlError.deleteMany();
     await prisma.crawlRun.deleteMany();
     await prisma.collectorDefinition.deleteMany();

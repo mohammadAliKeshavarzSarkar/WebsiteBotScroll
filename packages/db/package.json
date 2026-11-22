@@ -26,7 +26,6 @@
     "@prisma/client": "7.10.1",
     "@website-bot-scroll/config": "workspace:*",
     "@website-bot-scroll/domain": "workspace:*",
-    "@website-bot-scroll/evidence-producer": "workspace:*",
     "@website-bot-scroll/observation-schema": "workspace:*",
     "argon2": "0.45.2",
     "pg": "8.16.3"
