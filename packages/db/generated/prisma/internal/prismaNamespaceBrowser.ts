@@ -78,6 +78,9 @@ export const ModelName = {
   DiagnosticExecution: 'DiagnosticExecution',
   DiagnosticResult: 'DiagnosticResult',
   DiagnosticResultInput: 'DiagnosticResultInput',
+  ExportProjectionDefinition: 'ExportProjectionDefinition',
+  PlatformSnapshot: 'PlatformSnapshot',
+  ProjectionExecution: 'ProjectionExecution',
   EvidenceArtifact: 'EvidenceArtifact',
   ObservationArtifact: 'ObservationArtifact',
   DomainVerification: 'DomainVerification',
@@ -490,6 +493,51 @@ export const DiagnosticResultInputScalarFieldEnum = {
 } as const
 
 export type DiagnosticResultInputScalarFieldEnum = (typeof DiagnosticResultInputScalarFieldEnum)[keyof typeof DiagnosticResultInputScalarFieldEnum]
+
+
+export const ExportProjectionDefinitionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  version: 'version',
+  format: 'format',
+  mediaType: 'mediaType',
+  acceptedObservationDefinitions: 'acceptedObservationDefinitions',
+  acceptedDiagnosticRules: 'acceptedDiagnosticRules',
+  identitySha256: 'identitySha256',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type ExportProjectionDefinitionScalarFieldEnum = (typeof ExportProjectionDefinitionScalarFieldEnum)[keyof typeof ExportProjectionDefinitionScalarFieldEnum]
+
+
+export const PlatformSnapshotScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  crawlRunId: 'crawlRunId',
+  producerRevision: 'producerRevision',
+  sha256: 'sha256',
+  payload: 'payload',
+  frozenAt: 'frozenAt'
+} as const
+
+export type PlatformSnapshotScalarFieldEnum = (typeof PlatformSnapshotScalarFieldEnum)[keyof typeof PlatformSnapshotScalarFieldEnum]
+
+
+export const ProjectionExecutionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  snapshotId: 'snapshotId',
+  projectionDefinitionId: 'projectionDefinitionId',
+  stableKey: 'stableKey',
+  attempt: 'attempt',
+  status: 'status',
+  outputArtifactId: 'outputArtifactId',
+  outputSha256: 'outputSha256',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectionExecutionScalarFieldEnum = (typeof ProjectionExecutionScalarFieldEnum)[keyof typeof ProjectionExecutionScalarFieldEnum]
 
 
 export const EvidenceArtifactScalarFieldEnum = {

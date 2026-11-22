@@ -409,6 +409,7 @@ export type CrawlRunWhereInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactListRelationFilter
   diagnosticExecutions?: Prisma.DiagnosticExecutionListRelationFilter
   diagnosticResults?: Prisma.DiagnosticResultListRelationFilter
+  platformSnapshot?: Prisma.XOR<Prisma.PlatformSnapshotNullableScalarRelationFilter, Prisma.PlatformSnapshotWhereInput> | null
 }
 
 export type CrawlRunOrderByWithRelationInput = {
@@ -452,6 +453,7 @@ export type CrawlRunOrderByWithRelationInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactOrderByRelationAggregateInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionOrderByRelationAggregateInput
   diagnosticResults?: Prisma.DiagnosticResultOrderByRelationAggregateInput
+  platformSnapshot?: Prisma.PlatformSnapshotOrderByWithRelationInput
 }
 
 export type CrawlRunWhereUniqueInput = Prisma.AtLeast<{
@@ -499,6 +501,7 @@ export type CrawlRunWhereUniqueInput = Prisma.AtLeast<{
   evidenceArtifacts?: Prisma.EvidenceArtifactListRelationFilter
   diagnosticExecutions?: Prisma.DiagnosticExecutionListRelationFilter
   diagnosticResults?: Prisma.DiagnosticResultListRelationFilter
+  platformSnapshot?: Prisma.XOR<Prisma.PlatformSnapshotNullableScalarRelationFilter, Prisma.PlatformSnapshotWhereInput> | null
 }, "id" | "activeSiteKey" | "siteId_idempotencyKey">
 
 export type CrawlRunOrderByWithAggregationInput = {
@@ -607,6 +610,7 @@ export type CrawlRunCreateInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateInput = {
@@ -647,6 +651,7 @@ export type CrawlRunUncheckedCreateInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUpdateInput = {
@@ -687,6 +692,7 @@ export type CrawlRunUpdateInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateInput = {
@@ -727,6 +733,7 @@ export type CrawlRunUncheckedUpdateInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateManyInput = {
@@ -1220,6 +1227,20 @@ export type CrawlRunUpdateOneRequiredWithoutDiagnosticResultsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CrawlRunUpdateToOneWithWhereWithoutDiagnosticResultsInput, Prisma.CrawlRunUpdateWithoutDiagnosticResultsInput>, Prisma.CrawlRunUncheckedUpdateWithoutDiagnosticResultsInput>
 }
 
+export type CrawlRunCreateNestedOneWithoutPlatformSnapshotInput = {
+  create?: Prisma.XOR<Prisma.CrawlRunCreateWithoutPlatformSnapshotInput, Prisma.CrawlRunUncheckedCreateWithoutPlatformSnapshotInput>
+  connectOrCreate?: Prisma.CrawlRunCreateOrConnectWithoutPlatformSnapshotInput
+  connect?: Prisma.CrawlRunWhereUniqueInput
+}
+
+export type CrawlRunUpdateOneRequiredWithoutPlatformSnapshotNestedInput = {
+  create?: Prisma.XOR<Prisma.CrawlRunCreateWithoutPlatformSnapshotInput, Prisma.CrawlRunUncheckedCreateWithoutPlatformSnapshotInput>
+  connectOrCreate?: Prisma.CrawlRunCreateOrConnectWithoutPlatformSnapshotInput
+  upsert?: Prisma.CrawlRunUpsertWithoutPlatformSnapshotInput
+  connect?: Prisma.CrawlRunWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CrawlRunUpdateToOneWithWhereWithoutPlatformSnapshotInput, Prisma.CrawlRunUpdateWithoutPlatformSnapshotInput>, Prisma.CrawlRunUncheckedUpdateWithoutPlatformSnapshotInput>
+}
+
 export type CrawlRunCreateNestedOneWithoutEvidenceArtifactsInput = {
   create?: Prisma.XOR<Prisma.CrawlRunCreateWithoutEvidenceArtifactsInput, Prisma.CrawlRunUncheckedCreateWithoutEvidenceArtifactsInput>
   connectOrCreate?: Prisma.CrawlRunCreateOrConnectWithoutEvidenceArtifactsInput
@@ -1271,6 +1292,7 @@ export type CrawlRunCreateWithoutOrganizationInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutOrganizationInput = {
@@ -1310,6 +1332,7 @@ export type CrawlRunUncheckedCreateWithoutOrganizationInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutOrganizationInput = {
@@ -1408,6 +1431,7 @@ export type CrawlRunCreateWithoutSiteInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutSiteInput = {
@@ -1447,6 +1471,7 @@ export type CrawlRunUncheckedCreateWithoutSiteInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutSiteInput = {
@@ -1512,6 +1537,7 @@ export type CrawlRunCreateWithoutAuthorizationInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutAuthorizationInput = {
@@ -1551,6 +1577,7 @@ export type CrawlRunUncheckedCreateWithoutAuthorizationInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutAuthorizationInput = {
@@ -1616,6 +1643,7 @@ export type CrawlRunCreateWithoutEvidencePagesInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutEvidencePagesInput = {
@@ -1655,6 +1683,7 @@ export type CrawlRunUncheckedCreateWithoutEvidencePagesInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutEvidencePagesInput = {
@@ -1710,6 +1739,7 @@ export type CrawlRunUpdateWithoutEvidencePagesInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutEvidencePagesInput = {
@@ -1749,6 +1779,7 @@ export type CrawlRunUncheckedUpdateWithoutEvidencePagesInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateWithoutEvidenceLimitationsInput = {
@@ -1788,6 +1819,7 @@ export type CrawlRunCreateWithoutEvidenceLimitationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutEvidenceLimitationsInput = {
@@ -1827,6 +1859,7 @@ export type CrawlRunUncheckedCreateWithoutEvidenceLimitationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutEvidenceLimitationsInput = {
@@ -1882,6 +1915,7 @@ export type CrawlRunUpdateWithoutEvidenceLimitationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutEvidenceLimitationsInput = {
@@ -1921,6 +1955,7 @@ export type CrawlRunUncheckedUpdateWithoutEvidenceLimitationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateWithoutEvidenceErrorsInput = {
@@ -1960,6 +1995,7 @@ export type CrawlRunCreateWithoutEvidenceErrorsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutEvidenceErrorsInput = {
@@ -1999,6 +2035,7 @@ export type CrawlRunUncheckedCreateWithoutEvidenceErrorsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutEvidenceErrorsInput = {
@@ -2054,6 +2091,7 @@ export type CrawlRunUpdateWithoutEvidenceErrorsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutEvidenceErrorsInput = {
@@ -2093,6 +2131,7 @@ export type CrawlRunUncheckedUpdateWithoutEvidenceErrorsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateWithoutErrorsInput = {
@@ -2132,6 +2171,7 @@ export type CrawlRunCreateWithoutErrorsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutErrorsInput = {
@@ -2171,6 +2211,7 @@ export type CrawlRunUncheckedCreateWithoutErrorsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutErrorsInput = {
@@ -2226,6 +2267,7 @@ export type CrawlRunUpdateWithoutErrorsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutErrorsInput = {
@@ -2265,6 +2307,7 @@ export type CrawlRunUncheckedUpdateWithoutErrorsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateWithoutObservationSubjectsInput = {
@@ -2304,6 +2347,7 @@ export type CrawlRunCreateWithoutObservationSubjectsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutObservationSubjectsInput = {
@@ -2343,6 +2387,7 @@ export type CrawlRunUncheckedCreateWithoutObservationSubjectsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutObservationSubjectsInput = {
@@ -2398,6 +2443,7 @@ export type CrawlRunUpdateWithoutObservationSubjectsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutObservationSubjectsInput = {
@@ -2437,6 +2483,7 @@ export type CrawlRunUncheckedUpdateWithoutObservationSubjectsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateWithoutObservationExecutionsInput = {
@@ -2476,6 +2523,7 @@ export type CrawlRunCreateWithoutObservationExecutionsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutObservationExecutionsInput = {
@@ -2515,6 +2563,7 @@ export type CrawlRunUncheckedCreateWithoutObservationExecutionsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutObservationExecutionsInput = {
@@ -2570,6 +2619,7 @@ export type CrawlRunUpdateWithoutObservationExecutionsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutObservationExecutionsInput = {
@@ -2609,6 +2659,7 @@ export type CrawlRunUncheckedUpdateWithoutObservationExecutionsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateWithoutPlatformObservationsInput = {
@@ -2648,6 +2699,7 @@ export type CrawlRunCreateWithoutPlatformObservationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutPlatformObservationsInput = {
@@ -2687,6 +2739,7 @@ export type CrawlRunUncheckedCreateWithoutPlatformObservationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutPlatformObservationsInput = {
@@ -2742,6 +2795,7 @@ export type CrawlRunUpdateWithoutPlatformObservationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutPlatformObservationsInput = {
@@ -2781,6 +2835,7 @@ export type CrawlRunUncheckedUpdateWithoutPlatformObservationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateWithoutDiagnosticExecutionsInput = {
@@ -2820,6 +2875,7 @@ export type CrawlRunCreateWithoutDiagnosticExecutionsInput = {
   platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutCrawlRunInput
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutDiagnosticExecutionsInput = {
@@ -2859,6 +2915,7 @@ export type CrawlRunUncheckedCreateWithoutDiagnosticExecutionsInput = {
   platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutDiagnosticExecutionsInput = {
@@ -2914,6 +2971,7 @@ export type CrawlRunUpdateWithoutDiagnosticExecutionsInput = {
   platformObservations?: Prisma.PlatformObservationUpdateManyWithoutCrawlRunNestedInput
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutDiagnosticExecutionsInput = {
@@ -2953,6 +3011,7 @@ export type CrawlRunUncheckedUpdateWithoutDiagnosticExecutionsInput = {
   platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateWithoutDiagnosticResultsInput = {
@@ -2992,6 +3051,7 @@ export type CrawlRunCreateWithoutDiagnosticResultsInput = {
   platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutCrawlRunInput
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutDiagnosticResultsInput = {
@@ -3031,6 +3091,7 @@ export type CrawlRunUncheckedCreateWithoutDiagnosticResultsInput = {
   platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutCrawlRunInput
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutDiagnosticResultsInput = {
@@ -3086,6 +3147,7 @@ export type CrawlRunUpdateWithoutDiagnosticResultsInput = {
   platformObservations?: Prisma.PlatformObservationUpdateManyWithoutCrawlRunNestedInput
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutDiagnosticResultsInput = {
@@ -3125,6 +3187,183 @@ export type CrawlRunUncheckedUpdateWithoutDiagnosticResultsInput = {
   platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutCrawlRunNestedInput
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedUpdateOneWithoutCrawlRunNestedInput
+}
+
+export type CrawlRunCreateWithoutPlatformSnapshotInput = {
+  id?: string
+  trigger: $Enums.CrawlTrigger
+  idempotencyKey: string
+  status?: $Enums.CrawlStatus
+  activeSiteKey?: string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: number
+  startedAt?: Date | string | null
+  finishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: string | null
+  normalizationPolicyVersion?: string | null
+  extractorVersion?: string | null
+  discoveredCount?: number
+  attemptedCount?: number
+  collectedCount?: number
+  failedCount?: number
+  unattemptedCount?: number | null
+  stopReason?: string | null
+  frozenAt?: Date | string | null
+  organization: Prisma.OrganizationCreateNestedOneWithoutCrawlRunsInput
+  site: Prisma.SiteCreateNestedOneWithoutCrawlRunsInput
+  authorization?: Prisma.ExportAuthorizationCreateNestedOneWithoutCrawlRunsInput
+  errors?: Prisma.CrawlErrorCreateNestedManyWithoutCrawlRunInput
+  evidencePages?: Prisma.EvidencePageCreateNestedManyWithoutCrawlRunInput
+  evidenceLimitations?: Prisma.EvidenceLimitationCreateNestedManyWithoutCrawlRunInput
+  evidenceErrors?: Prisma.EvidenceErrorCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutCrawlRunInput
+  evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutCrawlRunInput
+  diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutCrawlRunInput
+  diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutCrawlRunInput
+}
+
+export type CrawlRunUncheckedCreateWithoutPlatformSnapshotInput = {
+  id?: string
+  organizationId: string
+  siteId: string
+  trigger: $Enums.CrawlTrigger
+  idempotencyKey: string
+  status?: $Enums.CrawlStatus
+  activeSiteKey?: string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: number
+  startedAt?: Date | string | null
+  finishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  authorizationId?: string | null
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: string | null
+  normalizationPolicyVersion?: string | null
+  extractorVersion?: string | null
+  discoveredCount?: number
+  attemptedCount?: number
+  collectedCount?: number
+  failedCount?: number
+  unattemptedCount?: number | null
+  stopReason?: string | null
+  frozenAt?: Date | string | null
+  errors?: Prisma.CrawlErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  evidencePages?: Prisma.EvidencePageUncheckedCreateNestedManyWithoutCrawlRunInput
+  evidenceLimitations?: Prisma.EvidenceLimitationUncheckedCreateNestedManyWithoutCrawlRunInput
+  evidenceErrors?: Prisma.EvidenceErrorUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedCreateNestedManyWithoutCrawlRunInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutCrawlRunInput
+  evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutCrawlRunInput
+  diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
+  diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutCrawlRunInput
+}
+
+export type CrawlRunCreateOrConnectWithoutPlatformSnapshotInput = {
+  where: Prisma.CrawlRunWhereUniqueInput
+  create: Prisma.XOR<Prisma.CrawlRunCreateWithoutPlatformSnapshotInput, Prisma.CrawlRunUncheckedCreateWithoutPlatformSnapshotInput>
+}
+
+export type CrawlRunUpsertWithoutPlatformSnapshotInput = {
+  update: Prisma.XOR<Prisma.CrawlRunUpdateWithoutPlatformSnapshotInput, Prisma.CrawlRunUncheckedUpdateWithoutPlatformSnapshotInput>
+  create: Prisma.XOR<Prisma.CrawlRunCreateWithoutPlatformSnapshotInput, Prisma.CrawlRunUncheckedCreateWithoutPlatformSnapshotInput>
+  where?: Prisma.CrawlRunWhereInput
+}
+
+export type CrawlRunUpdateToOneWithWhereWithoutPlatformSnapshotInput = {
+  where?: Prisma.CrawlRunWhereInput
+  data: Prisma.XOR<Prisma.CrawlRunUpdateWithoutPlatformSnapshotInput, Prisma.CrawlRunUncheckedUpdateWithoutPlatformSnapshotInput>
+}
+
+export type CrawlRunUpdateWithoutPlatformSnapshotInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  trigger?: Prisma.EnumCrawlTriggerFieldUpdateOperationsInput | $Enums.CrawlTrigger
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCrawlStatusFieldUpdateOperationsInput | $Enums.CrawlStatus
+  activeSiteKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizationPolicyVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extractorVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discoveredCount?: Prisma.IntFieldUpdateOperationsInput | number
+  attemptedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  collectedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  failedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  unattemptedCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  stopReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutCrawlRunsNestedInput
+  site?: Prisma.SiteUpdateOneRequiredWithoutCrawlRunsNestedInput
+  authorization?: Prisma.ExportAuthorizationUpdateOneWithoutCrawlRunsNestedInput
+  errors?: Prisma.CrawlErrorUpdateManyWithoutCrawlRunNestedInput
+  evidencePages?: Prisma.EvidencePageUpdateManyWithoutCrawlRunNestedInput
+  evidenceLimitations?: Prisma.EvidenceLimitationUpdateManyWithoutCrawlRunNestedInput
+  evidenceErrors?: Prisma.EvidenceErrorUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUpdateManyWithoutCrawlRunNestedInput
+  evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutCrawlRunNestedInput
+  diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutCrawlRunNestedInput
+  diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutCrawlRunNestedInput
+}
+
+export type CrawlRunUncheckedUpdateWithoutPlatformSnapshotInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  siteId?: Prisma.StringFieldUpdateOperationsInput | string
+  trigger?: Prisma.EnumCrawlTriggerFieldUpdateOperationsInput | $Enums.CrawlTrigger
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCrawlStatusFieldUpdateOperationsInput | $Enums.CrawlStatus
+  activeSiteKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frontier?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  processedUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  authorizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scope?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  limits?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  producerVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizationPolicyVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extractorVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discoveredCount?: Prisma.IntFieldUpdateOperationsInput | number
+  attemptedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  collectedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  failedCount?: Prisma.IntFieldUpdateOperationsInput | number
+  unattemptedCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  stopReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  errors?: Prisma.CrawlErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  evidencePages?: Prisma.EvidencePageUncheckedUpdateManyWithoutCrawlRunNestedInput
+  evidenceLimitations?: Prisma.EvidenceLimitationUncheckedUpdateManyWithoutCrawlRunNestedInput
+  evidenceErrors?: Prisma.EvidenceErrorUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedUpdateManyWithoutCrawlRunNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutCrawlRunNestedInput
+  evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput
+  diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
+  diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateWithoutEvidenceArtifactsInput = {
@@ -3164,6 +3403,7 @@ export type CrawlRunCreateWithoutEvidenceArtifactsInput = {
   platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunUncheckedCreateWithoutEvidenceArtifactsInput = {
@@ -3203,6 +3443,7 @@ export type CrawlRunUncheckedCreateWithoutEvidenceArtifactsInput = {
   platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutCrawlRunInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutCrawlRunInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedCreateNestedOneWithoutCrawlRunInput
 }
 
 export type CrawlRunCreateOrConnectWithoutEvidenceArtifactsInput = {
@@ -3258,6 +3499,7 @@ export type CrawlRunUpdateWithoutEvidenceArtifactsInput = {
   platformObservations?: Prisma.PlatformObservationUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutEvidenceArtifactsInput = {
@@ -3297,6 +3539,7 @@ export type CrawlRunUncheckedUpdateWithoutEvidenceArtifactsInput = {
   platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunCreateManyOrganizationInput = {
@@ -3365,6 +3608,7 @@ export type CrawlRunUpdateWithoutOrganizationInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutOrganizationInput = {
@@ -3404,6 +3648,7 @@ export type CrawlRunUncheckedUpdateWithoutOrganizationInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateManyWithoutOrganizationInput = {
@@ -3501,6 +3746,7 @@ export type CrawlRunUpdateWithoutSiteInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutSiteInput = {
@@ -3540,6 +3786,7 @@ export type CrawlRunUncheckedUpdateWithoutSiteInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateManyWithoutSiteInput = {
@@ -3637,6 +3884,7 @@ export type CrawlRunUpdateWithoutAuthorizationInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateWithoutAuthorizationInput = {
@@ -3676,6 +3924,7 @@ export type CrawlRunUncheckedUpdateWithoutAuthorizationInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutCrawlRunNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutCrawlRunNestedInput
+  platformSnapshot?: Prisma.PlatformSnapshotUncheckedUpdateOneWithoutCrawlRunNestedInput
 }
 
 export type CrawlRunUncheckedUpdateManyWithoutAuthorizationInput = {
@@ -3860,6 +4109,7 @@ export type CrawlRunSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   evidenceArtifacts?: boolean | Prisma.CrawlRun$evidenceArtifactsArgs<ExtArgs>
   diagnosticExecutions?: boolean | Prisma.CrawlRun$diagnosticExecutionsArgs<ExtArgs>
   diagnosticResults?: boolean | Prisma.CrawlRun$diagnosticResultsArgs<ExtArgs>
+  platformSnapshot?: boolean | Prisma.CrawlRun$platformSnapshotArgs<ExtArgs>
   _count?: boolean | Prisma.CrawlRunCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["crawlRun"]>
 
@@ -3974,6 +4224,7 @@ export type CrawlRunInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   evidenceArtifacts?: boolean | Prisma.CrawlRun$evidenceArtifactsArgs<ExtArgs>
   diagnosticExecutions?: boolean | Prisma.CrawlRun$diagnosticExecutionsArgs<ExtArgs>
   diagnosticResults?: boolean | Prisma.CrawlRun$diagnosticResultsArgs<ExtArgs>
+  platformSnapshot?: boolean | Prisma.CrawlRun$platformSnapshotArgs<ExtArgs>
   _count?: boolean | Prisma.CrawlRunCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CrawlRunIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4003,6 +4254,7 @@ export type $CrawlRunPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     evidenceArtifacts: Prisma.$EvidenceArtifactPayload<ExtArgs>[]
     diagnosticExecutions: Prisma.$DiagnosticExecutionPayload<ExtArgs>[]
     diagnosticResults: Prisma.$DiagnosticResultPayload<ExtArgs>[]
+    platformSnapshot: Prisma.$PlatformSnapshotPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4439,6 +4691,7 @@ export interface Prisma__CrawlRunClient<T, Null = never, ExtArgs extends runtime
   evidenceArtifacts<T extends Prisma.CrawlRun$evidenceArtifactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CrawlRun$evidenceArtifactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidenceArtifactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   diagnosticExecutions<T extends Prisma.CrawlRun$diagnosticExecutionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CrawlRun$diagnosticExecutionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiagnosticExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   diagnosticResults<T extends Prisma.CrawlRun$diagnosticResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CrawlRun$diagnosticResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiagnosticResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  platformSnapshot<T extends Prisma.CrawlRun$platformSnapshotArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CrawlRun$platformSnapshotArgs<ExtArgs>>): Prisma.Prisma__PlatformSnapshotClient<runtime.Types.Result.GetResult<Prisma.$PlatformSnapshotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5152,6 +5405,25 @@ export type CrawlRun$diagnosticResultsArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.DiagnosticResultScalarFieldEnum | Prisma.DiagnosticResultScalarFieldEnum[]
+}
+
+/**
+ * CrawlRun.platformSnapshot
+ */
+export type CrawlRun$platformSnapshotArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatformSnapshot
+   */
+  select?: Prisma.PlatformSnapshotSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatformSnapshot
+   */
+  omit?: Prisma.PlatformSnapshotOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlatformSnapshotInclude<ExtArgs> | null
+  where?: Prisma.PlatformSnapshotWhereInput
 }
 
 /**

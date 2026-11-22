@@ -25,6 +25,8 @@ model Organization {
   evidenceArtifacts     EvidenceArtifact[]
   diagnosticExecutions  DiagnosticExecution[]
   diagnosticResults     DiagnosticResult[]
+  platformSnapshots     PlatformSnapshot[]
+  projectionExecutions  ProjectionExecution[]
 
   @@map("organizations")
 }
@@ -130,6 +132,7 @@ model CrawlRun {
   evidenceArtifacts          EvidenceArtifact[]
   diagnosticExecutions       DiagnosticExecution[]
   diagnosticResults          DiagnosticResult[]
+  platformSnapshot           PlatformSnapshot?
 
   @@unique([siteId, idempotencyKey])
   @@index([organizationId, createdAt])
@@ -531,22 +534,76 @@ model DiagnosticResultInput {
   @@map("diagnostic_result_inputs")
 }
 
+model ExportProjectionDefinition {
+  id                             String                @id @default(uuid()) @db.Uuid
+  key                            String
+  version                        String
+  format                         String
+  mediaType                      String                @map("media_type")
+  acceptedObservationDefinitions Json                  @map("accepted_observation_definitions")
+  acceptedDiagnosticRules        Json                  @map("accepted_diagnostic_rules")
+  identitySha256                 String                @map("identity_sha256") @db.Char(64)
+  status                         String                @default("published")
+  createdAt                      DateTime              @default(now()) @map("created_at")
+  executions                     ProjectionExecution[]
+
+  @@unique([key, version])
+  @@map("export_projection_definitions")
+}
+
+model PlatformSnapshot {
+  id               String                @id @default(uuid()) @db.Uuid
+  organizationId   String                @map("organization_id") @db.Uuid
+  crawlRunId       String                @unique @map("crawl_run_id") @db.Uuid
+  producerRevision String                @map("producer_revision") @db.Char(40)
+  sha256           String                @db.Char(64)
+  payload          Json
+  frozenAt         DateTime              @default(now()) @map("frozen_at")
+  organization     Organization          @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  crawlRun         CrawlRun              @relation(fields: [crawlRunId], references: [id], onDelete: Restrict)
+  executions       ProjectionExecution[]
+
+  @@index([organizationId, frozenAt])
+  @@map("platform_snapshots")
+}
+
+model ProjectionExecution {
+  id                     String                     @id
+  organizationId         String                     @map("organization_id") @db.Uuid
+  snapshotId             String                     @map("snapshot_id") @db.Uuid
+  projectionDefinitionId String                     @map("projection_definition_id") @db.Uuid
+  stableKey              String                     @map("stable_key")
+  attempt                Int
+  status                 String
+  outputArtifactId       String                     @map("output_artifact_id") @db.Uuid
+  outputSha256           String                     @map("output_sha256") @db.Char(64)
+  createdAt              DateTime                   @default(now()) @map("created_at")
+  organization           Organization               @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  snapshot               PlatformSnapshot           @relation(fields: [snapshotId], references: [id], onDelete: Restrict)
+  projection             ExportProjectionDefinition @relation(fields: [projectionDefinitionId], references: [id], onDelete: Restrict)
+  outputArtifact         EvidenceArtifact           @relation("ProjectionOutput", fields: [outputArtifactId], references: [id], onDelete: Restrict)
+
+  @@unique([snapshotId, stableKey, attempt])
+  @@map("projection_executions")
+}
+
 model EvidenceArtifact {
-  id             String                @id @default(uuid()) @db.Uuid
-  organizationId String                @map("organization_id") @db.Uuid
-  crawlRunId     String                @map("crawl_run_id") @db.Uuid
-  sha256         String                @db.Char(64)
-  byteLength     Int                   @map("byte_length")
-  mediaType      String                @map("media_type")
-  locator        String
-  sensitivity    String
-  retentionClass String                @map("retention_class")
-  availability   String                @default("available")
-  pinnedAt       DateTime?             @map("pinned_at")
-  createdAt      DateTime              @default(now()) @map("created_at")
-  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  crawlRun       CrawlRun              @relation(fields: [crawlRunId], references: [id], onDelete: Cascade)
-  observations   ObservationArtifact[]
+  id                String                @id @default(uuid()) @db.Uuid
+  organizationId    String                @map("organization_id") @db.Uuid
+  crawlRunId        String                @map("crawl_run_id") @db.Uuid
+  sha256            String                @db.Char(64)
+  byteLength        Int                   @map("byte_length")
+  mediaType         String                @map("media_type")
+  locator           String
+  sensitivity       String
+  retentionClass    String                @map("retention_class")
+  availability      String                @default("available")
+  pinnedAt          DateTime?             @map("pinned_at")
+  createdAt         DateTime              @default(now()) @map("created_at")
+  organization      Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  crawlRun          CrawlRun              @relation(fields: [crawlRunId], references: [id], onDelete: Cascade)
+  observations      ObservationArtifact[]
+  projectionOutputs ProjectionExecution[] @relation("ProjectionOutput")
 
   @@unique([organizationId, sha256])
   @@index([organizationId, crawlRunId, availability])

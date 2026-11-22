@@ -185,6 +185,8 @@ export type OrganizationWhereInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactListRelationFilter
   diagnosticExecutions?: Prisma.DiagnosticExecutionListRelationFilter
   diagnosticResults?: Prisma.DiagnosticResultListRelationFilter
+  platformSnapshots?: Prisma.PlatformSnapshotListRelationFilter
+  projectionExecutions?: Prisma.ProjectionExecutionListRelationFilter
 }
 
 export type OrganizationOrderByWithRelationInput = {
@@ -203,6 +205,8 @@ export type OrganizationOrderByWithRelationInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactOrderByRelationAggregateInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionOrderByRelationAggregateInput
   diagnosticResults?: Prisma.DiagnosticResultOrderByRelationAggregateInput
+  platformSnapshots?: Prisma.PlatformSnapshotOrderByRelationAggregateInput
+  projectionExecutions?: Prisma.ProjectionExecutionOrderByRelationAggregateInput
 }
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -224,6 +228,8 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   evidenceArtifacts?: Prisma.EvidenceArtifactListRelationFilter
   diagnosticExecutions?: Prisma.DiagnosticExecutionListRelationFilter
   diagnosticResults?: Prisma.DiagnosticResultListRelationFilter
+  platformSnapshots?: Prisma.PlatformSnapshotListRelationFilter
+  projectionExecutions?: Prisma.ProjectionExecutionListRelationFilter
 }, "id">
 
 export type OrganizationOrderByWithAggregationInput = {
@@ -262,6 +268,8 @@ export type OrganizationCreateInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateInput = {
@@ -280,6 +288,8 @@ export type OrganizationUncheckedCreateInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUpdateInput = {
@@ -298,6 +308,8 @@ export type OrganizationUpdateInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateInput = {
@@ -316,6 +328,8 @@ export type OrganizationUncheckedUpdateInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateManyInput = {
@@ -499,6 +513,34 @@ export type OrganizationUpdateOneRequiredWithoutDiagnosticResultsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutDiagnosticResultsInput, Prisma.OrganizationUpdateWithoutDiagnosticResultsInput>, Prisma.OrganizationUncheckedUpdateWithoutDiagnosticResultsInput>
 }
 
+export type OrganizationCreateNestedOneWithoutPlatformSnapshotsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPlatformSnapshotsInput, Prisma.OrganizationUncheckedCreateWithoutPlatformSnapshotsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPlatformSnapshotsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutPlatformSnapshotsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPlatformSnapshotsInput, Prisma.OrganizationUncheckedCreateWithoutPlatformSnapshotsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPlatformSnapshotsInput
+  upsert?: Prisma.OrganizationUpsertWithoutPlatformSnapshotsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutPlatformSnapshotsInput, Prisma.OrganizationUpdateWithoutPlatformSnapshotsInput>, Prisma.OrganizationUncheckedUpdateWithoutPlatformSnapshotsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutProjectionExecutionsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutProjectionExecutionsInput, Prisma.OrganizationUncheckedCreateWithoutProjectionExecutionsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutProjectionExecutionsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutProjectionExecutionsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutProjectionExecutionsInput, Prisma.OrganizationUncheckedCreateWithoutProjectionExecutionsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutProjectionExecutionsInput
+  upsert?: Prisma.OrganizationUpsertWithoutProjectionExecutionsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutProjectionExecutionsInput, Prisma.OrganizationUpdateWithoutProjectionExecutionsInput>, Prisma.OrganizationUncheckedUpdateWithoutProjectionExecutionsInput>
+}
+
 export type OrganizationCreateNestedOneWithoutEvidenceArtifactsInput = {
   create?: Prisma.XOR<Prisma.OrganizationCreateWithoutEvidenceArtifactsInput, Prisma.OrganizationUncheckedCreateWithoutEvidenceArtifactsInput>
   connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutEvidenceArtifactsInput
@@ -542,6 +584,8 @@ export type OrganizationCreateWithoutUsersInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutUsersInput = {
@@ -559,6 +603,8 @@ export type OrganizationUncheckedCreateWithoutUsersInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutUsersInput = {
@@ -592,6 +638,8 @@ export type OrganizationUpdateWithoutUsersInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutUsersInput = {
@@ -609,6 +657,8 @@ export type OrganizationUncheckedUpdateWithoutUsersInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutSitesInput = {
@@ -626,6 +676,8 @@ export type OrganizationCreateWithoutSitesInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutSitesInput = {
@@ -643,6 +695,8 @@ export type OrganizationUncheckedCreateWithoutSitesInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutSitesInput = {
@@ -676,6 +730,8 @@ export type OrganizationUpdateWithoutSitesInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutSitesInput = {
@@ -693,6 +749,8 @@ export type OrganizationUncheckedUpdateWithoutSitesInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutCrawlRunsInput = {
@@ -710,6 +768,8 @@ export type OrganizationCreateWithoutCrawlRunsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutCrawlRunsInput = {
@@ -727,6 +787,8 @@ export type OrganizationUncheckedCreateWithoutCrawlRunsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutCrawlRunsInput = {
@@ -760,6 +822,8 @@ export type OrganizationUpdateWithoutCrawlRunsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutCrawlRunsInput = {
@@ -777,6 +841,8 @@ export type OrganizationUncheckedUpdateWithoutCrawlRunsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutExportAuthorizationsInput = {
@@ -794,6 +860,8 @@ export type OrganizationCreateWithoutExportAuthorizationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutExportAuthorizationsInput = {
@@ -811,6 +879,8 @@ export type OrganizationUncheckedCreateWithoutExportAuthorizationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutExportAuthorizationsInput = {
@@ -844,6 +914,8 @@ export type OrganizationUpdateWithoutExportAuthorizationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutExportAuthorizationsInput = {
@@ -861,6 +933,8 @@ export type OrganizationUncheckedUpdateWithoutExportAuthorizationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutObservationSubjectsInput = {
@@ -878,6 +952,8 @@ export type OrganizationCreateWithoutObservationSubjectsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutObservationSubjectsInput = {
@@ -895,6 +971,8 @@ export type OrganizationUncheckedCreateWithoutObservationSubjectsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutObservationSubjectsInput = {
@@ -928,6 +1006,8 @@ export type OrganizationUpdateWithoutObservationSubjectsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutObservationSubjectsInput = {
@@ -945,6 +1025,8 @@ export type OrganizationUncheckedUpdateWithoutObservationSubjectsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutObservationExecutionsInput = {
@@ -962,6 +1044,8 @@ export type OrganizationCreateWithoutObservationExecutionsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutObservationExecutionsInput = {
@@ -979,6 +1063,8 @@ export type OrganizationUncheckedCreateWithoutObservationExecutionsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutObservationExecutionsInput = {
@@ -1012,6 +1098,8 @@ export type OrganizationUpdateWithoutObservationExecutionsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutObservationExecutionsInput = {
@@ -1029,6 +1117,8 @@ export type OrganizationUncheckedUpdateWithoutObservationExecutionsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutPlatformObservationsInput = {
@@ -1046,6 +1136,8 @@ export type OrganizationCreateWithoutPlatformObservationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutPlatformObservationsInput = {
@@ -1063,6 +1155,8 @@ export type OrganizationUncheckedCreateWithoutPlatformObservationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutPlatformObservationsInput = {
@@ -1096,6 +1190,8 @@ export type OrganizationUpdateWithoutPlatformObservationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutPlatformObservationsInput = {
@@ -1113,6 +1209,8 @@ export type OrganizationUncheckedUpdateWithoutPlatformObservationsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutDiagnosticExecutionsInput = {
@@ -1130,6 +1228,8 @@ export type OrganizationCreateWithoutDiagnosticExecutionsInput = {
   platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutOrganizationInput
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutDiagnosticExecutionsInput = {
@@ -1147,6 +1247,8 @@ export type OrganizationUncheckedCreateWithoutDiagnosticExecutionsInput = {
   platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutOrganizationInput
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutDiagnosticExecutionsInput = {
@@ -1180,6 +1282,8 @@ export type OrganizationUpdateWithoutDiagnosticExecutionsInput = {
   platformObservations?: Prisma.PlatformObservationUpdateManyWithoutOrganizationNestedInput
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutDiagnosticExecutionsInput = {
@@ -1197,6 +1301,8 @@ export type OrganizationUncheckedUpdateWithoutDiagnosticExecutionsInput = {
   platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutOrganizationNestedInput
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutDiagnosticResultsInput = {
@@ -1214,6 +1320,8 @@ export type OrganizationCreateWithoutDiagnosticResultsInput = {
   platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutOrganizationInput
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutDiagnosticResultsInput = {
@@ -1231,6 +1339,8 @@ export type OrganizationUncheckedCreateWithoutDiagnosticResultsInput = {
   platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutOrganizationInput
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutDiagnosticResultsInput = {
@@ -1264,6 +1374,8 @@ export type OrganizationUpdateWithoutDiagnosticResultsInput = {
   platformObservations?: Prisma.PlatformObservationUpdateManyWithoutOrganizationNestedInput
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutDiagnosticResultsInput = {
@@ -1281,6 +1393,192 @@ export type OrganizationUncheckedUpdateWithoutDiagnosticResultsInput = {
   platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutOrganizationNestedInput
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutPlatformSnapshotsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserCreateNestedManyWithoutOrganizationInput
+  sites?: Prisma.SiteCreateNestedManyWithoutOrganizationInput
+  events?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutOrganizationInput
+  exportAuthorizations?: Prisma.ExportAuthorizationCreateNestedManyWithoutOrganizationInput
+  observationSubjects?: Prisma.ObservationSubjectCreateNestedManyWithoutOrganizationInput
+  observationExecutions?: Prisma.ObservationExecutionCreateNestedManyWithoutOrganizationInput
+  platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutOrganizationInput
+  evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutOrganizationInput
+  diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutOrganizationInput
+  diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutPlatformSnapshotsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutOrganizationInput
+  sites?: Prisma.SiteUncheckedCreateNestedManyWithoutOrganizationInput
+  events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutOrganizationInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedCreateNestedManyWithoutOrganizationInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedCreateNestedManyWithoutOrganizationInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+  platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutOrganizationInput
+  evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutOrganizationInput
+  diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+  diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutPlatformSnapshotsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPlatformSnapshotsInput, Prisma.OrganizationUncheckedCreateWithoutPlatformSnapshotsInput>
+}
+
+export type OrganizationUpsertWithoutPlatformSnapshotsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutPlatformSnapshotsInput, Prisma.OrganizationUncheckedUpdateWithoutPlatformSnapshotsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPlatformSnapshotsInput, Prisma.OrganizationUncheckedCreateWithoutPlatformSnapshotsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutPlatformSnapshotsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutPlatformSnapshotsInput, Prisma.OrganizationUncheckedUpdateWithoutPlatformSnapshotsInput>
+}
+
+export type OrganizationUpdateWithoutPlatformSnapshotsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUpdateManyWithoutOrganizationNestedInput
+  sites?: Prisma.SiteUpdateManyWithoutOrganizationNestedInput
+  events?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  crawlRuns?: Prisma.CrawlRunUpdateManyWithoutOrganizationNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUpdateManyWithoutOrganizationNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUpdateManyWithoutOrganizationNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUpdateManyWithoutOrganizationNestedInput
+  platformObservations?: Prisma.PlatformObservationUpdateManyWithoutOrganizationNestedInput
+  evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutOrganizationNestedInput
+  diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutOrganizationNestedInput
+  diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutPlatformSnapshotsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUncheckedUpdateManyWithoutOrganizationNestedInput
+  sites?: Prisma.SiteUncheckedUpdateManyWithoutOrganizationNestedInput
+  events?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedUpdateManyWithoutOrganizationNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedUpdateManyWithoutOrganizationNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutOrganizationNestedInput
+  evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
+  diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+  diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutProjectionExecutionsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserCreateNestedManyWithoutOrganizationInput
+  sites?: Prisma.SiteCreateNestedManyWithoutOrganizationInput
+  events?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  crawlRuns?: Prisma.CrawlRunCreateNestedManyWithoutOrganizationInput
+  exportAuthorizations?: Prisma.ExportAuthorizationCreateNestedManyWithoutOrganizationInput
+  observationSubjects?: Prisma.ObservationSubjectCreateNestedManyWithoutOrganizationInput
+  observationExecutions?: Prisma.ObservationExecutionCreateNestedManyWithoutOrganizationInput
+  platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutOrganizationInput
+  evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutOrganizationInput
+  diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutOrganizationInput
+  diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutProjectionExecutionsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutOrganizationInput
+  sites?: Prisma.SiteUncheckedCreateNestedManyWithoutOrganizationInput
+  events?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  crawlRuns?: Prisma.CrawlRunUncheckedCreateNestedManyWithoutOrganizationInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedCreateNestedManyWithoutOrganizationInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedCreateNestedManyWithoutOrganizationInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+  platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutOrganizationInput
+  evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutOrganizationInput
+  diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+  diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutProjectionExecutionsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutProjectionExecutionsInput, Prisma.OrganizationUncheckedCreateWithoutProjectionExecutionsInput>
+}
+
+export type OrganizationUpsertWithoutProjectionExecutionsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutProjectionExecutionsInput, Prisma.OrganizationUncheckedUpdateWithoutProjectionExecutionsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutProjectionExecutionsInput, Prisma.OrganizationUncheckedCreateWithoutProjectionExecutionsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutProjectionExecutionsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutProjectionExecutionsInput, Prisma.OrganizationUncheckedUpdateWithoutProjectionExecutionsInput>
+}
+
+export type OrganizationUpdateWithoutProjectionExecutionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUpdateManyWithoutOrganizationNestedInput
+  sites?: Prisma.SiteUpdateManyWithoutOrganizationNestedInput
+  events?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  crawlRuns?: Prisma.CrawlRunUpdateManyWithoutOrganizationNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUpdateManyWithoutOrganizationNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUpdateManyWithoutOrganizationNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUpdateManyWithoutOrganizationNestedInput
+  platformObservations?: Prisma.PlatformObservationUpdateManyWithoutOrganizationNestedInput
+  evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutOrganizationNestedInput
+  diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutOrganizationNestedInput
+  diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutProjectionExecutionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUncheckedUpdateManyWithoutOrganizationNestedInput
+  sites?: Prisma.SiteUncheckedUpdateManyWithoutOrganizationNestedInput
+  events?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  crawlRuns?: Prisma.CrawlRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  exportAuthorizations?: Prisma.ExportAuthorizationUncheckedUpdateManyWithoutOrganizationNestedInput
+  observationSubjects?: Prisma.ObservationSubjectUncheckedUpdateManyWithoutOrganizationNestedInput
+  observationExecutions?: Prisma.ObservationExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutOrganizationNestedInput
+  evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
+  diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+  diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutEvidenceArtifactsInput = {
@@ -1298,6 +1596,8 @@ export type OrganizationCreateWithoutEvidenceArtifactsInput = {
   platformObservations?: Prisma.PlatformObservationCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutEvidenceArtifactsInput = {
@@ -1315,6 +1615,8 @@ export type OrganizationUncheckedCreateWithoutEvidenceArtifactsInput = {
   platformObservations?: Prisma.PlatformObservationUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutEvidenceArtifactsInput = {
@@ -1348,6 +1650,8 @@ export type OrganizationUpdateWithoutEvidenceArtifactsInput = {
   platformObservations?: Prisma.PlatformObservationUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutEvidenceArtifactsInput = {
@@ -1365,6 +1669,8 @@ export type OrganizationUncheckedUpdateWithoutEvidenceArtifactsInput = {
   platformObservations?: Prisma.PlatformObservationUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutEventsInput = {
@@ -1382,6 +1688,8 @@ export type OrganizationCreateWithoutEventsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutEventsInput = {
@@ -1399,6 +1707,8 @@ export type OrganizationUncheckedCreateWithoutEventsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedCreateNestedManyWithoutOrganizationInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedCreateNestedManyWithoutOrganizationInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedCreateNestedManyWithoutOrganizationInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutEventsInput = {
@@ -1432,6 +1742,8 @@ export type OrganizationUpdateWithoutEventsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutEventsInput = {
@@ -1449,6 +1761,8 @@ export type OrganizationUncheckedUpdateWithoutEventsInput = {
   evidenceArtifacts?: Prisma.EvidenceArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticExecutions?: Prisma.DiagnosticExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
   diagnosticResults?: Prisma.DiagnosticResultUncheckedUpdateManyWithoutOrganizationNestedInput
+  platformSnapshots?: Prisma.PlatformSnapshotUncheckedUpdateManyWithoutOrganizationNestedInput
+  projectionExecutions?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 
@@ -1468,6 +1782,8 @@ export type OrganizationCountOutputType = {
   evidenceArtifacts: number
   diagnosticExecutions: number
   diagnosticResults: number
+  platformSnapshots: number
+  projectionExecutions: number
 }
 
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1482,6 +1798,8 @@ export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   evidenceArtifacts?: boolean | OrganizationCountOutputTypeCountEvidenceArtifactsArgs
   diagnosticExecutions?: boolean | OrganizationCountOutputTypeCountDiagnosticExecutionsArgs
   diagnosticResults?: boolean | OrganizationCountOutputTypeCountDiagnosticResultsArgs
+  platformSnapshots?: boolean | OrganizationCountOutputTypeCountPlatformSnapshotsArgs
+  projectionExecutions?: boolean | OrganizationCountOutputTypeCountProjectionExecutionsArgs
 }
 
 /**
@@ -1571,6 +1889,20 @@ export type OrganizationCountOutputTypeCountDiagnosticResultsArgs<ExtArgs extend
   where?: Prisma.DiagnosticResultWhereInput
 }
 
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountPlatformSnapshotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlatformSnapshotWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountProjectionExecutionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectionExecutionWhereInput
+}
+
 
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1588,6 +1920,8 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   evidenceArtifacts?: boolean | Prisma.Organization$evidenceArtifactsArgs<ExtArgs>
   diagnosticExecutions?: boolean | Prisma.Organization$diagnosticExecutionsArgs<ExtArgs>
   diagnosticResults?: boolean | Prisma.Organization$diagnosticResultsArgs<ExtArgs>
+  platformSnapshots?: boolean | Prisma.Organization$platformSnapshotsArgs<ExtArgs>
+  projectionExecutions?: boolean | Prisma.Organization$projectionExecutionsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
 
@@ -1625,6 +1959,8 @@ export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   evidenceArtifacts?: boolean | Prisma.Organization$evidenceArtifactsArgs<ExtArgs>
   diagnosticExecutions?: boolean | Prisma.Organization$diagnosticExecutionsArgs<ExtArgs>
   diagnosticResults?: boolean | Prisma.Organization$diagnosticResultsArgs<ExtArgs>
+  platformSnapshots?: boolean | Prisma.Organization$platformSnapshotsArgs<ExtArgs>
+  projectionExecutions?: boolean | Prisma.Organization$projectionExecutionsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1644,6 +1980,8 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     evidenceArtifacts: Prisma.$EvidenceArtifactPayload<ExtArgs>[]
     diagnosticExecutions: Prisma.$DiagnosticExecutionPayload<ExtArgs>[]
     diagnosticResults: Prisma.$DiagnosticResultPayload<ExtArgs>[]
+    platformSnapshots: Prisma.$PlatformSnapshotPayload<ExtArgs>[]
+    projectionExecutions: Prisma.$ProjectionExecutionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2055,6 +2393,8 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   evidenceArtifacts<T extends Prisma.Organization$evidenceArtifactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$evidenceArtifactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidenceArtifactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   diagnosticExecutions<T extends Prisma.Organization$diagnosticExecutionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$diagnosticExecutionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiagnosticExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   diagnosticResults<T extends Prisma.Organization$diagnosticResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$diagnosticResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiagnosticResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  platformSnapshots<T extends Prisma.Organization$platformSnapshotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$platformSnapshotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformSnapshotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projectionExecutions<T extends Prisma.Organization$projectionExecutionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$projectionExecutionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectionExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2742,6 +3082,54 @@ export type Organization$diagnosticResultsArgs<ExtArgs extends runtime.Types.Ext
   take?: number
   skip?: number
   distinct?: Prisma.DiagnosticResultScalarFieldEnum | Prisma.DiagnosticResultScalarFieldEnum[]
+}
+
+/**
+ * Organization.platformSnapshots
+ */
+export type Organization$platformSnapshotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatformSnapshot
+   */
+  select?: Prisma.PlatformSnapshotSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatformSnapshot
+   */
+  omit?: Prisma.PlatformSnapshotOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlatformSnapshotInclude<ExtArgs> | null
+  where?: Prisma.PlatformSnapshotWhereInput
+  orderBy?: Prisma.PlatformSnapshotOrderByWithRelationInput | Prisma.PlatformSnapshotOrderByWithRelationInput[]
+  cursor?: Prisma.PlatformSnapshotWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PlatformSnapshotScalarFieldEnum | Prisma.PlatformSnapshotScalarFieldEnum[]
+}
+
+/**
+ * Organization.projectionExecutions
+ */
+export type Organization$projectionExecutionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProjectionExecution
+   */
+  select?: Prisma.ProjectionExecutionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProjectionExecution
+   */
+  omit?: Prisma.ProjectionExecutionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionExecutionInclude<ExtArgs> | null
+  where?: Prisma.ProjectionExecutionWhereInput
+  orderBy?: Prisma.ProjectionExecutionOrderByWithRelationInput | Prisma.ProjectionExecutionOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectionExecutionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectionExecutionScalarFieldEnum | Prisma.ProjectionExecutionScalarFieldEnum[]
 }
 
 /**

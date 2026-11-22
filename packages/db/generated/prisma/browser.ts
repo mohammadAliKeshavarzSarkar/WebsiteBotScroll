@@ -153,6 +153,21 @@ export type DiagnosticResult = Prisma.DiagnosticResultModel
  */
 export type DiagnosticResultInput = Prisma.DiagnosticResultInputModel
 /**
+ * Model ExportProjectionDefinition
+ * 
+ */
+export type ExportProjectionDefinition = Prisma.ExportProjectionDefinitionModel
+/**
+ * Model PlatformSnapshot
+ * 
+ */
+export type PlatformSnapshot = Prisma.PlatformSnapshotModel
+/**
+ * Model ProjectionExecution
+ * 
+ */
+export type ProjectionExecution = Prisma.ProjectionExecutionModel
+/**
  * Model EvidenceArtifact
  * 
  */

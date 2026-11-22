@@ -125,6 +125,9 @@ importers:
       '@website-bot-scroll/domain':
         specifier: workspace:*
         version: link:../domain
+      '@website-bot-scroll/evidence-producer':
+        specifier: workspace:*
+        version: link:../evidence-producer
       '@website-bot-scroll/observation-schema':
         specifier: workspace:*
         version: link:../observation-schema
@@ -152,6 +155,19 @@ importers:
       ajv-formats:
         specifier: 3.0.1
         version: 3.0.1(ajv@8.17.1)
+
+  packages/evidence-producer:
+    dependencies:
+      '@website-bot-scroll/domain':
+        specifier: workspace:*
+        version: link:../domain
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.8
+        version: 4.0.8(@types/node@24.10.1)(jiti@2.7.0)(supports-color@7.2.0)(tsx@4.20.6)
 
   packages/observation-schema:
     dependencies:

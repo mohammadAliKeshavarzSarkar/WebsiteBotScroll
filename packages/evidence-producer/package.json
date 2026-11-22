@@ -1,0 +1,10 @@
+{
+  "name": "@website-bot-scroll/evidence-producer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": { "./platform-snapshot": "./src/platform-snapshot.ts" },
+  "scripts": { "test": "vitest run", "typecheck": "tsc --noEmit", "lint": "eslint src test" },
+  "dependencies": { "@website-bot-scroll/domain": "workspace:*" },
+  "devDependencies": { "typescript": "^5.9.3", "vitest": "^4.0.8" }
+}

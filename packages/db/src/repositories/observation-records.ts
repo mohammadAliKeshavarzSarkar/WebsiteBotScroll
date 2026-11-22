@@ -18,9 +18,10 @@ const terminal = new Set<ObservationExecutionStatus>(["completed", "partial", "f
 export class ObservationRepository {
   constructor(private readonly prisma: DatabaseClient) {}
 
-  private async requireRun(organizationId: string, runId: string) {
+  private async requireRun(organizationId: string, runId: string, mutable = true) {
     const run = await this.prisma.crawlRun.findFirst({ where: { id: runId, organizationId } });
     if (!run) throw new Error("crawl run not found");
+    if (mutable && run.frozenAt) throw new Error("crawl run evidence is frozen");
     return run;
   }
 
@@ -113,7 +114,7 @@ export class ObservationRepository {
   }
 
   async loadRunRecords(organizationId: string, runId: string) {
-    await this.requireRun(organizationId, runId);
+    await this.requireRun(organizationId, runId, false);
     const [subjects, executions, observations] = await Promise.all([
       this.prisma.observationSubject.findMany({ where: { organizationId, crawlRunId: runId }, orderBy: { position: "asc" }, include: { members: { orderBy: { position: "asc" } } } }),
       this.prisma.observationExecution.findMany({ where: { organizationId, crawlRunId: runId }, orderBy: [{ stableKey: "asc" }, { attempt: "asc" }] }),

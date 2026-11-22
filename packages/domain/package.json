@@ -8,6 +8,7 @@
     "./observation-platform": "./src/observation-platform.ts",
     "./renderer-session": "./src/renderer-session.ts",
     "./diagnostics": "./src/diagnostics.ts",
+    "./export-projection": "./src/export-projection.ts",
     "./ids": "./src/ids.ts",
     "./site": "./src/site.ts"
   },
