@@ -184,6 +184,9 @@ docs/superpowers     Product specification and phased implementation plan
 
 - [Product design](docs/superpowers/specs/2026-11-14-automated-seo-platform-design.md)
 - [MVP implementation plan](docs/superpowers/plans/2026-11-14-seo-auditor-mvp.md)
+- [Observation definition governance](docs/operations/observation-definition-governance.md)
+- [Observation platform migration and recovery](docs/operations/observation-platform-migration.md)
+- [Stage A.2 synthetic exchange runbook](docs/operations/stage-a2-synthetic-exchange.md)
 
 ## Evidence interoperability
 
