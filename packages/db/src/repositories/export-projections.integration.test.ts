@@ -105,12 +105,17 @@ describeDatabase("frozen platform snapshots and projections", () => {
     await snapshots.switchToGeneralizedReads(organizationId, runId);
 
     const snapshot = await snapshots.freezePlatformSnapshot(organizationId, runId);
-    const payload = snapshot.payload as any;
-    expect(payload.evidencePages[0].transactions[0]).toMatchObject({ transferredBytes: 123, decodedBytes: 456 });
-    expect(payload.evidencePages[0].transactions[0].headers[0].values.map(({ value }: { value: string }) => value)).toEqual(["a=1", "b=2"]);
+    const payload = snapshot.payload as {
+      evidencePages: Array<{ transactions: Array<{ transferredBytes: number; decodedBytes: number; headers: Array<{ values: Array<{ value: string }> }> }> }>;
+      observationExecutions: Array<Record<string, unknown>>;
+      observations: Array<Record<string, unknown>>;
+      diagnosticResults: Array<{ inputs: Array<{ observationId: string; position: number }> }>;
+    };
+    expect(payload.evidencePages[0]!.transactions[0]).toMatchObject({ transferredBytes: 123, decodedBytes: 456 });
+    expect(payload.evidencePages[0]!.transactions[0]!.headers[0]!.values.map(({ value }: { value: string }) => value)).toEqual(["a=1", "b=2"]);
     expect(payload.observationExecutions[0]).toMatchObject({ startedAt: "2026-11-21T00:00:00.100Z", finishedAt: "2026-11-21T00:00:00.900Z", collector: { key: "renderer.synthetic", version: "1.0.0" }, rendererSession: { engine: "synthetic", locale: "fa-IR" } });
     expect(payload.observations[0]).toMatchObject({ collectedAt: "2026-11-21T00:00:00.800Z", payload: { title: "عنوان فارسی" } });
-    expect(payload.diagnosticResults[0].inputs).toEqual([{ observationId: "observation-typed", position: 0 }]);
+    expect(payload.diagnosticResults[0]!.inputs).toEqual([{ observationId: "observation-typed", position: 0 }]);
   });
 
   it("runs deterministic projection retries against the identical snapshot", async () => {
