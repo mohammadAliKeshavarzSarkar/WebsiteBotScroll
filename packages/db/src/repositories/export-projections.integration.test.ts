@@ -16,7 +16,7 @@ describeDatabase("frozen platform snapshots and projections", () => {
   let organizationId: string; let runId: string;
 
   beforeEach(async () => {
-    await prisma.$executeRawUnsafe('TRUNCATE TABLE "projection_executions", "platform_snapshots", "export_projection_definitions", "evidence_artifacts", "crawl_runs", "sites", "organizations" CASCADE');
+    await prisma.$executeRawUnsafe('TRUNCATE TABLE "projection_executions", "platform_snapshots", "export_projection_definitions", "diagnostic_rule_definitions", "collector_definitions", "observation_definitions", "evidence_artifacts", "crawl_runs", "sites", "organizations" CASCADE');
     organizationId = randomUUID(); runId = randomUUID(); const siteId = randomUUID();
     await prisma.organization.create({ data: { id: organizationId, name: "Owner" } });
     await prisma.site.create({ data: { id: siteId, organizationId, name: "Site", origin: "https://example.test" } });
@@ -68,6 +68,49 @@ describeDatabase("frozen platform snapshots and projections", () => {
   it("never promotes a historically legacy-frozen run", async () => {
     await prisma.crawlRun.update({ where: { id: runId }, data: { frozenAt: new Date("2026-11-21T00:00:02.000Z") } });
     await expect(snapshots.recordParityCheckpoint(organizationId, runId, { checkpoint: {}, parityDigest: "d".repeat(64) })).rejects.toThrow("legacy-frozen");
+  });
+
+  it("freezes a nonempty typed snapshot without losing dates, byte counts, renderer provenance, or dependencies", async () => {
+    const pageId = "page-typed";
+    const observationDefinition = await prisma.observationDefinition.create({ data: {
+      key: "page.snapshot", version: "1.0.0", schema: {}, schemaSha256: "1".repeat(64), scopes: ["page"], statuses: ["observed"], sensitivity: "public", retentionClass: "evidence",
+    } });
+    const collector = await prisma.collectorDefinition.create({ data: {
+      key: "renderer.synthetic", version: "1.0.0", configurationSchema: {}, configurationSchemaSha256: "2".repeat(64), executionMode: "renderer",
+      capabilities: { create: { observationDefinitionId: observationDefinition.id, position: 0 } },
+    } });
+    const rule = await prisma.diagnosticRuleDefinition.create({ data: {
+      key: "seo.snapshot", version: "1.0.0", policyVersion: "2026-11", configurationSchema: {}, configurationSchemaSha256: "3".repeat(64), outcomes: ["pass"], supportsUnavailableInputs: false,
+      inputs: { create: { observationDefinitionId: observationDefinition.id, position: 0, scopes: ["page"], required: true } },
+    } });
+    await prisma.evidencePage.create({ data: {
+      id: pageId, crawlRunId: runId, position: 0, depth: 0, discoveredUrl: "https://example.test/fa", requestedUrl: "https://example.test/fa", normalizedUrl: "https://example.test/fa", finalUrl: "https://example.test/fa", canonicalUrls: ["https://example.test/fa"],
+      transactions: { create: { id: "transaction-typed", position: 0, method: "GET", requestUrl: "https://example.test/fa", responseUrl: "https://example.test/fa", statusCode: 200, startedAt: new Date("2026-11-21T00:00:00.200Z"), finishedAt: new Date("2026-11-21T00:00:00.700Z"), transferredBytes: 123n, decodedBytes: 456n,
+        headers: { create: { position: 0, name: "set-cookie", values: { create: [{ position: 0, value: "a=1" }, { position: 1, value: "b=2" }] } } } } },
+    } });
+    await prisma.observationSubject.create({ data: { id: "subject-typed", organizationId, crawlRunId: runId, position: 0, kind: "page", identity: { pageId } } });
+    await prisma.observationExecution.create({ data: {
+      id: "execution-typed", organizationId, crawlRunId: runId, collectorDefinitionId: collector.id, stableKey: "typed", attempt: 0, trigger: "synthetic", configuration: {}, status: "completed", startedAt: new Date("2026-11-21T00:00:00.100Z"), finishedAt: new Date("2026-11-21T00:00:00.900Z"),
+      rendererSession: { create: { engine: "synthetic", engineVersion: "1.0.0", viewportWidth: 1280, viewportHeight: 720, deviceScaleFactor: 1, locale: "fa-IR", userAgent: "WebsiteBotScroll/Test", timingPolicy: { wait: "network-idle" } } },
+    } });
+    await prisma.platformObservation.create({ data: {
+      id: "observation-typed", organizationId, crawlRunId: runId, subjectId: "subject-typed", executionId: "execution-typed", observationDefinitionId: observationDefinition.id, sequence: 0, status: "observed", payload: { title: "عنوان فارسی" }, reasons: [], provenance: { collector: "renderer.synthetic", version: "1.0.0", transaction_ids: ["transaction-typed"] }, collectedAt: new Date("2026-11-21T00:00:00.800Z"),
+    } });
+    await prisma.diagnosticExecution.create({ data: { id: "diagnostic-typed", organizationId, crawlRunId: runId, ruleDefinitionId: rule.id, stableKey: "title", attempt: 0, configuration: {}, status: "completed", startedAt: new Date("2026-11-21T00:00:01.000Z"), finishedAt: new Date("2026-11-21T00:00:01.100Z") } });
+    await prisma.diagnosticResult.create({ data: {
+      id: "result-typed", organizationId, crawlRunId: runId, executionId: "diagnostic-typed", subjectId: "subject-typed", sequence: 0, outcome: "pass", messageData: { title: "عنوان فارسی" }, limitations: [], collectedAt: new Date("2026-11-21T00:00:01.050Z"), inputs: { create: { observationId: "observation-typed", position: 0 } },
+    } });
+    await prisma.crawlRun.update({ where: { id: runId }, data: { discoveredCount: 1, attemptedCount: 1, collectedCount: 1, unattemptedCount: 0 } });
+    await snapshots.recordParityCheckpoint(organizationId, runId, { checkpoint: { observations: 1 }, parityDigest: "d".repeat(64) });
+    await snapshots.switchToGeneralizedReads(organizationId, runId);
+
+    const snapshot = await snapshots.freezePlatformSnapshot(organizationId, runId);
+    const payload = snapshot.payload as any;
+    expect(payload.evidencePages[0].transactions[0]).toMatchObject({ transferredBytes: 123, decodedBytes: 456 });
+    expect(payload.evidencePages[0].transactions[0].headers[0].values.map(({ value }: { value: string }) => value)).toEqual(["a=1", "b=2"]);
+    expect(payload.observationExecutions[0]).toMatchObject({ startedAt: "2026-11-21T00:00:00.100Z", finishedAt: "2026-11-21T00:00:00.900Z", collector: { key: "renderer.synthetic", version: "1.0.0" }, rendererSession: { engine: "synthetic", locale: "fa-IR" } });
+    expect(payload.observations[0]).toMatchObject({ collectedAt: "2026-11-21T00:00:00.800Z", payload: { title: "عنوان فارسی" } });
+    expect(payload.diagnosticResults[0].inputs).toEqual([{ observationId: "observation-typed", position: 0 }]);
   });
 
   it("runs deterministic projection retries against the identical snapshot", async () => {
