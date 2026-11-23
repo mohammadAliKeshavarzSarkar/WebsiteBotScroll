@@ -88,6 +88,9 @@ importers:
       '@types/node':
         specifier: 24.10.1
         version: 24.10.1
+      '@website-bot-scroll/evidence-producer':
+        specifier: workspace:*
+        version: link:../../packages/evidence-producer
       tsx:
         specifier: 4.20.6
         version: 4.20.6

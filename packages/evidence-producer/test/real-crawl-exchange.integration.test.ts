@@ -58,11 +58,17 @@ describeDatabase("real persisted synthetic exchange", () => {
       { id: "legacy-links", organizationId, crawlRunId: runId, subjectId: "subject-page-1", executionId: "collection-1", observationDefinitionId: additionalDefinitions[3]!.id, sequence: 5, status: "observed", payload: [], reasons: [], provenance: { collector: "html", version: "1.0.0", collectedAt: "2026-11-23T00:00:01.100Z" }, collectedAt: new Date("2026-11-23T00:00:01.100Z") },
       { id: "legacy-rendering", organizationId, crawlRunId: runId, subjectId: "subject-page-1", executionId: "collection-1", observationDefinitionId: additionalDefinitions[4]!.id, sequence: 6, status: "not_collected", reasons: ["browser_rendering_disabled"], provenance: { collector: "html", version: "1.0.0", collectedAt: "2026-11-23T00:00:01.100Z" }, collectedAt: new Date("2026-11-23T00:00:01.100Z") },
     ] });
+    const platformRows = await prisma.platformObservation.findMany({ where: { crawlRunId: runId }, include: { definition: true } });
+    await prisma.evidenceObservation.createMany({ data: platformRows.map((row) => ({
+      id: `legacy-${row.id}`, pageId: "page-1", method: row.definition.key.replace(/^page\./, ""), status: row.status,
+      value: row.payload as never, reasons: row.reasons as never, provenance: row.provenance as never,
+    })) });
     await prisma.diagnosticExecution.create({ data: { id: "diagnostic-1", organizationId, crawlRunId: runId, ruleDefinitionId: rule.id, stableKey: "title", attempt: 0, configuration: {}, status: "completed", startedAt: new Date("2026-11-23T00:00:01.300Z"), finishedAt: new Date("2026-11-23T00:00:01.400Z") } });
     await prisma.diagnosticResult.create({ data: { id: "diagnostic-result-1", organizationId, crawlRunId: runId, executionId: "diagnostic-1", subjectId: "subject-page-1", sequence: 0, outcome: "pass", messageData: { title: "عنوان فارسی" }, limitations: [], collectedAt: new Date("2026-11-23T00:00:01.350Z"), inputs: { create: { observationId: "legacy-metadata", position: 0 } } } });
 
     const snapshots = new SnapshotRepository(prisma);
-    await snapshots.recordParityCheckpoint(organizationId, runId, { checkpoint: { pages: 1, observations: 7 }, parityDigest: "d".repeat(64) });
+    const parity = await snapshots.inspectObservationParity(organizationId, runId);
+    await snapshots.recordParityCheckpoint(organizationId, runId, { checkpoint: { pages: 1, observations: 7 }, parityDigest: parity.legacyDigest });
     await snapshots.switchToGeneralizedReads(organizationId, runId);
     const snapshot = await snapshots.freezePlatformSnapshot(organizationId, runId);
     const artifactRoot = await mkdtemp(join(tmpdir(), "wbs-real-artifacts-")); const exchangeRoot = await mkdtemp(join(tmpdir(), "wbs-real-exchange-"));
@@ -71,7 +77,7 @@ describeDatabase("real persisted synthetic exchange", () => {
     const receipt = await exportFrozenSnapshot({ snapshot, destinationDirectory: exchangeRoot, evidenceFilename: `${runId}.evidence.json`, manifestFilename: `${runId}.manifest.json`, producerCommit: revision });
     const evidenceBytes = await readFile(receipt.evidencePath);
     const execution = await projections.runProjection(organizationId, snapshot.id, { id: "projection-1", key: "seo-crawl-evidence", version: "0.1.0", stableKey: "canonical", attempt: 0, bytes: evidenceBytes, sha256: receipt.evidenceSha256 });
-    const verified = await verifyExchangePair({ evidencePath: receipt.evidencePath, manifestPath: receipt.manifestPath });
+    const verified = await verifyExchangePair({ evidencePath: receipt.evidencePath, manifestPath: receipt.manifestPath, expectedAuthorizationRef: authorizationId });
     const artifact = await prisma.evidenceArtifact.findUniqueOrThrow({ where: { id: execution.outputArtifactId } });
     expect(verified).toMatchObject({ runId, evidenceSha256: receipt.evidenceSha256 });
     expect(Buffer.from(await store.read(artifact.locator))).toEqual(evidenceBytes);

@@ -36,13 +36,13 @@ export function buildPlatformPageBatch(input: {
   return {
     subject: { id: subjectId, runId: input.runId, kind: "page", identity: { pageId: input.pageId } },
     execution: {
-      id: executionId, runId: input.runId, collectorKey: "crawler.http-html", collectorVersion: "1.0.0",
+      id: executionId, runId: input.runId, collectorKey: "crawler.http-html", collectorVersion: "1.1.0",
       stableKey: `crawler.http-html:${input.pageId}`, attempt: input.attempt, trigger: input.attempt === 0 ? "collection" : "retry",
       configuration: {}, startedAt: input.observations.map(({ provenance }) => provenance.collectedAt).find((value): value is string => typeof value === "string") ?? new Date(0).toISOString(),
     },
     records: input.observations.map((observation, sequence) => ({
       id: observation.id,
-      runId: input.runId, subjectId, executionId, definitionKey: legacyMethodToDefinitionKey(observation.method), definitionVersion: "1.0.0",
+      runId: input.runId, subjectId, executionId, definitionKey: legacyMethodToDefinitionKey(observation.method), definitionVersion: "1.1.0",
       sequence, status: observation.status, payload: observation.value, reasons: [...observation.reasons], provenance: { ...observation.provenance },
       collectedAt: observation.provenance.collectedAt ?? new Date(0).toISOString(),
     })),

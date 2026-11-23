@@ -22,16 +22,21 @@ describeDatabase("frozen platform snapshots and projections", () => {
 
   beforeEach(async () => {
     await prisma.$executeRawUnsafe('TRUNCATE TABLE "projection_executions", "platform_snapshots", "export_projection_definitions", "diagnostic_rule_definitions", "collector_definitions", "observation_definitions", "evidence_artifacts", "crawl_runs", "sites", "organizations" CASCADE');
-    organizationId = randomUUID(); runId = randomUUID(); const siteId = randomUUID();
+    organizationId = randomUUID(); runId = randomUUID(); const siteId = randomUUID(); const authorizationId = `auth-${randomUUID()}`;
     await prisma.organization.create({ data: { id: organizationId, name: "Owner" } });
     await prisma.site.create({ data: { id: siteId, organizationId, name: "Site", origin: "https://example.test" } });
-    await prisma.crawlRun.create({ data: { id: runId, organizationId, siteId, trigger: "MANUAL", idempotencyKey: randomUUID(), status: "COMPLETED", startedAt: new Date("2026-11-21T00:00:00.000Z"), finishedAt: new Date("2026-11-21T00:00:01.000Z"), scope: {}, limits: {}, producerVersion: revision, discoveredCount: 0, attemptedCount: 0, collectedCount: 0, failedCount: 0, unattemptedCount: 0, stopReason: "completed" } });
+    await prisma.exportAuthorization.create({ data: { id: authorizationId, organizationId, siteId, description: "Snapshot tests", scope: {} } });
+    await prisma.crawlRun.create({ data: { id: runId, organizationId, siteId, authorizationId, trigger: "MANUAL", idempotencyKey: randomUUID(), status: "COMPLETED", startedAt: new Date("2026-11-21T00:00:00.000Z"), finishedAt: new Date("2026-11-21T00:00:01.000Z"), scope: {}, limits: {}, producerVersion: revision, discoveredCount: 0, attemptedCount: 0, collectedCount: 0, failedCount: 0, unattemptedCount: 0, stopReason: "completed" } });
     artifactStore = new FilesystemArtifactStore(await mkdtemp(join(tmpdir(), "wbs-projections-")));
     projections = new ExportProjectionRepository(prisma, { canPublish: true }, artifactStore);
   });
   afterAll(async () => prisma.$disconnect());
 
   const definition = (key = "platform.neutral-json") => ({ key, version: "1.0.0", format: "neutral-json", mediaType: "application/json", acceptedObservationDefinitions: [], acceptedDiagnosticRules: [] });
+  const recordCurrentParity = async (checkpoint: Record<string, unknown>) => {
+    const parity = await snapshots.inspectObservationParity(organizationId, runId);
+    return snapshots.recordParityCheckpoint(organizationId, runId, { checkpoint, parityDigest: parity.legacyDigest });
+  };
 
   it("publishes immutable projection definitions", async () => {
     await projections.publishProjection(definition()); await projections.publishProjection(definition());
@@ -41,15 +46,16 @@ describeDatabase("frozen platform snapshots and projections", () => {
   });
 
   it("freezes one deterministic tenant-owned snapshot and prevents overwrite", async () => {
-    await snapshots.recordParityCheckpoint(organizationId, runId, { checkpoint: { observations: 0 }, parityDigest: "d".repeat(64) });
+    await recordCurrentParity({ observations: 0 });
     await snapshots.switchToGeneralizedReads(organizationId, runId);
-    const first = await snapshots.freezePlatformSnapshot(organizationId, runId);
-    const second = await snapshots.freezePlatformSnapshot(organizationId, runId);
+    const [first, second] = await Promise.all([snapshots.freezePlatformSnapshot(organizationId, runId), snapshots.freezePlatformSnapshot(organizationId, runId)]);
     expect(second.id).toBe(first.id); expect(second.sha256).toBe(first.sha256); expect(first.producerRevision).toBe(revision);
     await expect(snapshots.loadSnapshot(randomUUID(), first.id)).rejects.toThrow("snapshot not found");
     await expect(prisma.platformSnapshot.update({ where: { id: first.id }, data: { sha256: "b".repeat(64) } })).rejects.toThrow();
     await expect(prisma.platformSnapshot.delete({ where: { id: first.id } })).rejects.toThrow();
     await expect(observations.appendSubject(organizationId, { id: "late-subject", runId, kind: "run", identity: { runId } })).rejects.toThrow("frozen");
+    await expect(prisma.evidenceLimitation.create({ data: { id: "late-limitation", crawlRunId: runId, code: "late", message: "late" } })).rejects.toThrow("frozen");
+    await expect(prisma.crawlRun.update({ where: { id: runId }, data: { stopReason: "changed" } })).rejects.toThrow("frozen");
   });
 
   it("rejects inconsistent coverage, dirty revisions, active executions, and unavailable artifacts", async () => {
@@ -58,7 +64,7 @@ describeDatabase("frozen platform snapshots and projections", () => {
     await prisma.crawlRun.update({ where: { id: runId }, data: { attemptedCount: 0, producerVersion: "dirty" } });
     await expect(snapshots.freezePlatformSnapshot(organizationId, runId)).rejects.toThrow("producer revision");
     await prisma.crawlRun.update({ where: { id: runId }, data: { producerVersion: revision } });
-    await snapshots.recordParityCheckpoint(organizationId, runId, { checkpoint: { observations: 0 }, parityDigest: "d".repeat(64) });
+    await recordCurrentParity({ observations: 0 });
     await snapshots.switchToGeneralizedReads(organizationId, runId);
     await prisma.evidenceArtifact.create({ data: { organizationId, crawlRunId: runId, sha256: "c".repeat(64), byteLength: 1, mediaType: "text/plain", locator: "sha256/cc/c", sensitivity: "public", retentionClass: "evidence", availability: "unavailable" } });
     await expect(snapshots.freezePlatformSnapshot(organizationId, runId)).rejects.toThrow("artifact unavailable");
@@ -66,7 +72,7 @@ describeDatabase("frozen platform snapshots and projections", () => {
 
   it("requires verified parity and a generalized read switch before freeze", async () => {
     await expect(snapshots.freezePlatformSnapshot(organizationId, runId)).rejects.toThrow("migration parity");
-    await snapshots.recordParityCheckpoint(organizationId, runId, { checkpoint: { observations: 0 }, parityDigest: "d".repeat(64) });
+    await recordCurrentParity({ observations: 0 });
     await expect(snapshots.freezePlatformSnapshot(organizationId, runId)).rejects.toThrow("read authority");
     await snapshots.switchToGeneralizedReads(organizationId, runId);
     await expect(snapshots.freezePlatformSnapshot(organizationId, runId)).resolves.toMatchObject({ crawlRunId: runId });
@@ -103,12 +109,13 @@ describeDatabase("frozen platform snapshots and projections", () => {
     await prisma.platformObservation.create({ data: {
       id: "observation-typed", organizationId, crawlRunId: runId, subjectId: "subject-typed", executionId: "execution-typed", observationDefinitionId: observationDefinition.id, sequence: 0, status: "observed", payload: { title: "عنوان فارسی" }, reasons: [], provenance: { collector: "renderer.synthetic", version: "1.0.0", transaction_ids: ["transaction-typed"] }, collectedAt: new Date("2026-11-21T00:00:00.800Z"),
     } });
+    await prisma.evidenceObservation.create({ data: { id: "legacy-observation-typed", pageId, method: "snapshot", status: "observed", value: { title: "عنوان فارسی" }, reasons: [], provenance: { collector: "renderer.synthetic", version: "1.0.0", transaction_ids: ["transaction-typed"] } } });
     await prisma.diagnosticExecution.create({ data: { id: "diagnostic-typed", organizationId, crawlRunId: runId, ruleDefinitionId: rule.id, stableKey: "title", attempt: 0, configuration: {}, status: "completed", startedAt: new Date("2026-11-21T00:00:01.000Z"), finishedAt: new Date("2026-11-21T00:00:01.100Z") } });
     await prisma.diagnosticResult.create({ data: {
       id: "result-typed", organizationId, crawlRunId: runId, executionId: "diagnostic-typed", subjectId: "subject-typed", sequence: 0, outcome: "pass", messageData: { title: "عنوان فارسی" }, limitations: [], collectedAt: new Date("2026-11-21T00:00:01.050Z"), inputs: { create: { observationId: "observation-typed", position: 0 } },
     } });
     await prisma.crawlRun.update({ where: { id: runId }, data: { discoveredCount: 1, attemptedCount: 1, collectedCount: 1, unattemptedCount: 0 } });
-    await snapshots.recordParityCheckpoint(organizationId, runId, { checkpoint: { observations: 1 }, parityDigest: "d".repeat(64) });
+    await recordCurrentParity({ observations: 1 });
     await snapshots.switchToGeneralizedReads(organizationId, runId);
 
     const snapshot = await snapshots.freezePlatformSnapshot(organizationId, runId);
@@ -130,7 +137,7 @@ describeDatabase("frozen platform snapshots and projections", () => {
 
   it("runs deterministic projection retries against the identical snapshot", async () => {
     await projections.publishProjection(definition()); await projections.publishProjection(definition("contract.canonical-json"));
-    await snapshots.recordParityCheckpoint(organizationId, runId, { checkpoint: { observations: 0 }, parityDigest: "d".repeat(64) });
+    await recordCurrentParity({ observations: 0 });
     await snapshots.switchToGeneralizedReads(organizationId, runId);
     const snapshot = await snapshots.freezePlatformSnapshot(organizationId, runId);
     const bytes = Buffer.from("{\"ok\":true}\n"); const sha256 = createHash("sha256").update(bytes).digest("hex");
@@ -142,5 +149,7 @@ describeDatabase("frozen platform snapshots and projections", () => {
     expect(Buffer.from(await artifactStore.read(stored.locator))).toEqual(bytes);
     const changed = Buffer.from("changed"); const changedSha = createHash("sha256").update(changed).digest("hex");
     await expect(projections.runProjection(organizationId, snapshot.id, { id: "projection-1", key: "platform.neutral-json", version: "1.0.0", stableKey: "neutral", attempt: 0, bytes: changed, sha256: changedSha })).rejects.toThrow("immutable projection execution conflict");
+    await prisma.evidenceArtifact.update({ where: { id: first.outputArtifactId! }, data: { locator: "sha256/ff/wrong" } });
+    await expect(projections.runProjection(organizationId, snapshot.id, { id: "projection-1", key: "platform.neutral-json", version: "1.0.0", stableKey: "neutral", attempt: 0, bytes, sha256 })).rejects.toThrow("artifact metadata conflict");
   });
 });

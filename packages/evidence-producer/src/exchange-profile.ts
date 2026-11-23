@@ -43,7 +43,7 @@ function scanJson(text: string, issues: ExchangeProfileIssue[]): unknown {
     space(); const current = text[index];
     if (current === '"') return string(path);
     if (current === "{") {
-      index += 1; const result: Record<string, unknown> = {}; const keys = new Set<string>(); space();
+      index += 1; const result = Object.create(null) as Record<string, unknown>; const keys = new Set<string>(); space();
       if (text[index] === "}") { index += 1; return result; }
       while (true) {
         space(); if (text[index] !== '"') throw new SyntaxError("object key expected");
@@ -65,13 +65,13 @@ function scanJson(text: string, issues: ExchangeProfileIssue[]): unknown {
 }
 
 const hasUrlCharacters = (value: string) => [...value].some((character) => character === "\\" || character.charCodeAt(0) <= 0x1f || character.charCodeAt(0) === 0x7f);
-const urlKey = (key: string) => key === "url" || key.endsWith("_url") || key === "canonical_urls" || key === "seed_urls";
+const urlKey = (key: string) => key === "url" || key.endsWith("_url") || key === "redirect_to" || key === "canonical_urls" || key === "seed_urls";
 const inspectValues = (value: unknown, path: string, key: string, issues: ExchangeProfileIssue[]): void => {
   if (typeof value === "string") {
     if (urlKey(key) && hasUrlCharacters(value)) issue(issues, "url_character", path, "Ambiguous URL characters are not permitted");
     if (/(?:^|_)at$/.test(key) || key.endsWith("At")) {
-      if (/T\d{2}:\d{2}:\d{2}\.\d{4,}Z$/.test(value)) issue(issues, "timestamp_precision", path, "Timestamp precision exceeds milliseconds");
-      if (/T\d{2}:\d{2}:60(?:\.\d+)?Z$/.test(value)) issue(issues, "leap_second", path, "Leap seconds are not permitted");
+      if (/T\d{2}:\d{2}:\d{2}\.\d{4,}(?:Z|[+-]\d{2}:\d{2})$/.test(value)) issue(issues, "timestamp_precision", path, "Timestamp precision exceeds milliseconds");
+      if (/T\d{2}:\d{2}:60(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(value)) issue(issues, "leap_second", path, "Leap seconds are not permitted");
     }
     return;
   }

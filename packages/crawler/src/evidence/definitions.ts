@@ -16,12 +16,12 @@ const schemas: Record<string, Record<string, unknown>> = {
 };
 
 export const PLATFORM_OBSERVATION_DEFINITIONS: ObservationDefinitionInput[] = Object.entries(schemas).map(([key, schema]) => ({
-  key, version: "1.0.0", schema, scopes: ["page"], statuses, sensitivity: "public", retentionClass: "evidence",
+  key, version: "1.1.0", schema, scopes: ["page"], statuses, sensitivity: "public", retentionClass: "evidence",
 }));
 
 export const PLATFORM_CRAWLER_DEFINITION: CollectorDefinitionInput = {
   key: "crawler.http-html",
-  version: "1.0.0",
+  version: "1.1.0",
   configurationSchema: { type: "object", additionalProperties: false },
   capabilities: PLATFORM_OBSERVATION_DEFINITIONS.map(({ key, version }) => ({ observationKey: key, observationVersion: version })),
   executionMode: "worker",

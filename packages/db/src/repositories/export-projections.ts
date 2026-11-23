@@ -15,9 +15,25 @@ const stable = (value: unknown): unknown => value instanceof Date ? value.toISOS
   ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => [key, stable(item)])) : value;
 const same = (a: unknown, b: unknown) => JSON.stringify(stable(a)) === JSON.stringify(stable(b));
 const buildSnapshotBytes = (snapshot: unknown) => { const bytes = Buffer.from(`${JSON.stringify(stable(snapshot))}\n`, "utf8"); return { bytes, sha256: createHash("sha256").update(bytes).digest("hex") }; };
+const parityDigest = (rows: Array<{ key: string; status: string; payload: unknown; reasons: unknown; provenance: unknown }>) => createHash("sha256").update(JSON.stringify(stable(rows.sort((left, right) => left.key < right.key ? -1 : left.key > right.key ? 1 : 0))), "utf8").digest("hex");
+const readParity = async (tx: Prisma.TransactionClient, runId: string) => {
+  const [legacy, generalized] = await Promise.all([
+    tx.evidenceObservation.findMany({ where: { page: { crawlRunId: runId } }, include: { page: true } }),
+    tx.platformObservation.findMany({ where: { crawlRunId: runId }, include: { definition: true } }),
+  ]);
+  const legacyDigest = parityDigest(legacy.map((row) => ({ key: `page.${row.method}`, status: row.status, payload: row.value, reasons: row.reasons, provenance: row.provenance })));
+  const generalizedDigest = parityDigest(generalized.map((row) => ({ key: row.definition.key, status: row.status, payload: row.payload, reasons: row.reasons, provenance: row.provenance })));
+  return { legacyDigest, generalizedDigest, legacyCount: legacy.length, generalizedCount: generalized.length };
+};
 
 export class SnapshotRepository {
   constructor(private readonly prisma: DatabaseClient) {}
+
+  async inspectObservationParity(organizationId: string, runId: string) {
+    const run = await this.prisma.crawlRun.findFirst({ where: { id: runId, organizationId }, select: { id: true } });
+    if (!run) throw new Error("crawl run not found");
+    return readParity(this.prisma as unknown as Prisma.TransactionClient, runId);
+  }
 
   async recordParityCheckpoint(organizationId: string, runId: string, input: { checkpoint: unknown; parityDigest: string }) {
     if (!/^[a-f0-9]{64}$/.test(input.parityDigest)) throw new Error("parity digest is invalid");
@@ -26,8 +42,10 @@ export class SnapshotRepository {
       const run = await tx.crawlRun.findFirst({ where: { id: runId, organizationId } });
       if (!run) throw new Error("crawl run not found");
       if (run.frozenAt) throw new Error("legacy-frozen crawl run cannot be promoted");
+      const parity = await readParity(tx, runId);
+      if (parity.legacyDigest !== parity.generalizedDigest || input.parityDigest !== parity.legacyDigest) throw new Error("persisted observation parity mismatch");
       const existing = await tx.platformMigrationState.findUnique({ where: { crawlRunId: runId } });
-      const comparable = { checkpoint: input.checkpoint, parityDigest: input.parityDigest };
+      const comparable = { checkpoint: { ...(input.checkpoint as Record<string, unknown>), ...parity }, parityDigest: input.parityDigest };
       if (existing) {
         if (existing.organizationId !== organizationId || !same({ checkpoint: existing.checkpoint, parityDigest: existing.parityDigest }, comparable)) throw new Error("immutable migration parity conflict");
         return existing;
@@ -44,6 +62,8 @@ export class SnapshotRepository {
       if (run.frozenAt) throw new Error("legacy-frozen crawl run cannot be promoted");
       const state = await tx.platformMigrationState.findUnique({ where: { crawlRunId: runId } });
       if (!state?.parityVerifiedAt) throw new Error("migration parity checkpoint is required");
+      const parity = await readParity(tx, runId);
+      if (parity.legacyDigest !== state.parityDigest || parity.generalizedDigest !== state.parityDigest) throw new Error("migration parity checkpoint is stale");
       if (state.readAuthority === "generalized") return state;
       return tx.platformMigrationState.update({ where: { crawlRunId: runId }, data: { readAuthority: "generalized", switchedAt: new Date() } });
     });
@@ -51,18 +71,23 @@ export class SnapshotRepository {
 
   async freezePlatformSnapshot(organizationId: string, runId: string) {
     return this.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "crawl_runs" WHERE "id" = ${runId}::uuid AND "organization_id" = ${organizationId}::uuid FOR UPDATE`;
       const existing = await tx.platformSnapshot.findFirst({ where: { crawlRunId: runId, organizationId } });
       if (existing) return existing;
-      await tx.$queryRaw`SELECT "id" FROM "crawl_runs" WHERE "id" = ${runId}::uuid AND "organization_id" = ${organizationId}::uuid FOR UPDATE`;
-      const run = await tx.crawlRun.findFirst({ where: { id: runId, organizationId } });
+      const run = await tx.crawlRun.findFirst({ where: { id: runId, organizationId }, include: { authorization: true, _count: { select: { evidencePages: true } } } });
       if (!run) throw new Error("crawl run not found");
       if (run.frozenAt) throw new Error("legacy-frozen crawl run cannot be exported through the generalized platform");
       if (!["COMPLETED", "PARTIAL", "FAILED", "CANCELLED"].includes(run.status) || !run.finishedAt) throw new Error("crawl run must be terminal");
+      if (run.trigger !== "MANUAL") throw new Error("only manual crawl runs are export eligible");
+      if (!run.authorization || run.authorization.revokedAt || !same(run.scope, run.authorization.scope)) throw new Error("authorization scope mismatch");
       if (run.collectedCount + run.failedCount !== run.attemptedCount || run.attemptedCount > run.discoveredCount || run.unattemptedCount !== run.discoveredCount - run.attemptedCount) throw new Error("coverage is inconsistent");
+      if (run._count.evidencePages !== run.collectedCount) throw new Error("coverage is inconsistent");
       if (!run.producerVersion || !/^[a-f0-9]{40}$/.test(run.producerVersion)) throw new Error("exact producer revision is required");
       const migration = await tx.platformMigrationState.findUnique({ where: { crawlRunId: runId } });
       if (!migration?.parityVerifiedAt) throw new Error("migration parity checkpoint is required");
       if (migration.readAuthority !== "generalized" || !migration.switchedAt) throw new Error("generalized read authority is required");
+      const parity = await readParity(tx, runId);
+      if (parity.legacyDigest !== migration.parityDigest || parity.generalizedDigest !== migration.parityDigest) throw new Error("migration parity checkpoint is stale");
       const [activeObservation, activeDiagnostic, unavailableArtifact, subjects, observationExecutions, observations, diagnosticExecutions, diagnosticResults, artifacts, evidencePages, evidenceLimitations, evidenceErrors] = await Promise.all([
         tx.observationExecution.findFirst({ where: { crawlRunId: runId, status: { in: ["pending", "running"] } } }),
         tx.diagnosticExecution.findFirst({ where: { crawlRunId: runId, status: { in: ["pending", "running"] } } }),
@@ -79,6 +104,18 @@ export class SnapshotRepository {
       ]);
       if (activeObservation || activeDiagnostic) throw new Error("active execution prevents freeze");
       if (unavailableArtifact) throw new Error("artifact unavailable");
+      const pageById = new Map(evidencePages.map((page) => [page.id, page]));
+      const subjectPage = new Map(subjects.map((subject) => [subject.id, (subject.identity as { pageId?: unknown } | null)?.pageId]));
+      for (const observation of observations) {
+        if (observation.definition.key !== "page.http") continue;
+        const pageId = subjectPage.get(observation.subjectId);
+        const page = typeof pageId === "string" ? pageById.get(pageId) : undefined;
+        const value = observation.payload as { transactions?: unknown; final_transaction_id?: unknown } | null;
+        const references = value?.transactions;
+        if (!page || !Array.isArray(references) || references.some((reference) => typeof reference !== "string")) throw new Error("HTTP transaction dependency closure failed");
+        const transactionIds = new Set(page.transactions.map(({ id }) => id));
+        if (references.some((reference) => !transactionIds.has(reference)) || (value?.final_transaction_id != null && (typeof value.final_transaction_id !== "string" || !transactionIds.has(value.final_transaction_id)))) throw new Error("HTTP transaction dependency closure failed");
+      }
       const payload = {
         run: { id: run.id, organizationId, siteId: run.siteId, authorizationRef: run.authorizationId, trigger: run.trigger.toLowerCase(), status: run.status.toLowerCase(), startedAt: run.startedAt?.toISOString(), finishedAt: run.finishedAt.toISOString(), scope: run.scope, limits: run.limits, producerRevision: run.producerVersion, normalizationPolicyVersion: run.normalizationPolicyVersion, extractorVersion: run.extractorVersion, stopReason: run.stopReason, coverage: { discovered: run.discoveredCount, attempted: run.attemptedCount, collected: run.collectedCount, failed: run.failedCount, unattempted: run.unattemptedCount } },
         subjects: subjects.map((subject) => ({ id: subject.id, organizationId: subject.organizationId, crawlRunId: subject.crawlRunId, position: subject.position, kind: subject.kind, identity: subject.identity, members: subject.members.map(({ memberSubjectId, position }) => ({ memberSubjectId, position })) })),
@@ -148,14 +185,23 @@ export class ExportProjectionRepository {
     if (descriptor.sha256 !== input.sha256 || descriptor.byteLength !== input.bytes.byteLength) throw new Error("projection artifact persistence mismatch");
     const existing = await this.prisma.projectionExecution.findUnique({ where: { id: input.id } });
     if (existing) {
-      if (existing.organizationId !== organizationId || existing.snapshotId !== snapshotId || existing.projectionDefinitionId !== projection.id || existing.stableKey !== input.stableKey || existing.attempt !== input.attempt || existing.outputSha256 !== input.sha256) throw new Error("immutable projection execution conflict");
+      if (existing.organizationId !== organizationId || existing.snapshotId !== snapshotId || existing.projectionDefinitionId !== projection.id || existing.stableKey !== input.stableKey || existing.attempt !== input.attempt || existing.outputSha256 !== input.sha256 || !existing.outputArtifactId) throw new Error("immutable projection execution conflict");
+      const existingArtifact = await this.prisma.evidenceArtifact.findUnique({ where: { id: existing.outputArtifactId } });
+      if (!existingArtifact || existingArtifact.organizationId !== organizationId || existingArtifact.crawlRunId !== snapshot.crawlRunId || existingArtifact.sha256 !== input.sha256 || existingArtifact.byteLength !== descriptor.byteLength || existingArtifact.mediaType !== descriptor.mediaType || existingArtifact.locator !== descriptor.locator || existingArtifact.sensitivity !== descriptor.sensitivity || existingArtifact.retentionClass !== descriptor.retentionClass || existingArtifact.availability !== "available") throw new Error("projection artifact metadata conflict");
       return existing;
     }
-    const latest = await this.prisma.projectionExecution.findFirst({ where: { snapshotId, stableKey: input.stableKey }, orderBy: { attempt: "desc" } });
-    if (input.attempt !== (latest ? latest.attempt + 1 : 0)) throw new Error("projection attempt sequence invalid");
-    const run = await this.prisma.crawlRun.findUnique({ where: { id: snapshot.crawlRunId } });
-    const artifact = await this.prisma.evidenceArtifact.upsert({ where: { crawlRunId_sha256: { crawlRunId: snapshot.crawlRunId, sha256: input.sha256 } }, update: {}, create: { organizationId, crawlRunId: snapshot.crawlRunId, ...descriptor, pinnedAt: snapshot.frozenAt } });
-    if (!run) throw new Error("crawl run not found");
-    return this.prisma.projectionExecution.create({ data: { id: input.id, organizationId, snapshotId, projectionDefinitionId: projection.id, stableKey: input.stableKey, attempt: input.attempt, status: "completed", outputArtifactId: artifact.id, outputSha256: input.sha256 } });
+    return this.prisma.$transaction(async (tx) => {
+      const latest = await tx.projectionExecution.findFirst({ where: { snapshotId, stableKey: input.stableKey }, orderBy: { attempt: "desc" } });
+      if (input.attempt !== (latest ? latest.attempt + 1 : 0)) throw new Error("projection attempt sequence invalid");
+      const run = await tx.crawlRun.findUnique({ where: { id: snapshot.crawlRunId } });
+      if (!run) throw new Error("crawl run not found");
+      let artifact = await tx.evidenceArtifact.findUnique({ where: { crawlRunId_sha256: { crawlRunId: snapshot.crawlRunId, sha256: input.sha256 } } });
+      if (artifact) {
+        if (artifact.organizationId !== organizationId || artifact.byteLength !== descriptor.byteLength || artifact.mediaType !== descriptor.mediaType || artifact.locator !== descriptor.locator || artifact.sensitivity !== descriptor.sensitivity || artifact.retentionClass !== descriptor.retentionClass || artifact.availability !== "available") throw new Error("projection artifact metadata conflict");
+      } else {
+        artifact = await tx.evidenceArtifact.create({ data: { organizationId, crawlRunId: snapshot.crawlRunId, ...descriptor, pinnedAt: snapshot.frozenAt } });
+      }
+      return tx.projectionExecution.create({ data: { id: input.id, organizationId, snapshotId, projectionDefinitionId: projection.id, stableKey: input.stableKey, attempt: input.attempt, status: "completed", outputArtifactId: artifact.id, outputSha256: input.sha256 } });
+    });
   }
 }

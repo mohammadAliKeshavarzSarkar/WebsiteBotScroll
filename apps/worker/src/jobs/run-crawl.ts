@@ -2,6 +2,7 @@ import type { DatabaseClient } from "@website-bot-scroll/db";
 import { EvidenceRepository } from "@website-bot-scroll/db/evidence";
 import { DefinitionRepository } from "@website-bot-scroll/db/definitions";
 import { ObservationRepository } from "@website-bot-scroll/db/observation-records";
+import { SnapshotRepository } from "@website-bot-scroll/db/export-projections";
 import { createEvidenceId, defineObservation } from "@website-bot-scroll/domain/evidence";
 import { fetchPage, type HttpTransport } from "@website-bot-scroll/crawler/http/fetch-page";
 import type { DnsResolver } from "@website-bot-scroll/crawler/network/resolve-public";
@@ -169,6 +170,11 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
   await dependencies.evidence.updateCoverage(job.organizationId, job.crawlRunId, { ...coverage, stopReason: pageLimited ? "page_limit_reached" : "frontier_exhausted" });
   const status = partial ? "PARTIAL" : "COMPLETED";
   await finishCrawlRun(job.crawlRunId, status, dependencies.prisma);
-  await dependencies.evidence.freezeRun(job.organizationId, job.crawlRunId);
+  const snapshots = new SnapshotRepository(dependencies.prisma);
+  const parity = await snapshots.inspectObservationParity(job.organizationId, job.crawlRunId);
+  if (parity.legacyDigest !== parity.generalizedDigest) throw new Error("persisted observation parity mismatch");
+  await snapshots.recordParityCheckpoint(job.organizationId, job.crawlRunId, { checkpoint: { legacyCount: parity.legacyCount, generalizedCount: parity.generalizedCount }, parityDigest: parity.legacyDigest });
+  await snapshots.switchToGeneralizedReads(job.organizationId, job.crawlRunId);
+  await snapshots.freezePlatformSnapshot(job.organizationId, job.crawlRunId);
   return { crawlRunId: job.crawlRunId, status, coverage };
 }

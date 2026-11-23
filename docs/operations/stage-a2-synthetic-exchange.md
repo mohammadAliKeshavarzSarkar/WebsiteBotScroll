@@ -35,7 +35,7 @@ The command also stores the exact evidence bytes below `<destination>\.artifacts
 ## Verify and deliver
 
 ```powershell
-pnpm --filter @website-bot-scroll/evidence-producer evidence:verify -- D:\Private\WebsiteBotScrollExchange\<run-id>.evidence.json D:\Private\WebsiteBotScrollExchange\<run-id>.manifest.json
+pnpm --filter @website-bot-scroll/evidence-producer evidence:verify -- D:\Private\WebsiteBotScrollExchange\<run-id>.evidence.json D:\Private\WebsiteBotScrollExchange\<run-id>.manifest.json <expected-authorization-ref>
 Get-FileHash D:\Private\WebsiteBotScrollExchange\<run-id>.evidence.json -Algorithm SHA256
 ```
 

@@ -9,7 +9,7 @@ import { EXCHANGE_PROFILE, inspectExchangeJsonBytes, preflightExchangeBytes } fr
 const KEYS = ["contract", "exchange_profile", "contract_source_commit", "producer_commit", "schema_sha256", "evidence_sha256", "checksum_algorithm", "evidence_filename", "evidence_bytes", "run_id", "authorization_ref", "authorized_scope", "started_at", "finished_at", "coverage_limitations", "producer_validation", "producer_preflight"];
 const stable = (value: unknown): unknown => Array.isArray(value) ? value.map(stable) : value !== null && typeof value === "object" ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([key, item]) => [key, stable(item)])) : value;
 
-export async function verifyExchangePair(options: { evidencePath: string; manifestPath: string }) {
+export async function verifyExchangePair(options: { evidencePath: string; manifestPath: string; expectedAuthorizationRef: string }) {
   const [evidenceBytes, manifestBytes] = await Promise.all([readFile(options.evidencePath), readFile(options.manifestPath)]);
   const inspectedManifest = inspectExchangeJsonBytes(manifestBytes);
   if (inspectedManifest.issues.length || !inspectedManifest.value || typeof inspectedManifest.value !== "object" || Array.isArray(inspectedManifest.value)) throw new Error("manifest JSON is invalid");
@@ -21,6 +21,7 @@ export async function verifyExchangePair(options: { evidencePath: string; manife
     || !manifest.authorized_scope || typeof manifest.authorized_scope !== "object" || Array.isArray(manifest.authorized_scope)
     || !Array.isArray(manifest.coverage_limitations)) throw new Error("manifest field type mismatch");
   if (manifest.evidence_filename !== basename(options.evidencePath)) throw new Error("evidence filename mismatch");
+  if (manifest.authorization_ref !== options.expectedAuthorizationRef) throw new Error("authorization reference mismatch");
   if (manifest.evidence_bytes !== evidenceBytes.byteLength) throw new Error("evidence byte length mismatch");
   const sha256 = createHash("sha256").update(evidenceBytes).digest("hex");
   if (manifest.evidence_sha256 !== sha256) throw new Error("evidence checksum mismatch");

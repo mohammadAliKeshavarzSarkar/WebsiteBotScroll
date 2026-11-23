@@ -17,6 +17,7 @@
     "@website-bot-scroll/queue": "workspace:*"
   },
   "devDependencies": {
+    "@website-bot-scroll/evidence-producer": "workspace:*",
     "@types/node": "24.10.1",
     "tsx": "4.20.6"
   }

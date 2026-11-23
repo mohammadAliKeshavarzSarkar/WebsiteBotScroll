@@ -30,4 +30,10 @@ describe("canonical evidence projection", () => {
     changed.payload.observations[0].payload.transactions = ["missing"];
     expect(() => buildEvidenceDocument(changed, { producerVersion: "0.1.0" })).toThrow("transaction reference");
   });
+
+  it("preserves page scope for collection limitations", () => {
+    const changed: any = structuredClone(snapshot);
+    changed.payload.evidenceLimitations = [{ code: "page_blocked", message: "Blocked", pageId: "page-1" }];
+    expect((buildEvidenceDocument(changed, { producerVersion: "0.1.0" }) as any).run.limitations[0]).toEqual({ code: "page_blocked", message: "Blocked", page_id: "page-1" });
+  });
 });

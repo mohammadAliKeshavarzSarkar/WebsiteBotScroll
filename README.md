@@ -204,7 +204,7 @@ pnpm --filter @website-bot-scroll/evidence-producer evidence:export -- <organiza
 The destination must be private and the generated evidence and manifest files must not already exist. Verify the delivered pair without modifying either file:
 
 ```powershell
-pnpm --filter @website-bot-scroll/evidence-producer evidence:verify -- D:\Private\WebsiteBotScrollExchange\<run-id>.evidence.json D:\Private\WebsiteBotScrollExchange\<run-id>.manifest.json
+pnpm --filter @website-bot-scroll/evidence-producer evidence:verify -- D:\Private\WebsiteBotScrollExchange\<run-id>.evidence.json D:\Private\WebsiteBotScrollExchange\<run-id>.manifest.json <expected-authorization-ref>
 ```
 
 The verifier checks the exact evidence byte length and SHA-256 before parsing, then independently replays canonical validation, exchange-profile preflight, and type-sensitive manifest consistency.

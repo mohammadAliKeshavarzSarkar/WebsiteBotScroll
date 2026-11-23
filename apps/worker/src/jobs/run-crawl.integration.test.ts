@@ -1,12 +1,20 @@
 import { randomUUID } from "node:crypto";
+import { mkdtemp, readFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { enqueueCrawl, CrawlOverlapError, type QueueProducer } from "@website-bot-scroll/queue/client";
 import { createPrismaClient } from "@website-bot-scroll/db";
 import { EvidenceRepository } from "@website-bot-scroll/db/evidence";
+import { FilesystemArtifactStore } from "@website-bot-scroll/db/artifacts";
+import { ExportProjectionRepository } from "@website-bot-scroll/db/export-projections";
+import { exportFrozenSnapshot } from "@website-bot-scroll/evidence-producer/export-run";
+import { verifyExchangePair } from "@website-bot-scroll/evidence-producer/verify-exchange";
 import type { DnsResolver } from "@website-bot-scroll/crawler/network/resolve-public";
 import type { HttpTransport } from "@website-bot-scroll/crawler/http/fetch-page";
 import { computeObservationParityDigest } from "@website-bot-scroll/crawler/evidence/platform-sink";
+import { PLATFORM_OBSERVATION_DEFINITIONS } from "@website-bot-scroll/crawler/evidence/definitions";
 import { processPage } from "./process-page.js";
 import { executeAuthorizedCrawl, finishCrawlRun, processRunCrawl } from "./run-crawl.js";
 
@@ -99,6 +107,9 @@ describeDatabase("idempotent crawl orchestration", () => {
       scope, limits: { max_pages: 1, max_depth: 0, max_duration_ms: 10_000, max_response_bytes: 1_000_000 },
       producerVersion: "a".repeat(40), normalizationPolicyVersion: "normalize/1", extractorVersion: "extract/1",
     } });
+    await prisma.observationDefinition.createMany({ data: ["http", "metadata", "headings", "structured_data", "content", "links", "rendering"].map((method) => ({
+      key: `page.${method}`, version: "1.0.0", schema: {}, schemaSha256: "0".repeat(64), scopes: ["page"], statuses: ["observed"], sensitivity: "public", retentionClass: "evidence",
+    })) });
     const bytes = new TextEncoder().encode('<html lang="fa"><head><title>نمونه</title></head><body><h1>عنوان</h1></body></html>');
     const resolver: DnsResolver = { resolve: vi.fn().mockResolvedValue(["93.184.216.34"]) };
     const transport: HttpTransport = { request: vi.fn().mockResolvedValue({
@@ -113,9 +124,10 @@ describeDatabase("idempotent crawl orchestration", () => {
 
     await executeAuthorizedCrawl(job, { prisma, evidence: new EvidenceRepository(prisma), resolver, transport });
 
-    const frozen = await new EvidenceRepository(prisma).loadFrozenRun(organizationId, crawlRunId);
-    expect(frozen.coverage).toEqual({ discovered: 1, attempted: 1, collected: 1, failed: 0, unattempted: 0 });
-    expect(frozen.pages).toHaveLength(1);
+    const run = await prisma.crawlRun.findUniqueOrThrow({ where: { id: crawlRunId } });
+    expect(run.frozenAt).not.toBeNull();
+    expect(await prisma.platformSnapshot.findUnique({ where: { crawlRunId } })).not.toBeNull();
+    expect(await prisma.platformMigrationState.findUnique({ where: { crawlRunId } })).toMatchObject({ readAuthority: "generalized" });
     expect(await prisma.evidenceTransaction.count({ where: { page: { crawlRunId } } })).toBe(1);
     expect(await prisma.evidenceObservation.count({ where: { page: { crawlRunId } } })).toBe(7);
     const legacy = await prisma.evidenceObservation.findMany({ where: { page: { crawlRunId } }, orderBy: { id: "asc" } });
@@ -125,6 +137,16 @@ describeDatabase("idempotent crawl orchestration", () => {
     expect(platform).toHaveLength(7);
     expect(computeObservationParityDigest(legacy.map((row) => ({ method: row.method, status: row.status as never, value: row.value, reasons: row.reasons as string[], provenance: row.provenance as never, id: row.id }))))
       .toBe(computeObservationParityDigest(platform.map((row) => ({ id: row.id, runId: row.crawlRunId, subjectId: row.subjectId, executionId: row.executionId, definitionKey: row.definition.key, definitionVersion: row.definition.version, sequence: row.sequence, status: row.status as never, payload: row.payload, reasons: row.reasons as string[], provenance: row.provenance as never, collectedAt: row.collectedAt.toISOString() }))));
+    const snapshot = await prisma.platformSnapshot.findUniqueOrThrow({ where: { crawlRunId } });
+    const exchangeRoot = await mkdtemp(join(tmpdir(), "wbs-worker-exchange-"));
+    const artifactStore = new FilesystemArtifactStore(await mkdtemp(join(tmpdir(), "wbs-worker-artifacts-")));
+    const projections = new ExportProjectionRepository(prisma, { canPublish: true }, artifactStore);
+    await projections.publishProjection({ key: "seo-crawl-evidence", version: "0.1.0", format: "seo-crawl-evidence/0.1.0", mediaType: "application/json", acceptedObservationDefinitions: PLATFORM_OBSERVATION_DEFINITIONS.map(({ key, version }) => ({ key, version })), acceptedDiagnosticRules: [] });
+    const receipt = await exportFrozenSnapshot({ snapshot, destinationDirectory: exchangeRoot, evidenceFilename: `${crawlRunId}.evidence.json`, manifestFilename: `${crawlRunId}.manifest.json`, producerCommit: job.producerVersion });
+    const evidenceBytes = await readFile(receipt.evidencePath);
+    const projection = await projections.runProjection(organizationId, snapshot.id, { id: `projection-${crawlRunId}`, key: "seo-crawl-evidence", version: "0.1.0", stableKey: "canonical", attempt: 0, bytes: evidenceBytes, sha256: receipt.evidenceSha256 });
+    await expect(verifyExchangePair({ evidencePath: receipt.evidencePath, manifestPath: receipt.manifestPath, expectedAuthorizationRef: exchangeAuthorizationRef })).resolves.toMatchObject({ runId: crawlRunId });
+    expect(projection.outputArtifactId).toBeTruthy();
   });
 
   it("resumes after persisted transaction evidence without refetching or duplicating it", async () => {

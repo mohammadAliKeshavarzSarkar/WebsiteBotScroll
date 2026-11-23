@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { EvidenceDocument } from "@website-bot-scroll/evidence-contract/types";
 
-const SUPPORTED = new Set(["page.http@1.0.0", "page.metadata@1.0.0", "page.headings@1.0.0", "page.structured_data@1.0.0", "page.content@1.0.0", "page.links@1.0.0", "page.rendering@1.0.0"]);
+const SUPPORTED = new Set(["page.http", "page.metadata", "page.headings", "page.structured_data", "page.content", "page.links", "page.rendering"].flatMap((key) => [`${key}@1.0.0`, `${key}@1.1.0`]));
 type Snapshot = { id: string; payload: Record<string, any> };
 
 const provenance = (record: any, method: string) => record.provenance && Object.keys(record.provenance).length ? {
@@ -36,7 +36,7 @@ export function buildEvidenceDocument(snapshot: Snapshot, identity: { producerVe
     for (const record of records) { const method = record.definition.key.replace(/^page\./, ""); observations[method] = mapObservation(record, method, transactions); }
     return { id: page.id, depth: page.depth, url_identity: { discovered_url: page.discoveredUrl, requested_url: page.requestedUrl, normalized_url: page.normalizedUrl, final_url: page.finalUrl, canonical_urls: page.canonicalUrls }, observations };
   });
-  const limitations = (payload.evidenceLimitations ?? []).map((item: any) => ({ code: item.code, message: item.message }));
+  const limitations = (payload.evidenceLimitations ?? []).map((item: any) => ({ code: item.code, message: item.message, ...(item.pageId ? { page_id: item.pageId } : {}) }));
   const diagnosticExecutions = new Map((payload.diagnosticExecutions ?? []).map((execution: any) => [execution.id, execution]));
   const diagnosticValue = (payload.diagnosticResults ?? []).map((result: any) => {
     const execution = diagnosticExecutions.get(result.executionId) as any; const subject = subjects.get(result.subjectId) as any;

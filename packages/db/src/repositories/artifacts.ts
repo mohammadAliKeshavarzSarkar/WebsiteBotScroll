@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { link, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
 import {
   describeArtifact,
@@ -34,7 +34,12 @@ export class FilesystemArtifactStore implements ArtifactStore {
     const temporary = join(directory, `${derived.sha256}.${randomUUID()}.tmp`);
     try {
       await writeFile(temporary, bytes, { flag: "wx" });
-      await rename(temporary, storagePath);
+      try { await link(temporary, storagePath); }
+      catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+        const existing = await readFile(storagePath);
+        if (!existing.equals(Buffer.from(bytes))) throw new Error("content-address collision");
+      }
     } finally {
       await rm(temporary, { force: true });
     }

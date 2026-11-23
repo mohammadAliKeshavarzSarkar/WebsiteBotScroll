@@ -1,4 +1,4 @@
-import { access, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { access, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -12,11 +12,19 @@ describe("evidence exchange export", () => {
   it("atomically exports and re-verifies exact evidence and manifest bytes", async () => {
     const destinationDirectory = await mkdtemp(join(tmpdir(), "wbs-exchange-"));
     const receipt = await exportFrozenSnapshot({ snapshot, destinationDirectory, evidenceFilename: "run-1.evidence.json", manifestFilename: "run-1.manifest.json", producerCommit: commit });
-    const verified = await verifyExchangePair({ evidencePath: receipt.evidencePath, manifestPath: receipt.manifestPath });
+    const verified = await verifyExchangePair({ evidencePath: receipt.evidencePath, manifestPath: receipt.manifestPath, expectedAuthorizationRef: "auth-1" });
     expect(verified.evidenceSha256).toBe(receipt.evidenceSha256);
-    await expect(exportFrozenSnapshot({ snapshot, destinationDirectory, evidenceFilename: "run-1.evidence.json", manifestFilename: "run-1.manifest.json", producerCommit: commit })).rejects.toThrow("already exists");
+    await expect(exportFrozenSnapshot({ snapshot, destinationDirectory, evidenceFilename: "run-1.evidence.json", manifestFilename: "run-1.manifest.json", producerCommit: commit })).resolves.toMatchObject({ evidenceSha256: receipt.evidenceSha256 });
     const original = await readFile(receipt.evidencePath); await writeFile(receipt.evidencePath, Buffer.concat([original.subarray(0, -1), Buffer.from(" ")]));
-    await expect(verifyExchangePair({ evidencePath: receipt.evidencePath, manifestPath: receipt.manifestPath })).rejects.toThrow("checksum");
+    await expect(verifyExchangePair({ evidencePath: receipt.evidencePath, manifestPath: receipt.manifestPath, expectedAuthorizationRef: "auth-1" })).rejects.toThrow("checksum");
+  });
+
+  it("recovers an exact partial publication on retry", async () => {
+    const destinationDirectory = await mkdtemp(join(tmpdir(), "wbs-exchange-"));
+    const receipt = await exportFrozenSnapshot({ snapshot, destinationDirectory, evidenceFilename: "run-1.evidence.json", manifestFilename: "run-1.manifest.json", producerCommit: commit });
+    await rm(receipt.manifestPath);
+    const retried = await exportFrozenSnapshot({ snapshot, destinationDirectory, evidenceFilename: "run-1.evidence.json", manifestFilename: "run-1.manifest.json", producerCommit: commit });
+    await expect(verifyExchangePair({ evidencePath: retried.evidencePath, manifestPath: retried.manifestPath, expectedAuthorizationRef: "auth-1" })).resolves.toMatchObject({ runId: "run-1" });
   });
 
   it("rejects traversal filenames before writing", async () => {
@@ -40,6 +48,23 @@ describe("evidence exchange export", () => {
     const manifest = JSON.parse(await readFile(receipt.manifestPath, "utf8"));
     manifest[field] = value;
     await writeFile(receipt.manifestPath, `${JSON.stringify(manifest)}\n`);
-    await expect(verifyExchangePair({ evidencePath: receipt.evidencePath, manifestPath: receipt.manifestPath })).rejects.toThrow(message);
+    await expect(verifyExchangePair({ evidencePath: receipt.evidencePath, manifestPath: receipt.manifestPath, expectedAuthorizationRef: "auth-1" })).rejects.toThrow(message);
+  });
+
+  it("rejects substitution of a valid authorization reference", async () => {
+    const destinationDirectory = await mkdtemp(join(tmpdir(), "wbs-exchange-"));
+    const receipt = await exportFrozenSnapshot({ snapshot, destinationDirectory, evidenceFilename: "run-1.evidence.json", manifestFilename: "run-1.manifest.json", producerCommit: commit });
+    const manifest = JSON.parse(await readFile(receipt.manifestPath, "utf8"));
+    manifest.authorization_ref = "auth-2";
+    await writeFile(receipt.manifestPath, `${JSON.stringify(manifest)}\n`);
+    await expect(verifyExchangePair({ evidencePath: receipt.evidencePath, manifestPath: receipt.manifestPath, expectedAuthorizationRef: "auth-1" })).rejects.toThrow("authorization reference mismatch");
+  });
+
+  it("rejects an own __proto__ manifest member", async () => {
+    const destinationDirectory = await mkdtemp(join(tmpdir(), "wbs-exchange-"));
+    const receipt = await exportFrozenSnapshot({ snapshot, destinationDirectory, evidenceFilename: "run-1.evidence.json", manifestFilename: "run-1.manifest.json", producerCommit: commit });
+    const manifest = await readFile(receipt.manifestPath, "utf8");
+    await writeFile(receipt.manifestPath, manifest.replace("{\n", "{\n  \"__proto__\": {},\n"));
+    await expect(verifyExchangePair({ evidencePath: receipt.evidencePath, manifestPath: receipt.manifestPath, expectedAuthorizationRef: "auth-1" })).rejects.toThrow("manifest fields mismatch");
   });
 });
