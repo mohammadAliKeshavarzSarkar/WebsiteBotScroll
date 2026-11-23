@@ -30,4 +30,16 @@ describe("evidence exchange export", () => {
     await expect(exportFrozenSnapshot({ snapshot, destinationDirectory, evidenceFilename: "same.json", manifestFilename: "same.json", producerCommit: commit })).rejects.toThrow("distinct");
     await expect(access(output)).rejects.toThrow();
   });
+
+  it.each([
+    ["authorization_ref", null, "manifest field type"],
+    ["coverage_limitations", [{ code: "changed", message: "changed" }], "manifest evidence mismatch"],
+  ])("rejects a changed %s manifest field", async (field, value, message) => {
+    const destinationDirectory = await mkdtemp(join(tmpdir(), "wbs-exchange-"));
+    const receipt = await exportFrozenSnapshot({ snapshot, destinationDirectory, evidenceFilename: "run-1.evidence.json", manifestFilename: "run-1.manifest.json", producerCommit: commit });
+    const manifest = JSON.parse(await readFile(receipt.manifestPath, "utf8"));
+    manifest[field] = value;
+    await writeFile(receipt.manifestPath, `${JSON.stringify(manifest)}\n`);
+    await expect(verifyExchangePair({ evidencePath: receipt.evidencePath, manifestPath: receipt.manifestPath })).rejects.toThrow(message);
+  });
 });

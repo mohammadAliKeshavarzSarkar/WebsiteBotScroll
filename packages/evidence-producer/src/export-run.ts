@@ -23,7 +23,8 @@ export async function exportFrozenSnapshot(options: { snapshot: any; destination
   const validation = parseEvidenceJson(Buffer.from(evidenceBytes).toString("utf8")); if (!validation.valid) throw new Error("canonical evidence validation failed");
   const preflight = preflightExchangeBytes(evidenceBytes); if (!preflight.eligible) throw new Error("exchange profile preflight failed");
   const run = options.snapshot.payload.run;
-  const manifest = createExchangeManifest({ evidenceBytes, evidenceFilename: options.evidenceFilename, producerCommit: options.producerCommit, runId: run.id, authorizationRef: run.authorizationRef, authorizedScope: run.scope, startedAt: run.startedAt, finishedAt: run.finishedAt, coverageLimitations: options.snapshot.payload.evidenceLimitations ?? [] });
+  const projectedRun = document.run as { limitations?: unknown[] };
+  const manifest = createExchangeManifest({ evidenceBytes, evidenceFilename: options.evidenceFilename, producerCommit: options.producerCommit, runId: run.id, authorizationRef: run.authorizationRef, authorizedScope: run.scope, startedAt: run.startedAt, finishedAt: run.finishedAt, coverageLimitations: projectedRun.limitations ?? [] });
   const manifestBytes = Buffer.from(`${JSON.stringify(manifest, null, 2)}\n`, "utf8");
   const evidenceTemporary = join(destination, `.${options.evidenceFilename}.${randomUUID()}.tmp`); const manifestTemporary = join(destination, `.${options.manifestFilename}.${randomUUID()}.tmp`);
   let evidencePublished = false; let manifestPublished = false;
