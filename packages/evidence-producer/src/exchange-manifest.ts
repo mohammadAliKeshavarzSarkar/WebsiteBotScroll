@@ -10,7 +10,7 @@ export function createExchangeManifest(input: ManifestInput) {
   if (basename(input.evidenceFilename) !== input.evidenceFilename || !/^[A-Za-z0-9._-]+$/.test(input.evidenceFilename)) throw new TypeError("evidence filename is unsafe");
   if (!/^[a-f0-9]{40}$/.test(input.producerCommit)) throw new TypeError("producer commit is invalid");
   return {
-    contract: "seo-crawl-evidence/0.1.0", exchange_profile: EXCHANGE_PROFILE,
+    contract: { name: "seo-crawl-evidence", version: "0.1.0" }, exchange_profile: EXCHANGE_PROFILE,
     contract_source_commit: CONTRACT_SOURCE_COMMIT, producer_commit: input.producerCommit, schema_sha256: SCHEMA_SHA256,
     evidence_sha256: createHash("sha256").update(input.evidenceBytes).digest("hex"), checksum_algorithm: "SHA-256",
     evidence_filename: input.evidenceFilename, evidence_bytes: input.evidenceBytes.byteLength, run_id: input.runId,
