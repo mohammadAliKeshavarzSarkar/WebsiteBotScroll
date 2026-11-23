@@ -18,4 +18,4 @@ export async function proxy(request: NextRequest): Promise<Response> {
   return (await protectRequest(request, getAuthStore())) ?? NextResponse.next();
 }
 
-export const config = { matcher: ["/sites/:path*"] };
+export const config = { matcher: ["/sites/:path*", "/api/sites"] };

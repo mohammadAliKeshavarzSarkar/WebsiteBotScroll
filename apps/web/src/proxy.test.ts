@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { AuthStore } from "./lib/auth.js";
-import { protectRequest } from "./proxy.js";
+import { config, protectRequest } from "./proxy.js";
 import { getAuthStore } from "./lib/server-auth-store.js";
 
 describe("protectRequest", () => {
@@ -16,6 +16,10 @@ describe("protectRequest", () => {
 
     expect(response?.status).toBe(307);
     expect(response?.headers.get("location")).toBe("https://app.example/login");
+  });
+
+  it("registers both workspace pages and the site creation endpoint as protected", () => {
+    expect(config.matcher).toEqual(["/sites/:path*", "/api/sites"]);
   });
 });
 
