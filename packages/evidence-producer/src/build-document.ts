@@ -10,8 +10,13 @@ const provenance = (record: any, method: string) => record.provenance && Object.
   source: record.provenance.source ?? (method === "http" ? "http" : "source_html"),
   version: record.provenance.version ?? "1.0.0",
 } : undefined;
+const resolveTransactions = (references: unknown, transactions: any[]) => {
+  if (!Array.isArray(references) || references.some((id) => typeof id !== "string")) throw new Error("HTTP transaction references are invalid");
+  const byId = new Map(transactions.map((transaction) => [transaction.id, transaction]));
+  return references.map((id) => { const transaction = byId.get(id); if (!transaction) throw new Error(`HTTP transaction reference not found: ${id}`); return transaction; });
+};
 const mapObservation = (record: any, method: string, transactions: any[]) => ({
-  id: record.id, status: record.status, value: method === "http" && record.payload ? { ...record.payload, transactions, final_transaction_id: record.payload.final_transaction_id } : record.payload,
+  id: record.id, status: record.status, value: method === "http" && record.payload ? { ...record.payload, transactions: resolveTransactions(record.payload.transactions, transactions), final_transaction_id: record.payload.final_transaction_id } : record.payload,
   reasons: record.reasons ?? [], ...(provenance(record, method) ? { provenance: provenance(record, method) } : {}),
 });
 const mapTransaction = (transaction: any) => ({ id: transaction.id, request_url: transaction.requestUrl, response_url: transaction.responseUrl, method: transaction.method, status_code: transaction.statusCode, started_at: transaction.startedAt, finished_at: transaction.finishedAt, headers: transaction.headers.map((header: any) => ({ name: header.name, values: header.values.map((value: any) => value.value) })), transferred_bytes: Number(transaction.transferredBytes), decoded_bytes: Number(transaction.decodedBytes), redirect_to: transaction.redirectTo });

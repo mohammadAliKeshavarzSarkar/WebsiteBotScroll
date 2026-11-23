@@ -107,6 +107,9 @@ importers:
       '@website-bot-scroll/domain':
         specifier: workspace:*
         version: link:../domain
+      '@website-bot-scroll/observation-schema':
+        specifier: workspace:*
+        version: link:../observation-schema
       cheerio:
         specifier: 1.1.2
         version: 1.1.2
