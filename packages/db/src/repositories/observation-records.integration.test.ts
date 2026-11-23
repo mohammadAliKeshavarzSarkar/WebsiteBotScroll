@@ -72,6 +72,24 @@ describeDatabase("ObservationRepository", () => {
     await expect(records.finishExecution(organizationId, { executionId: "execution-1", status: "completed", finishedAt: "2026-11-19T08:00:02.000Z" })).rejects.toThrow("child execution");
     await records.finishExecution(organizationId, { executionId: "execution-child", status: "completed", finishedAt: "2026-11-19T08:00:02.000Z" });
     await records.finishExecution(organizationId, { executionId: "execution-1", status: "completed", finishedAt: "2026-11-19T08:00:03.000Z" });
+    await records.finishExecution(organizationId, { executionId: "execution-1", status: "completed", finishedAt: "2026-11-19T08:00:03.000Z" });
+    await expect(records.finishExecution(organizationId, { executionId: "execution-1", status: "failed", finishedAt: "2026-11-19T08:00:04.000Z", error: { code: "late" } })).rejects.toThrow("immutable execution conflict");
+  });
+
+  it("rejects an immutable execution replay with a changed collector version or start time", async () => {
+    await start();
+    await definitions.publishCollectorDefinition({
+      key: "crawler.html", version: "1.1.0", configurationSchema: { type: "object", additionalProperties: false },
+      capabilities: [{ observationKey: "page.metadata", observationVersion: "1.0.0" }], executionMode: "worker",
+    });
+    await expect(records.startExecution(organizationId, {
+      id: "execution-1", runId, collectorKey: "crawler.html", collectorVersion: "1.1.0", stableKey: "html-main", attempt: 0,
+      trigger: "manual", configuration: {}, startedAt: "2026-11-19T08:00:00.000Z",
+    })).rejects.toThrow("immutable execution conflict");
+    await expect(records.startExecution(organizationId, {
+      id: "execution-1", runId, collectorKey: "crawler.html", collectorVersion: "1.0.0", stableKey: "html-main", attempt: 0,
+      trigger: "manual", configuration: {}, startedAt: "2026-11-19T08:00:01.000Z",
+    })).rejects.toThrow("immutable execution conflict");
   });
 
   it("validates definition scope, collector capability, payload, and immutable retry", async () => {

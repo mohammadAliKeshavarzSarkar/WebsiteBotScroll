@@ -76,5 +76,6 @@ describeDatabase("governed evidence artifacts", () => {
     await expect(repository.linkObservation(organizationId, observationId, second.id, "extra", 1)).rejects.toThrow("execution artifact byte limit");
     await prisma.crawlRun.update({ where: { id: runId }, data: { frozenAt: new Date() } });
     await expect(repository.linkObservation(organizationId, observationId, second.id, "extra", 1)).rejects.toThrow("frozen");
+    await expect(repository.register(organizationId, runId, { sha256: "e".repeat(64), byteLength: 1, mediaType: "text/plain", locator: "sha256/ee/e", sensitivity: "public", retentionClass: "evidence" })).rejects.toThrow("frozen");
   });
 });

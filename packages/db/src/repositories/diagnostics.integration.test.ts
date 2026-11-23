@@ -94,4 +94,10 @@ describeDatabase("DiagnosticRepository", () => {
     const snapshot = await diagnostics.loadRunDiagnostics(organizationId, runId);
     expect(snapshot.executions.map(({ attempt, status }) => ({ attempt, status }))).toEqual([{ attempt: 0, status: "failed" }, { attempt: 1, status: "running" }]);
   });
+
+  it("rejects diagnostic execution and results after the run is frozen", async () => {
+    await diagnostics.publishRule(rule());
+    await prisma.crawlRun.update({ where: { id: runId }, data: { frozenAt: new Date("2026-11-21T00:00:05.000Z") } });
+    await expect(startDiagnostic()).rejects.toThrow("frozen");
+  });
 });

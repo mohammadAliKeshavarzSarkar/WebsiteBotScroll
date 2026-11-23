@@ -10,7 +10,7 @@ import { Prisma } from "../../generated/prisma/client.js";
 import type { DatabaseClient } from "../client.js";
 
 const asJson = (value: unknown): Prisma.InputJsonValue => value as Prisma.InputJsonValue;
-const normalize = (value: unknown): unknown => Array.isArray(value) ? value.map(normalize) : value !== null && typeof value === "object"
+const normalize = (value: unknown): unknown => value instanceof Date ? value.toISOString() : Array.isArray(value) ? value.map(normalize) : value !== null && typeof value === "object"
   ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => [key, normalize(item)])) : value;
 const same = (left: unknown, right: unknown): boolean => JSON.stringify(normalize(left)) === JSON.stringify(normalize(right));
 const terminal = new Set<ObservationExecutionStatus>(["completed", "partial", "failed", "cancelled"]);
@@ -56,15 +56,15 @@ export class ObservationRepository {
 
   async startExecution(organizationId: string, input: ObservationExecutionInput) {
     await this.requireRun(organizationId, input.runId);
+    const collector = await this.prisma.collectorDefinition.findUnique({ where: { key_version: { key: input.collectorKey, version: input.collectorVersion } } });
+    if (!collector || collector.status !== "published") throw new Error("collector definition not found");
     const existing = await this.prisma.observationExecution.findUnique({ where: { id: input.id } });
     if (existing) {
-      const expected = { organizationId, crawlRunId: input.runId, collectorDefinitionId: existing.collectorDefinitionId, parentExecutionId: input.parentExecutionId ?? null, stableKey: input.stableKey, attempt: input.attempt, trigger: input.trigger, configuration: input.configuration, startedAt: new Date(input.startedAt) };
+      const expected = { organizationId, crawlRunId: input.runId, collectorDefinitionId: collector.id, parentExecutionId: input.parentExecutionId ?? null, stableKey: input.stableKey, attempt: input.attempt, trigger: input.trigger, configuration: input.configuration, startedAt: new Date(input.startedAt) };
       const actual = { organizationId: existing.organizationId, crawlRunId: existing.crawlRunId, collectorDefinitionId: existing.collectorDefinitionId, parentExecutionId: existing.parentExecutionId, stableKey: existing.stableKey, attempt: existing.attempt, trigger: existing.trigger, configuration: existing.configuration, startedAt: existing.startedAt };
       if (!same(actual, expected)) throw new Error("immutable execution conflict");
       return existing;
     }
-    const collector = await this.prisma.collectorDefinition.findUnique({ where: { key_version: { key: input.collectorKey, version: input.collectorVersion } } });
-    if (!collector || collector.status !== "published") throw new Error("collector definition not found");
     const configResult = validateBoundedPayload(compileBoundedSchema(collector.configurationSchema), input.configuration);
     if (!configResult.valid) throw new Error("collector configuration validation failed");
     if (!Number.isSafeInteger(input.attempt) || input.attempt < 0) throw new Error("attempt sequence invalid");
@@ -85,6 +85,13 @@ export class ObservationRepository {
     if (!terminal.has(input.status)) throw new Error("terminal execution status required");
     const execution = await this.prisma.observationExecution.findFirst({ where: { id: input.executionId, organizationId } });
     if (!execution) throw new Error("observation execution not found");
+    await this.requireRun(organizationId, execution.crawlRunId);
+    const expected = { status: input.status, finishedAt: new Date(input.finishedAt), error: input.error ?? null };
+    if (terminal.has(execution.status as ObservationExecutionStatus)) {
+      if (!same({ status: execution.status, finishedAt: execution.finishedAt, error: execution.error }, expected)) throw new Error("immutable execution conflict");
+      return;
+    }
+    if (execution.status !== "running") throw new Error("running observation execution not found");
     const activeChild = await this.prisma.observationExecution.findFirst({ where: { parentExecutionId: execution.id, status: { in: ["pending", "running"] } } });
     if (activeChild) throw new Error("child execution remains active");
     await this.prisma.observationExecution.update({ where: { id: execution.id }, data: { status: input.status, finishedAt: new Date(input.finishedAt), ...(input.error === undefined ? {} : { error: asJson(input.error) }) } });

@@ -43,6 +43,11 @@ export type Site = Prisma.SiteModel
  */
 export type CrawlRun = Prisma.CrawlRunModel
 /**
+ * Model PlatformMigrationState
+ * 
+ */
+export type PlatformMigrationState = Prisma.PlatformMigrationStateModel
+/**
  * Model ExportAuthorization
  * 
  */

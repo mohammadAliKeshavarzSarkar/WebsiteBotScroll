@@ -56,6 +56,7 @@ export const ModelName = {
   Session: 'Session',
   Site: 'Site',
   CrawlRun: 'CrawlRun',
+  PlatformMigrationState: 'PlatformMigrationState',
   ExportAuthorization: 'ExportAuthorization',
   EvidencePage: 'EvidencePage',
   EvidenceTransaction: 'EvidenceTransaction',
@@ -179,6 +180,21 @@ export const CrawlRunScalarFieldEnum = {
 } as const
 
 export type CrawlRunScalarFieldEnum = (typeof CrawlRunScalarFieldEnum)[keyof typeof CrawlRunScalarFieldEnum]
+
+
+export const PlatformMigrationStateScalarFieldEnum = {
+  crawlRunId: 'crawlRunId',
+  organizationId: 'organizationId',
+  checkpoint: 'checkpoint',
+  parityDigest: 'parityDigest',
+  parityVerifiedAt: 'parityVerifiedAt',
+  readAuthority: 'readAuthority',
+  switchedAt: 'switchedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlatformMigrationStateScalarFieldEnum = (typeof PlatformMigrationStateScalarFieldEnum)[keyof typeof PlatformMigrationStateScalarFieldEnum]
 
 
 export const ExportAuthorizationScalarFieldEnum = {

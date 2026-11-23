@@ -402,6 +402,7 @@ export const ModelName = {
   Session: 'Session',
   Site: 'Site',
   CrawlRun: 'CrawlRun',
+  PlatformMigrationState: 'PlatformMigrationState',
   ExportAuthorization: 'ExportAuthorization',
   EvidencePage: 'EvidencePage',
   EvidenceTransaction: 'EvidenceTransaction',
@@ -446,7 +447,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "session" | "site" | "crawlRun" | "exportAuthorization" | "evidencePage" | "evidenceTransaction" | "evidenceHeader" | "evidenceHeaderValue" | "evidenceObservation" | "evidenceLimitation" | "evidenceError" | "crawlError" | "observationDefinition" | "collectorDefinition" | "collectorCapability" | "observationSubject" | "observationSubjectMember" | "observationExecution" | "rendererSession" | "platformObservation" | "diagnosticRuleDefinition" | "diagnosticRuleInput" | "diagnosticExecution" | "diagnosticResult" | "diagnosticResultInput" | "exportProjectionDefinition" | "platformSnapshot" | "projectionExecution" | "evidenceArtifact" | "observationArtifact" | "domainVerification" | "auditEvent"
+    modelProps: "organization" | "user" | "session" | "site" | "crawlRun" | "platformMigrationState" | "exportAuthorization" | "evidencePage" | "evidenceTransaction" | "evidenceHeader" | "evidenceHeaderValue" | "evidenceObservation" | "evidenceLimitation" | "evidenceError" | "crawlError" | "observationDefinition" | "collectorDefinition" | "collectorCapability" | "observationSubject" | "observationSubjectMember" | "observationExecution" | "rendererSession" | "platformObservation" | "diagnosticRuleDefinition" | "diagnosticRuleInput" | "diagnosticExecution" | "diagnosticResult" | "diagnosticResultInput" | "exportProjectionDefinition" | "platformSnapshot" | "projectionExecution" | "evidenceArtifact" | "observationArtifact" | "domainVerification" | "auditEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -817,6 +818,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.CrawlRunCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.CrawlRunCountAggregateOutputType> | number
+        }
+      }
+    }
+    PlatformMigrationState: {
+      payload: Prisma.$PlatformMigrationStatePayload<ExtArgs>
+      fields: Prisma.PlatformMigrationStateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PlatformMigrationStateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformMigrationStatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PlatformMigrationStateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformMigrationStatePayload>
+        }
+        findFirst: {
+          args: Prisma.PlatformMigrationStateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformMigrationStatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PlatformMigrationStateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformMigrationStatePayload>
+        }
+        findMany: {
+          args: Prisma.PlatformMigrationStateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformMigrationStatePayload>[]
+        }
+        create: {
+          args: Prisma.PlatformMigrationStateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformMigrationStatePayload>
+        }
+        createMany: {
+          args: Prisma.PlatformMigrationStateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PlatformMigrationStateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformMigrationStatePayload>[]
+        }
+        delete: {
+          args: Prisma.PlatformMigrationStateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformMigrationStatePayload>
+        }
+        update: {
+          args: Prisma.PlatformMigrationStateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformMigrationStatePayload>
+        }
+        deleteMany: {
+          args: Prisma.PlatformMigrationStateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PlatformMigrationStateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PlatformMigrationStateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformMigrationStatePayload>[]
+        }
+        upsert: {
+          args: Prisma.PlatformMigrationStateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformMigrationStatePayload>
+        }
+        aggregate: {
+          args: Prisma.PlatformMigrationStateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePlatformMigrationState>
+        }
+        groupBy: {
+          args: Prisma.PlatformMigrationStateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlatformMigrationStateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PlatformMigrationStateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlatformMigrationStateCountAggregateOutputType> | number
         }
       }
     }
@@ -3083,6 +3158,21 @@ export const CrawlRunScalarFieldEnum = {
 export type CrawlRunScalarFieldEnum = (typeof CrawlRunScalarFieldEnum)[keyof typeof CrawlRunScalarFieldEnum]
 
 
+export const PlatformMigrationStateScalarFieldEnum = {
+  crawlRunId: 'crawlRunId',
+  organizationId: 'organizationId',
+  checkpoint: 'checkpoint',
+  parityDigest: 'parityDigest',
+  parityVerifiedAt: 'parityVerifiedAt',
+  readAuthority: 'readAuthority',
+  switchedAt: 'switchedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlatformMigrationStateScalarFieldEnum = (typeof PlatformMigrationStateScalarFieldEnum)[keyof typeof PlatformMigrationStateScalarFieldEnum]
+
+
 export const ExportAuthorizationScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
@@ -3825,6 +3915,7 @@ export type GlobalOmitConfig = {
   session?: Prisma.SessionOmit
   site?: Prisma.SiteOmit
   crawlRun?: Prisma.CrawlRunOmit
+  platformMigrationState?: Prisma.PlatformMigrationStateOmit
   exportAuthorization?: Prisma.ExportAuthorizationOmit
   evidencePage?: Prisma.EvidencePageOmit
   evidenceTransaction?: Prisma.EvidenceTransactionOmit

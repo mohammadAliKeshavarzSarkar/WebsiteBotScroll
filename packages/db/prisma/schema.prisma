@@ -10,23 +10,24 @@ datasource db {
 }
 
 model Organization {
-  id                    String                 @id @default(uuid()) @db.Uuid
-  name                  String
-  createdAt             DateTime               @default(now()) @map("created_at")
-  updatedAt             DateTime               @updatedAt @map("updated_at")
-  users                 User[]
-  sites                 Site[]
-  events                AuditEvent[]
-  crawlRuns             CrawlRun[]
-  exportAuthorizations  ExportAuthorization[]
-  observationSubjects   ObservationSubject[]
-  observationExecutions ObservationExecution[]
-  platformObservations  PlatformObservation[]
-  evidenceArtifacts     EvidenceArtifact[]
-  diagnosticExecutions  DiagnosticExecution[]
-  diagnosticResults     DiagnosticResult[]
-  platformSnapshots     PlatformSnapshot[]
-  projectionExecutions  ProjectionExecution[]
+  id                      String                   @id @default(uuid()) @db.Uuid
+  name                    String
+  createdAt               DateTime                 @default(now()) @map("created_at")
+  updatedAt               DateTime                 @updatedAt @map("updated_at")
+  users                   User[]
+  sites                   Site[]
+  events                  AuditEvent[]
+  crawlRuns               CrawlRun[]
+  exportAuthorizations    ExportAuthorization[]
+  observationSubjects     ObservationSubject[]
+  observationExecutions   ObservationExecution[]
+  platformObservations    PlatformObservation[]
+  evidenceArtifacts       EvidenceArtifact[]
+  diagnosticExecutions    DiagnosticExecution[]
+  diagnosticResults       DiagnosticResult[]
+  platformSnapshots       PlatformSnapshot[]
+  projectionExecutions    ProjectionExecution[]
+  platformMigrationStates PlatformMigrationState[]
 
   @@map("organizations")
 }
@@ -92,36 +93,36 @@ enum CrawlTrigger {
 }
 
 model CrawlRun {
-  id                         String                 @id @default(uuid()) @db.Uuid
-  organizationId             String                 @map("organization_id") @db.Uuid
-  siteId                     String                 @map("site_id") @db.Uuid
+  id                         String                  @id @default(uuid()) @db.Uuid
+  organizationId             String                  @map("organization_id") @db.Uuid
+  siteId                     String                  @map("site_id") @db.Uuid
   trigger                    CrawlTrigger
-  idempotencyKey             String                 @map("idempotency_key")
-  status                     CrawlStatus            @default(PENDING)
-  activeSiteKey              String?                @unique @map("active_site_key") @db.Uuid
-  frontier                   Json                   @default("[]")
-  processedUrls              Json                   @default("[]") @map("processed_urls")
-  attemptCount               Int                    @default(0) @map("attempt_count")
-  startedAt                  DateTime?              @map("started_at")
-  finishedAt                 DateTime?              @map("finished_at")
-  createdAt                  DateTime               @default(now()) @map("created_at")
-  updatedAt                  DateTime               @updatedAt @map("updated_at")
-  authorizationId            String?                @map("authorization_id")
+  idempotencyKey             String                  @map("idempotency_key")
+  status                     CrawlStatus             @default(PENDING)
+  activeSiteKey              String?                 @unique @map("active_site_key") @db.Uuid
+  frontier                   Json                    @default("[]")
+  processedUrls              Json                    @default("[]") @map("processed_urls")
+  attemptCount               Int                     @default(0) @map("attempt_count")
+  startedAt                  DateTime?               @map("started_at")
+  finishedAt                 DateTime?               @map("finished_at")
+  createdAt                  DateTime                @default(now()) @map("created_at")
+  updatedAt                  DateTime                @updatedAt @map("updated_at")
+  authorizationId            String?                 @map("authorization_id")
   scope                      Json?
   limits                     Json?
-  producerVersion            String?                @map("producer_version")
-  normalizationPolicyVersion String?                @map("normalization_policy_version")
-  extractorVersion           String?                @map("extractor_version")
-  discoveredCount            Int                    @default(0) @map("discovered_count")
-  attemptedCount             Int                    @default(0) @map("attempted_count")
-  collectedCount             Int                    @default(0) @map("collected_count")
-  failedCount                Int                    @default(0) @map("failed_count")
-  unattemptedCount           Int?                   @map("unattempted_count")
-  stopReason                 String?                @map("stop_reason")
-  frozenAt                   DateTime?              @map("frozen_at")
-  organization               Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  site                       Site                   @relation(fields: [siteId], references: [id], onDelete: Cascade)
-  authorization              ExportAuthorization?   @relation(fields: [authorizationId], references: [id], onDelete: Restrict)
+  producerVersion            String?                 @map("producer_version")
+  normalizationPolicyVersion String?                 @map("normalization_policy_version")
+  extractorVersion           String?                 @map("extractor_version")
+  discoveredCount            Int                     @default(0) @map("discovered_count")
+  attemptedCount             Int                     @default(0) @map("attempted_count")
+  collectedCount             Int                     @default(0) @map("collected_count")
+  failedCount                Int                     @default(0) @map("failed_count")
+  unattemptedCount           Int?                    @map("unattempted_count")
+  stopReason                 String?                 @map("stop_reason")
+  frozenAt                   DateTime?               @map("frozen_at")
+  organization               Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  site                       Site                    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  authorization              ExportAuthorization?    @relation(fields: [authorizationId], references: [id], onDelete: Restrict)
   errors                     CrawlError[]
   evidencePages              EvidencePage[]
   evidenceLimitations        EvidenceLimitation[]
@@ -133,11 +134,29 @@ model CrawlRun {
   diagnosticExecutions       DiagnosticExecution[]
   diagnosticResults          DiagnosticResult[]
   platformSnapshot           PlatformSnapshot?
+  platformMigrationState     PlatformMigrationState?
 
   @@unique([siteId, idempotencyKey])
   @@index([organizationId, createdAt])
   @@index([siteId, status])
   @@map("crawl_runs")
+}
+
+model PlatformMigrationState {
+  crawlRunId       String       @id @map("crawl_run_id") @db.Uuid
+  organizationId   String       @map("organization_id") @db.Uuid
+  checkpoint       Json
+  parityDigest     String       @map("parity_digest") @db.Char(64)
+  parityVerifiedAt DateTime     @map("parity_verified_at")
+  readAuthority    String       @default("legacy") @map("read_authority")
+  switchedAt       DateTime?    @map("switched_at")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+  crawlRun         CrawlRun     @relation(fields: [crawlRunId], references: [id], onDelete: Restrict)
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+
+  @@index([organizationId, readAuthority])
+  @@map("platform_migration_states")
 }
 
 model ExportAuthorization {

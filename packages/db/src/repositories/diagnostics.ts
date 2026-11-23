@@ -11,7 +11,7 @@ import type { DatabaseClient } from "../client.js";
 
 type PublicationAccess = { canPublish: boolean };
 const json = (value: unknown): Prisma.InputJsonValue => value as Prisma.InputJsonValue;
-const normalize = (value: unknown): unknown => Array.isArray(value) ? value.map(normalize) : value !== null && typeof value === "object"
+const normalize = (value: unknown): unknown => value instanceof Date ? value.toISOString() : Array.isArray(value) ? value.map(normalize) : value !== null && typeof value === "object"
   ? Object.fromEntries(Object.entries(value).sort(([left], [right]) => left.localeCompare(right)).map(([key, item]) => [key, normalize(item)])) : value;
 const same = (left: unknown, right: unknown): boolean => JSON.stringify(normalize(left)) === JSON.stringify(normalize(right));
 
@@ -56,6 +56,7 @@ export class DiagnosticRepository {
   async startExecution(organizationId: string, input: DiagnosticExecutionInput) {
     const run = await this.prisma.crawlRun.findFirst({ where: { id: input.runId, organizationId } });
     if (!run) throw new Error("crawl run not found");
+    if (run.frozenAt) throw new Error("crawl run evidence is frozen");
     const rule = await this.prisma.diagnosticRuleDefinition.findUnique({ where: { key_version: { key: input.ruleKey, version: input.ruleVersion } } });
     if (!rule || rule.status !== "published") throw new Error("diagnostic rule not found");
     if (!validateBoundedPayload(compileBoundedSchema(rule.configurationSchema), input.configuration).valid) throw new Error("diagnostic configuration validation failed");
@@ -73,14 +74,26 @@ export class DiagnosticRepository {
   }
 
   async finishExecution(organizationId: string, input: { executionId: string; status: "completed" | "partial" | "failed" | "cancelled"; finishedAt: string; error?: unknown }) {
-    const execution = await this.prisma.diagnosticExecution.findFirst({ where: { id: input.executionId, organizationId, status: "running" } });
-    if (!execution) throw new Error("running diagnostic execution not found");
+    const execution = await this.prisma.diagnosticExecution.findFirst({ where: { id: input.executionId, organizationId } });
+    if (!execution) throw new Error("diagnostic execution not found");
+    const run = await this.prisma.crawlRun.findFirst({ where: { id: execution.crawlRunId, organizationId } });
+    if (!run) throw new Error("crawl run not found");
+    if (run.frozenAt) throw new Error("crawl run evidence is frozen");
     if (input.status === "failed" && input.error === undefined) throw new Error("diagnostic failure details are required");
+    const expected = { status: input.status, finishedAt: new Date(input.finishedAt), error: input.error ?? null };
+    if (["completed", "partial", "failed", "cancelled"].includes(execution.status)) {
+      if (!same({ status: execution.status, finishedAt: execution.finishedAt, error: execution.error }, expected)) throw new Error("immutable diagnostic execution conflict");
+      return execution;
+    }
+    if (execution.status !== "running") throw new Error("running diagnostic execution not found");
     await this.prisma.diagnosticExecution.update({ where: { id: execution.id }, data: { status: input.status, finishedAt: new Date(input.finishedAt), ...(input.error === undefined ? {} : { error: json(input.error) }) } });
   }
 
   async appendResult(organizationId: string, raw: DiagnosticResultInput): Promise<void> {
     const input = defineDiagnosticResult(raw);
+    const run = await this.prisma.crawlRun.findFirst({ where: { id: input.runId, organizationId } });
+    if (!run) throw new Error("crawl run not found");
+    if (run.frozenAt) throw new Error("crawl run evidence is frozen");
     if (!Number.isSafeInteger(input.sequence) || input.sequence < 0 || new Set(input.inputObservationIds).size !== input.inputObservationIds.length) throw new Error("diagnostic result ordering is invalid");
     const execution = await this.prisma.diagnosticExecution.findFirst({
       where: { id: input.executionId, organizationId, crawlRunId: input.runId, status: "running" },

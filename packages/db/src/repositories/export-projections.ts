@@ -12,15 +12,50 @@ const buildSnapshotBytes = (snapshot: unknown) => { const bytes = Buffer.from(`$
 export class SnapshotRepository {
   constructor(private readonly prisma: DatabaseClient) {}
 
+  async recordParityCheckpoint(organizationId: string, runId: string, input: { checkpoint: unknown; parityDigest: string }) {
+    if (!/^[a-f0-9]{64}$/.test(input.parityDigest)) throw new Error("parity digest is invalid");
+    return this.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "crawl_runs" WHERE "id" = ${runId}::uuid AND "organization_id" = ${organizationId}::uuid FOR UPDATE`;
+      const run = await tx.crawlRun.findFirst({ where: { id: runId, organizationId } });
+      if (!run) throw new Error("crawl run not found");
+      if (run.frozenAt) throw new Error("legacy-frozen crawl run cannot be promoted");
+      const existing = await tx.platformMigrationState.findUnique({ where: { crawlRunId: runId } });
+      const comparable = { checkpoint: input.checkpoint, parityDigest: input.parityDigest };
+      if (existing) {
+        if (existing.organizationId !== organizationId || !same({ checkpoint: existing.checkpoint, parityDigest: existing.parityDigest }, comparable)) throw new Error("immutable migration parity conflict");
+        return existing;
+      }
+      return tx.platformMigrationState.create({ data: { crawlRunId: runId, organizationId, checkpoint: json(input.checkpoint), parityDigest: input.parityDigest, parityVerifiedAt: new Date() } });
+    });
+  }
+
+  async switchToGeneralizedReads(organizationId: string, runId: string) {
+    return this.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "crawl_runs" WHERE "id" = ${runId}::uuid AND "organization_id" = ${organizationId}::uuid FOR UPDATE`;
+      const run = await tx.crawlRun.findFirst({ where: { id: runId, organizationId } });
+      if (!run) throw new Error("crawl run not found");
+      if (run.frozenAt) throw new Error("legacy-frozen crawl run cannot be promoted");
+      const state = await tx.platformMigrationState.findUnique({ where: { crawlRunId: runId } });
+      if (!state?.parityVerifiedAt) throw new Error("migration parity checkpoint is required");
+      if (state.readAuthority === "generalized") return state;
+      return tx.platformMigrationState.update({ where: { crawlRunId: runId }, data: { readAuthority: "generalized", switchedAt: new Date() } });
+    });
+  }
+
   async freezePlatformSnapshot(organizationId: string, runId: string) {
     return this.prisma.$transaction(async (tx) => {
       const existing = await tx.platformSnapshot.findFirst({ where: { crawlRunId: runId, organizationId } });
       if (existing) return existing;
+      await tx.$queryRaw`SELECT "id" FROM "crawl_runs" WHERE "id" = ${runId}::uuid AND "organization_id" = ${organizationId}::uuid FOR UPDATE`;
       const run = await tx.crawlRun.findFirst({ where: { id: runId, organizationId } });
       if (!run) throw new Error("crawl run not found");
+      if (run.frozenAt) throw new Error("legacy-frozen crawl run cannot be exported through the generalized platform");
       if (!["COMPLETED", "PARTIAL", "FAILED", "CANCELLED"].includes(run.status) || !run.finishedAt) throw new Error("crawl run must be terminal");
       if (run.collectedCount + run.failedCount !== run.attemptedCount || run.attemptedCount > run.discoveredCount || run.unattemptedCount !== run.discoveredCount - run.attemptedCount) throw new Error("coverage is inconsistent");
       if (!run.producerVersion || !/^[a-f0-9]{40}$/.test(run.producerVersion)) throw new Error("exact producer revision is required");
+      const migration = await tx.platformMigrationState.findUnique({ where: { crawlRunId: runId } });
+      if (!migration?.parityVerifiedAt) throw new Error("migration parity checkpoint is required");
+      if (migration.readAuthority !== "generalized" || !migration.switchedAt) throw new Error("generalized read authority is required");
       const [activeObservation, activeDiagnostic, unavailableArtifact, subjects, observationExecutions, observations, diagnosticExecutions, diagnosticResults, artifacts, evidencePages, evidenceLimitations, evidenceErrors] = await Promise.all([
         tx.observationExecution.findFirst({ where: { crawlRunId: runId, status: { in: ["pending", "running"] } } }),
         tx.diagnosticExecution.findFirst({ where: { crawlRunId: runId, status: { in: ["pending", "running"] } } }),
