@@ -18,11 +18,13 @@ export class FilesystemArtifactStore implements ArtifactStore {
   async put(bytes: Uint8Array, policy: ArtifactPutPolicy): Promise<ArtifactDescriptor> {
     const derived = describeArtifact(bytes, policy.mediaType);
     validateArtifactPolicy({ ...derived, sensitivity: policy.sensitivity, retentionClass: policy.retentionClass }, policy);
-    const directory = join(this.root, "sha256", derived.sha256.slice(0, 2));
-    const locator = join(directory, derived.sha256);
+    const relativeDirectory = join("sha256", derived.sha256.slice(0, 2));
+    const locator = join(relativeDirectory, derived.sha256);
+    const directory = join(this.root, relativeDirectory);
+    const storagePath = join(this.root, locator);
     await mkdir(directory, { recursive: true });
     try {
-      const existing = await readFile(locator);
+      const existing = await readFile(storagePath);
       if (!existing.equals(Buffer.from(bytes))) throw new Error("content-address collision");
       return { ...derived, locator, sensitivity: policy.sensitivity, retentionClass: policy.retentionClass };
     } catch (error) {
@@ -32,11 +34,16 @@ export class FilesystemArtifactStore implements ArtifactStore {
     const temporary = join(directory, `${derived.sha256}.${randomUUID()}.tmp`);
     try {
       await writeFile(temporary, bytes, { flag: "wx" });
-      await rename(temporary, locator);
+      await rename(temporary, storagePath);
     } finally {
       await rm(temporary, { force: true });
     }
     return { ...derived, locator, sensitivity: policy.sensitivity, retentionClass: policy.retentionClass };
+  }
+
+  async read(locator: string): Promise<Uint8Array> {
+    if (isAbsolute(locator) || locator.includes("..")) throw new Error("artifact locator must be server relative");
+    return readFile(join(this.root, locator));
   }
 }
 
@@ -55,7 +62,7 @@ export class ArtifactRepository {
       const run = await tx.crawlRun.findFirst({ where: { id: runId, organizationId } });
       if (!run) throw new Error("crawl run not found");
       if (run.frozenAt) throw new Error("crawl run evidence is frozen");
-      const existing = await tx.evidenceArtifact.findUnique({ where: { organizationId_sha256: { organizationId, sha256: descriptor.sha256 } } });
+      const existing = await tx.evidenceArtifact.findUnique({ where: { crawlRunId_sha256: { crawlRunId: runId, sha256: descriptor.sha256 } } });
       if (existing) {
         if (existing.byteLength !== descriptor.byteLength || existing.mediaType !== descriptor.mediaType || existing.locator !== descriptor.locator || existing.sensitivity !== descriptor.sensitivity || existing.retentionClass !== descriptor.retentionClass) throw new Error("artifact metadata conflict");
         return existing;

@@ -13,6 +13,7 @@ const absent = async (path: string) => { try { await access(path); throw new Err
 
 export async function exportFrozenSnapshot(options: { snapshot: any; destinationDirectory: string; evidenceFilename: string; manifestFilename: string; producerCommit: string }) {
   if (!safe(options.evidenceFilename) || !safe(options.manifestFilename)) throw new Error("output filename is unsafe");
+  if (options.evidenceFilename === options.manifestFilename) throw new Error("evidence and manifest filenames must be distinct");
   if (options.snapshot.payload.run.producerRevision !== options.producerCommit) throw new Error("producer revision mismatch");
   const destination = resolve(options.destinationDirectory); await mkdir(destination, { recursive: true });
   const evidencePath = join(destination, options.evidenceFilename); const manifestPath = join(destination, options.manifestFilename);
@@ -25,10 +26,14 @@ export async function exportFrozenSnapshot(options: { snapshot: any; destination
   const manifest = createExchangeManifest({ evidenceBytes, evidenceFilename: options.evidenceFilename, producerCommit: options.producerCommit, runId: run.id, authorizationRef: run.authorizationRef, authorizedScope: run.scope, startedAt: run.startedAt, finishedAt: run.finishedAt, coverageLimitations: options.snapshot.payload.evidenceLimitations ?? [] });
   const manifestBytes = Buffer.from(`${JSON.stringify(manifest, null, 2)}\n`, "utf8");
   const evidenceTemporary = join(destination, `.${options.evidenceFilename}.${randomUUID()}.tmp`); const manifestTemporary = join(destination, `.${options.manifestFilename}.${randomUUID()}.tmp`);
+  let evidencePublished = false; let manifestPublished = false;
   try {
     await writeFile(evidenceTemporary, evidenceBytes, { flag: "wx" }); await writeFile(manifestTemporary, manifestBytes, { flag: "wx" });
-    await link(evidenceTemporary, evidencePath); await link(manifestTemporary, manifestPath);
+    await link(evidenceTemporary, evidencePath); evidencePublished = true;
+    await link(manifestTemporary, manifestPath); manifestPublished = true;
   } catch (error) {
+    if (evidencePublished && !manifestPublished) await rm(evidencePath, { force: true });
+    if (manifestPublished && !evidencePublished) await rm(manifestPath, { force: true });
     if ((error as NodeJS.ErrnoException).code === "EEXIST") throw new Error("output already exists");
     throw error;
   } finally { await rm(evidenceTemporary, { force: true }); await rm(manifestTemporary, { force: true }); }

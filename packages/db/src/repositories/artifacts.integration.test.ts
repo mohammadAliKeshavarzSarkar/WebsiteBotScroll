@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
+import { mkdtemp, readdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
@@ -42,15 +42,16 @@ describeDatabase("governed evidence artifacts", () => {
     const first = await store.put(bytes, { ...policy, mediaType: "text/plain", sensitivity: "public", retentionClass: "evidence" });
     const second = await store.put(bytes, { ...policy, mediaType: "text/plain", sensitivity: "public", retentionClass: "evidence" });
     expect(second).toEqual(first);
-    expect(new TextDecoder().decode(await readFile(first.locator))).toBe("evidence");
-    expect(first.locator.startsWith(root)).toBe(true);
+    expect(new TextDecoder().decode(await store.read(first.locator))).toBe("evidence");
+    expect(first.locator).toMatch(/^sha256[\\/]../);
+    expect(first.locator.startsWith(root)).toBe(false);
   });
 
   it("detects occupied hash paths and removes temporary files after failure", async () => {
     const store = new FilesystemArtifactStore(root);
     const bytes = new TextEncoder().encode("collision");
     const descriptor = await store.put(bytes, { ...policy, mediaType: "text/plain", sensitivity: "public", retentionClass: "evidence" });
-    await writeFile(descriptor.locator, "different");
+    await writeFile(join(root, descriptor.locator), "different");
     await expect(store.put(bytes, { ...policy, mediaType: "text/plain", sensitivity: "public", retentionClass: "evidence" })).rejects.toThrow("content-address collision");
     expect((await readdir(root, { recursive: true })).some((name) => String(name).endsWith(".tmp"))).toBe(false);
   });
@@ -62,6 +63,19 @@ describeDatabase("governed evidence artifacts", () => {
     await repository.linkObservation(organizationId, observationId, one.id, "source", 0);
     await repository.linkObservation(organizationId, observationId, two.id, "screenshot", 1);
     expect((await repository.listObservationArtifacts(organizationId, observationId)).map(({ role }) => role)).toEqual(["source", "screenshot"]);
+  });
+
+  it("shares content-addressed bytes while preserving artifact ownership per run", async () => {
+    const repository = new ArtifactRepository(prisma);
+    const site = await prisma.site.findFirstOrThrow({ where: { organizationId } });
+    const secondRunId = randomUUID();
+    await prisma.crawlRun.create({ data: { id: secondRunId, organizationId, siteId: site.id, trigger: "MANUAL", idempotencyKey: randomUUID(), status: "RUNNING", scope: {}, limits: {} } });
+    const descriptor = { sha256: "f".repeat(64), byteLength: 10, mediaType: "text/plain", locator: "sha256/ff/f", sensitivity: "public" as const, retentionClass: "evidence" };
+    const first = await repository.register(organizationId, runId, descriptor);
+    const second = await repository.register(organizationId, secondRunId, descriptor);
+    expect(second.id).not.toBe(first.id);
+    expect([first.crawlRunId, second.crawlRunId]).toEqual([runId, secondRunId]);
+    expect(second.locator).toBe(first.locator);
   });
 
   it("rejects cross-tenant, unavailable, frozen, and over-budget links", async () => {

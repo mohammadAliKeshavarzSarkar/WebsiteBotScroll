@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { access, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -22,5 +22,12 @@ describe("evidence exchange export", () => {
   it("rejects traversal filenames before writing", async () => {
     const destinationDirectory = await mkdtemp(join(tmpdir(), "wbs-exchange-"));
     await expect(exportFrozenSnapshot({ snapshot, destinationDirectory, evidenceFilename: "../outside.json", manifestFilename: "manifest.json", producerCommit: commit })).rejects.toThrow("filename");
+  });
+
+  it("rejects equal output names without leaving a partial final file", async () => {
+    const destinationDirectory = await mkdtemp(join(tmpdir(), "wbs-exchange-"));
+    const output = join(destinationDirectory, "same.json");
+    await expect(exportFrozenSnapshot({ snapshot, destinationDirectory, evidenceFilename: "same.json", manifestFilename: "same.json", producerCommit: commit })).rejects.toThrow("distinct");
+    await expect(access(output)).rejects.toThrow();
   });
 });

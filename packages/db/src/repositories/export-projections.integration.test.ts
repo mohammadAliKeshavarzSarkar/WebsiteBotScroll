@@ -1,6 +1,10 @@
 import { createHash, randomUUID } from "node:crypto";
+import { mkdtemp } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { createPrismaClient } from "../client.js";
+import { FilesystemArtifactStore } from "./artifacts.js";
 import { ExportProjectionRepository, SnapshotRepository } from "./export-projections.js";
 import { ObservationRepository } from "./observation-records.js";
 
@@ -10,7 +14,8 @@ const revision = "a".repeat(40);
 
 describeDatabase("frozen platform snapshots and projections", () => {
   const prisma = createPrismaClient(databaseUrl!);
-  const projections = new ExportProjectionRepository(prisma, { canPublish: true });
+  let projections: ExportProjectionRepository;
+  let artifactStore: FilesystemArtifactStore;
   const snapshots = new SnapshotRepository(prisma);
   const observations = new ObservationRepository(prisma);
   let organizationId: string; let runId: string;
@@ -21,6 +26,8 @@ describeDatabase("frozen platform snapshots and projections", () => {
     await prisma.organization.create({ data: { id: organizationId, name: "Owner" } });
     await prisma.site.create({ data: { id: siteId, organizationId, name: "Site", origin: "https://example.test" } });
     await prisma.crawlRun.create({ data: { id: runId, organizationId, siteId, trigger: "MANUAL", idempotencyKey: randomUUID(), status: "COMPLETED", startedAt: new Date("2026-11-21T00:00:00.000Z"), finishedAt: new Date("2026-11-21T00:00:01.000Z"), scope: {}, limits: {}, producerVersion: revision, discoveredCount: 0, attemptedCount: 0, collectedCount: 0, failedCount: 0, unattemptedCount: 0, stopReason: "completed" } });
+    artifactStore = new FilesystemArtifactStore(await mkdtemp(join(tmpdir(), "wbs-projections-")));
+    projections = new ExportProjectionRepository(prisma, { canPublish: true }, artifactStore);
   });
   afterAll(async () => prisma.$disconnect());
 
@@ -116,6 +123,9 @@ describeDatabase("frozen platform snapshots and projections", () => {
     expect(payload.observationExecutions[0]).toMatchObject({ startedAt: "2026-11-21T00:00:00.100Z", finishedAt: "2026-11-21T00:00:00.900Z", collector: { key: "renderer.synthetic", version: "1.0.0" }, rendererSession: { engine: "synthetic", locale: "fa-IR" } });
     expect(payload.observations[0]).toMatchObject({ collectedAt: "2026-11-21T00:00:00.800Z", payload: { title: "عنوان فارسی" } });
     expect(payload.diagnosticResults[0]!.inputs).toEqual([{ observationId: "observation-typed", position: 0 }]);
+    await projections.publishProjection(definition("projection.without-dependencies"));
+    const bytes = Buffer.from("{}\n");
+    await expect(projections.runProjection(organizationId, snapshot.id, { id: "projection-missing-dependencies", key: "projection.without-dependencies", version: "1.0.0", stableKey: "missing", attempt: 0, bytes, sha256: createHash("sha256").update(bytes).digest("hex") })).rejects.toThrow("projection dependency");
   });
 
   it("runs deterministic projection retries against the identical snapshot", async () => {
@@ -128,6 +138,8 @@ describeDatabase("frozen platform snapshots and projections", () => {
     const repeated = await projections.runProjection(organizationId, snapshot.id, { id: "projection-1", key: "platform.neutral-json", version: "1.0.0", stableKey: "neutral", attempt: 0, bytes, sha256 });
     const canonical = await projections.runProjection(organizationId, snapshot.id, { id: "projection-2", key: "contract.canonical-json", version: "1.0.0", stableKey: "canonical", attempt: 0, bytes, sha256 });
     expect(repeated.outputArtifactId).toBe(first.outputArtifactId); expect(canonical.snapshotId).toBe(first.snapshotId);
+    const stored = await prisma.evidenceArtifact.findUniqueOrThrow({ where: { id: first.outputArtifactId } });
+    expect(Buffer.from(await artifactStore.read(stored.locator))).toEqual(bytes);
     const changed = Buffer.from("changed"); const changedSha = createHash("sha256").update(changed).digest("hex");
     await expect(projections.runProjection(organizationId, snapshot.id, { id: "projection-1", key: "platform.neutral-json", version: "1.0.0", stableKey: "neutral", attempt: 0, bytes: changed, sha256: changedSha })).rejects.toThrow("immutable projection execution conflict");
   });

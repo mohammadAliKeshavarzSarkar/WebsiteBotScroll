@@ -624,7 +624,7 @@ model EvidenceArtifact {
   observations      ObservationArtifact[]
   projectionOutputs ProjectionExecution[] @relation("ProjectionOutput")
 
-  @@unique([organizationId, sha256])
+  @@unique([crawlRunId, sha256])
   @@index([organizationId, crawlRunId, availability])
   @@map("evidence_artifacts")
 }

@@ -1,5 +1,7 @@
 import { createHash } from "node:crypto";
 import { defineExportProjection, type ExportProjectionDefinitionInput } from "@website-bot-scroll/domain/export-projection";
+import type { ArtifactStore } from "@website-bot-scroll/domain/evidence-artifact";
+import { PLATFORM_LIMITS } from "@website-bot-scroll/domain/observation-platform";
 import { Prisma } from "../../generated/prisma/client.js";
 import type { DatabaseClient } from "../client.js";
 
@@ -108,7 +110,7 @@ export class SnapshotRepository {
 }
 
 export class ExportProjectionRepository {
-  constructor(private readonly prisma: DatabaseClient, private readonly access: { canPublish: boolean } = { canPublish: false }) {}
+  constructor(private readonly prisma: DatabaseClient, private readonly access: { canPublish: boolean } = { canPublish: false }, private readonly artifactStore?: ArtifactStore) {}
 
   async publishProjection(input: ExportProjectionDefinitionInput) {
     if (!this.access.canPublish) throw new Error("projection publication authority required");
@@ -134,8 +136,16 @@ export class ExportProjectionRepository {
     ]);
     if (!snapshot) throw new Error("snapshot not found");
     if (!projection || projection.status !== "published") throw new Error("projection definition not found");
+    if (!this.artifactStore) throw new Error("projection artifact store is required");
+    const payload = snapshot.payload as { observations?: Array<{ definition?: { key?: unknown; version?: unknown } }>; diagnosticExecutions?: Array<{ rule?: { key?: unknown; version?: unknown } }> };
+    const observationDependencies = new Set((projection.acceptedObservationDefinitions as Array<{ key: string; version: string }>).map(({ key, version }) => `${key}@${version}`));
+    const diagnosticDependencies = new Set((projection.acceptedDiagnosticRules as Array<{ key: string; version: string }>).map(({ key, version }) => `${key}@${version}`));
+    if ((payload.observations ?? []).some(({ definition }) => !definition || !observationDependencies.has(`${String(definition.key)}@${String(definition.version)}`))
+      || (payload.diagnosticExecutions ?? []).some(({ rule }) => !rule || !diagnosticDependencies.has(`${String(rule.key)}@${String(rule.version)}`))) throw new Error("projection dependency is not declared");
     const actualHash = createHash("sha256").update(input.bytes).digest("hex");
     if (actualHash !== input.sha256) throw new Error("projection output checksum mismatch");
+    const descriptor = await this.artifactStore.put(input.bytes, { maxBytes: PLATFORM_LIMITS.maxArtifactBytes, allowedMediaTypes: [projection.mediaType], allowedSensitivities: ["internal"], allowedRetentionClasses: ["export"], mediaType: projection.mediaType, sensitivity: "internal", retentionClass: "export" });
+    if (descriptor.sha256 !== input.sha256 || descriptor.byteLength !== input.bytes.byteLength) throw new Error("projection artifact persistence mismatch");
     const existing = await this.prisma.projectionExecution.findUnique({ where: { id: input.id } });
     if (existing) {
       if (existing.organizationId !== organizationId || existing.snapshotId !== snapshotId || existing.projectionDefinitionId !== projection.id || existing.stableKey !== input.stableKey || existing.attempt !== input.attempt || existing.outputSha256 !== input.sha256) throw new Error("immutable projection execution conflict");
@@ -144,7 +154,7 @@ export class ExportProjectionRepository {
     const latest = await this.prisma.projectionExecution.findFirst({ where: { snapshotId, stableKey: input.stableKey }, orderBy: { attempt: "desc" } });
     if (input.attempt !== (latest ? latest.attempt + 1 : 0)) throw new Error("projection attempt sequence invalid");
     const run = await this.prisma.crawlRun.findUnique({ where: { id: snapshot.crawlRunId } });
-    const artifact = await this.prisma.evidenceArtifact.upsert({ where: { organizationId_sha256: { organizationId, sha256: input.sha256 } }, update: {}, create: { organizationId, crawlRunId: snapshot.crawlRunId, sha256: input.sha256, byteLength: input.bytes.byteLength, mediaType: projection.mediaType, locator: `sha256/${input.sha256.slice(0, 2)}/${input.sha256}`, sensitivity: "internal", retentionClass: "export", pinnedAt: snapshot.frozenAt } });
+    const artifact = await this.prisma.evidenceArtifact.upsert({ where: { crawlRunId_sha256: { crawlRunId: snapshot.crawlRunId, sha256: input.sha256 } }, update: {}, create: { organizationId, crawlRunId: snapshot.crawlRunId, ...descriptor, pinnedAt: snapshot.frozenAt } });
     if (!run) throw new Error("crawl run not found");
     return this.prisma.projectionExecution.create({ data: { id: input.id, organizationId, snapshotId, projectionDefinitionId: projection.id, stableKey: input.stableKey, attempt: input.attempt, status: "completed", outputArtifactId: artifact.id, outputSha256: input.sha256 } });
   }

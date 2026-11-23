@@ -299,7 +299,7 @@ export type EvidenceArtifactOrderByWithRelationInput = {
 
 export type EvidenceArtifactWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  organizationId_sha256?: Prisma.EvidenceArtifactOrganizationIdSha256CompoundUniqueInput
+  crawlRunId_sha256?: Prisma.EvidenceArtifactCrawlRunIdSha256CompoundUniqueInput
   AND?: Prisma.EvidenceArtifactWhereInput | Prisma.EvidenceArtifactWhereInput[]
   OR?: Prisma.EvidenceArtifactWhereInput[]
   NOT?: Prisma.EvidenceArtifactWhereInput | Prisma.EvidenceArtifactWhereInput[]
@@ -318,7 +318,7 @@ export type EvidenceArtifactWhereUniqueInput = Prisma.AtLeast<{
   crawlRun?: Prisma.XOR<Prisma.CrawlRunScalarRelationFilter, Prisma.CrawlRunWhereInput>
   observations?: Prisma.ObservationArtifactListRelationFilter
   projectionOutputs?: Prisma.ProjectionExecutionListRelationFilter
-}, "id" | "organizationId_sha256">
+}, "id" | "crawlRunId_sha256">
 
 export type EvidenceArtifactOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -484,8 +484,8 @@ export type EvidenceArtifactScalarRelationFilter = {
   isNot?: Prisma.EvidenceArtifactWhereInput
 }
 
-export type EvidenceArtifactOrganizationIdSha256CompoundUniqueInput = {
-  organizationId: string
+export type EvidenceArtifactCrawlRunIdSha256CompoundUniqueInput = {
+  crawlRunId: string
   sha256: string
 }
 
