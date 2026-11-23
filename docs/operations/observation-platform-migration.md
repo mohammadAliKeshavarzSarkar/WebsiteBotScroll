@@ -14,9 +14,13 @@ Backfill only explicitly eligible, unfrozen runs in bounded batches. Reuse stabl
 
 Compare counts, subjects, exact definition versions, status/value/reason envelopes, URL identities, ordered redirects/headers, Persian Unicode, provenance, limitations, diagnostics, and artifacts. Compute deterministic parity digests without sorting evidentiary arrays. Reject active executions, dangling dependencies, unavailable artifacts, unsafe payloads, or tenant mismatches. Rollback checkpoint: mark the run failed-parity and leave its read authority unchanged.
 
+Persist the successful checkpoint and 64-character parity digest through `SnapshotRepository.recordParityCheckpoint`. The operation locks the run, is immutable on replay, and rejects any run already frozen by the legacy path.
+
 ## 4. Switch
 
 Switch reads and snapshot eligibility per run only after recorded parity success. Freeze through `SnapshotRepository`; it verifies terminal lifecycle, coverage, dependency closure, artifact availability, exact producer revision, and tenant ownership. Monitor error, latency, parity, and export validation metrics. Rollback checkpoint: before any generalized snapshot/export exists, return the run to legacy reads; after freeze, never mutate or downgrade the snapshot—create an auditable superseding workflow instead.
+
+Invoke `SnapshotRepository.switchToGeneralizedReads` before freeze. The persisted migration state must show `readAuthority = generalized` and a switch timestamp; freeze refuses a legacy authority or a historical legacy-frozen run. Evidence writes, diagnostic writes, artifact registration, and freeze serialize on the run lock.
 
 ## 5. Contract
 

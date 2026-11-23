@@ -20,7 +20,7 @@ export async function exportFrozenSnapshot(options: { snapshot: any; destination
   await Promise.all([absent(evidencePath), absent(manifestPath)]);
   const document = buildEvidenceDocument(options.snapshot, { producerVersion: options.producerCommit });
   const evidenceBytes = serializeEvidence(document);
-  const validation = parseEvidenceJson(Buffer.from(evidenceBytes).toString("utf8")); if (!validation.valid) throw new Error("canonical evidence validation failed");
+  const validation = parseEvidenceJson(Buffer.from(evidenceBytes).toString("utf8")); if (!validation.valid) throw new Error(`canonical evidence validation failed: ${JSON.stringify(validation.errors)}`);
   const preflight = preflightExchangeBytes(evidenceBytes); if (!preflight.eligible) throw new Error("exchange profile preflight failed");
   const run = options.snapshot.payload.run;
   const projectedRun = document.run as { limitations?: unknown[] };
