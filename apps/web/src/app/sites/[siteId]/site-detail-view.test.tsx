@@ -20,10 +20,22 @@ describe("owner site detail", () => {
     const html = renderToStaticMarkup(<SiteDetailView site={site} authorization={{ id: "auth-1", description: "Owner-declared crawl authorization", scope: { seed_urls: ["https://example.com/"], allowed_hosts: ["example.com"], include_patterns: [], exclude_patterns: [] }, createdAt: new Date("2026-11-24T09:00:00Z") }} latestRun={{ id: "run-1", status: "FAILED", createdAt: new Date("2026-11-24T09:01:00Z"), startedAt: new Date("2026-11-24T09:01:01Z"), finishedAt: new Date("2026-11-24T09:01:03Z"), stopReason: "worker_error", coverage: { discovered: 3, attempted: 2, collected: 1, failed: 1, unattempted: 1 }, errors: [{ code: "request_failed", message: "The page could not be collected.", url: null, retryable: true }] }} feedback={{ authorized: true }} />);
     expect(html).toContain("Authorized for bounded collection");
     expect(html).toContain("https://example.com/");
+    expect(html).toContain('action="/api/sites/site-1/crawl"');
+    expect(html).toContain('name="maxPages"');
+    expect(html).toContain('value="25"');
+    expect(html).toContain('name="maxDepth"');
+    expect(html).toContain('name="maxDurationSeconds"');
     expect(html).toContain("FAILED");
     expect(html).toContain("1 collected");
     expect(html).toContain("The page could not be collected.");
     expect(html).not.toContain("SEO score");
+  });
+
+  it("marks active runs for safe refresh and disables overlapping starts", () => {
+    const html = renderToStaticMarkup(<SiteDetailView site={site} authorization={{ id: "auth-1", description: "Owner-declared crawl authorization", scope: { seed_urls: ["https://example.com/"], allowed_hosts: ["example.com"], include_patterns: [], exclude_patterns: [] }, createdAt: new Date("2026-11-24T09:00:00Z") }} latestRun={{ id: "run-1", status: "RUNNING", createdAt: new Date(), startedAt: new Date(), finishedAt: null, stopReason: null, coverage: { discovered: 1, attempted: 0, collected: 0, failed: 0, unattempted: 1 }, errors: [] }} />);
+    expect(html).toContain('data-active-run="true"');
+    expect(html).toContain("A crawl is already active");
+    expect(html).not.toContain('action="/api/sites/site-1/crawl"');
   });
 
   it("renders stable route feedback", () => {

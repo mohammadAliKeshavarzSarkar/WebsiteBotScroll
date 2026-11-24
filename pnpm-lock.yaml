@@ -41,6 +41,9 @@ importers:
       '@website-bot-scroll/domain':
         specifier: workspace:*
         version: link:../../packages/domain
+      '@website-bot-scroll/queue':
+        specifier: workspace:*
+        version: link:../../packages/queue
       argon2:
         specifier: 0.45.2
         version: 0.45.2

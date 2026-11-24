@@ -65,14 +65,24 @@ describeDatabase("idempotent crawl orchestration", () => {
     await expect(enqueueCrawl({ ...input, idempotencyKey: "manual-2" }, { prisma, producer })).rejects.toBeInstanceOf(CrawlOverlapError);
   });
 
-  it("republishes a stored run after a transient queue failure", async () => {
+  it("removes a just-created pending run after queue publication fails so a retry can start", async () => {
     const recovering: QueueProducer = { add: vi.fn().mockRejectedValueOnce(new Error("redis unavailable")).mockResolvedValueOnce(undefined) };
     const input = { organizationId, siteId, ...evidenceControl(), trigger: "MANUAL" as const, idempotencyKey: "recover-1" };
     await expect(enqueueCrawl(input, { prisma, producer: recovering })).rejects.toThrow("redis unavailable");
+    expect(await prisma.crawlRun.count()).toBe(0);
     const crawlRunId = await enqueueCrawl(input, { prisma, producer: recovering });
     expect(crawlRunId).toBeTruthy();
     expect(await prisma.crawlRun.count()).toBe(1);
     expect(recovering.add).toHaveBeenCalledTimes(2);
+  });
+
+  it("keeps a previously stored idempotent run replayable when republication fails", async () => {
+    const input = { organizationId, siteId, ...evidenceControl(), trigger: "MANUAL" as const, idempotencyKey: "stored-1" };
+    const crawlRunId = await enqueueCrawl(input, { prisma, producer });
+    const recovering: QueueProducer = { add: vi.fn().mockRejectedValueOnce(new Error("redis unavailable")).mockResolvedValueOnce(undefined) };
+    await expect(enqueueCrawl(input, { prisma, producer: recovering })).rejects.toThrow("redis unavailable");
+    expect((await prisma.crawlRun.findUniqueOrThrow({ where: { id: crawlRunId } })).activeSiteKey).toBe(siteId);
+    await expect(enqueueCrawl(input, { prisma, producer: recovering })).resolves.toBe(crawlRunId);
   });
 
   it("resumes duplicate worker delivery and checkpoints a page once", async () => {
