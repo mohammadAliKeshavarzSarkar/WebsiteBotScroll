@@ -6,14 +6,15 @@ WebsiteBotScroll is a read-only, evidence-based SEO auditing platform. The repos
 
 The following foundations are runnable today:
 
-- Next.js web application and login page
+- Evidence-first product landing page and owner login
+- Protected, tenant-scoped website registration workspace
 - Background worker bootstrap
 - PostgreSQL persistence and tenant-safe repositories
 - Owner authentication and session storage
 - URL normalization and SSRF/network-boundary protection
 - `robots.txt` evaluation and bounded sitemap discovery
 
-The end-to-end workflow where a customer enters a domain and receives a complete scheduled audit is **not connected yet**. Crawl fetching, scheduling, findings, scores, and the customer dashboard are later implementation phases. The current home page therefore shows an MVP-in-progress message.
+An authenticated owner can now register a website and see it in the `/sites` workspace. The end-to-end workflow that authorizes a target, starts or schedules a crawl, and presents findings is **not connected yet**. The interface labels newly registered websites `Ready for authorization` and does not invent audit results.
 
 ## Requirements
 
@@ -111,10 +112,13 @@ Open:
 - Web application: <http://localhost:3000>
 - Health endpoint: <http://localhost:3000/api/health>
 - Login page: <http://localhost:3000/login>
+- Owner website workspace: <http://localhost:3000/sites>
 
 The worker prints a JSON `ready` event when its environment is valid.
 
-Owner bootstrap logic exists in `packages/db/src/seed.ts`, but a production-style seed command and the post-login `/sites` dashboard are not wired yet. Consequently, the login screen is present for development, but the complete interactive owner flow is not ready.
+Open the home page, select **Open workspace**, and sign in with the owner account already bootstrapped in your local database. In `/sites`, enter a short label and an absolute `http://` or `https://` URL, then select **Add website**. WebsiteBotScroll stores only the normalized origin; pasted paths, queries, and fragments are removed. See the [web onboarding guide](docs/operations/web-onboarding.md) for the exact flow and current boundary.
+
+Owner bootstrap logic exists in `packages/db/src/seed.ts`, but a production-style seed command is not wired yet. A fresh database therefore needs an owner record created through the existing bootstrap function before the login flow can be used.
 
 ## Run quality checks
 
@@ -187,6 +191,7 @@ docs/superpowers     Product specification and phased implementation plan
 - [Observation definition governance](docs/operations/observation-definition-governance.md)
 - [Observation platform migration and recovery](docs/operations/observation-platform-migration.md)
 - [Stage A.2 synthetic exchange runbook](docs/operations/stage-a2-synthetic-exchange.md)
+- [Web onboarding guide](docs/operations/web-onboarding.md)
 
 ## Evidence interoperability
 
