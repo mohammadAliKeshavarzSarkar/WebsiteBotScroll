@@ -11,7 +11,8 @@
     "./renderer-sessions": "./src/repositories/renderer-sessions.ts",
     "./diagnostics": "./src/repositories/diagnostics.ts",
     "./export-projections": "./src/repositories/export-projections.ts",
-    "./sites": "./src/repositories/sites.ts"
+    "./sites": "./src/repositories/sites.ts",
+    "./site-workspace": "./src/repositories/site-workspace.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",
