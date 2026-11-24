@@ -1,8 +1,8 @@
 import type { DatabaseClient } from "@website-bot-scroll/db";
 import { Queue } from "bullmq";
 
-import { crawlScopeSchema, runCrawlJobSchema, type CrawlTrigger, type RunCrawlJob } from "./contracts.js";
-import { CRAWL_QUEUE_NAME, crawlJobOptions, RUN_CRAWL_JOB_NAME } from "./worker-options.js";
+import { crawlScopeSchema, runCrawlJobSchema, type CrawlTrigger, type RunCrawlJob } from "./contracts.ts";
+import { CRAWL_QUEUE_NAME, crawlJobOptions, RUN_CRAWL_JOB_NAME } from "./worker-options.ts";
 
 export type EnqueueCrawlInput = Omit<RunCrawlJob, "crawlRunId">;
 export interface QueueProducer { add(name: string, data: RunCrawlJob, options: { jobId: string }): Promise<unknown> }
