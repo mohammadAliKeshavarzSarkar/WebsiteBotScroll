@@ -13,6 +13,8 @@ describe("public product page", () => {
     expect(text).toContain("SEO monitoring you can prove.");
     expect(text).toContain("Collect read-only evidence");
     expect(text).toContain("No rankings are manipulated");
+    expect(text).toContain("Conceptual workflow");
+    expect(text).not.toContain("24 pages found");
     expect(html).toContain('href="/sites"');
     expect(html).toContain("Open your workspace");
   });

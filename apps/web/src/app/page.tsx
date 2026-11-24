@@ -14,11 +14,11 @@ export default function HomePage() {
           <div className="hero-actions"><a className="button button-primary" href="/sites">Open your workspace</a><a className="button button-quiet" href="#workflow">See the evidence flow</a></div>
           <p className="hero-note">No rankings are manipulated. No content is rewritten. No observation is invented.</p>
         </div>
-        <div className="evidence-window" aria-label="Illustration of an evidence collection run">
-          <div className="window-bar"><span className="window-title">live evidence · example.com</span><span className="window-state">COLLECTING</span></div>
+        <div className="evidence-window" aria-label="Conceptual illustration of the evidence workflow">
+          <div className="window-bar"><span className="window-title">Conceptual workflow</span><span className="window-state">PREVIEW</span></div>
           <div className="window-body">
-            <div className="run-summary"><div><span className="metric-value">24</span><span className="metric-label">pages found</span></div><div><span className="metric-value">18</span><span className="metric-label">observed</span></div><div><span className="metric-value">6</span><span className="metric-label">remaining</span></div></div>
-            <div className="evidence-log"><p><span className="log-time">09:41:02</span><span className="log-ok">200</span><span>/</span></p><p><span className="log-time">09:41:03</span><span className="log-ok">200</span><span>/products</span></p><p><span className="log-time">09:41:04</span><span className="log-warn">301</span><span>/old-page</span></p><p className="log-active"><span className="log-time">09:41:05</span><span className="log-dot">●</span><span>/about</span></p></div>
+            <div className="run-summary"><div><span className="metric-value">01</span><span className="metric-label">register</span></div><div><span className="metric-value">02</span><span className="metric-label">authorize</span></div><div><span className="metric-value">03</span><span className="metric-label">observe</span></div></div>
+            <div className="evidence-log"><p><span className="log-time">CURRENT</span><span className="log-ok">READY</span><span>tenant site registry</span></p><p><span className="log-time">NEXT</span><span className="log-warn">PENDING</span><span>authorization controls</span></p><p><span className="log-time">LATER</span><span className="log-dot">●</span><span>bounded collection</span></p></div>
             <div className="evidence-footer"><span>scope locked</span><span>headers preserved</span><span>sha-256</span></div>
           </div>
         </div>
@@ -29,7 +29,7 @@ export default function HomePage() {
       <section className="workflow-section" id="workflow">
         <div className="section-heading"><p className="eyebrow">A traceable workflow</p><h2>From a domain to defensible evidence.</h2><p>Every stage keeps collection facts separate from interpretation, so your team can see what was observed and where coverage stopped.</p></div>
         <div className="workflow-grid">
-          <article className="workflow-card"><span className="step-label">01 · AUTHORIZE</span><h3>Define the boundary</h3><p>Add a website and explicitly control its permitted hosts, seed pages, and collection limits.</p><span className="card-detail">Nothing outside scope is collected</span></article>
+          <article className="workflow-card"><span className="step-label">01 · AUTHORIZE</span><h3>Define the boundary</h3><p>After registration, upcoming controls will define permitted hosts, seed pages, and collection limits before any crawl starts.</p><span className="card-detail">Nothing outside scope is collected</span></article>
           <article className="workflow-card featured"><span className="step-label">02 · OBSERVE</span><h3>Collect read-only evidence</h3><p>Capture HTTP transactions, metadata, content signals, links, and known limitations without modifying the target.</p><span className="card-detail">Ordered, attributed, preserved</span></article>
           <article className="workflow-card"><span className="step-label">03 · VERIFY</span><h3>Freeze a trusted record</h3><p>Produce an immutable snapshot and exact-byte export that independent systems can verify.</p><span className="card-detail">Checksummed and replayable</span></article>
         </div>
