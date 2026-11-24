@@ -39,7 +39,7 @@ export function SitesView({ sites, feedback = {} }: { sites: WorkspaceSite[]; fe
             <div className="empty-sites"><span className="empty-glyph" aria-hidden="true">⌁</span><h3>No websites registered yet</h3><p>Your first website will appear here with its authorization and evidence state.</p></div>
           ) : (
             <ul className="site-list">
-              {sites.map((site) => <li key={site.id} className="site-row"><span className="site-monogram" aria-hidden="true">{site.name.slice(0, 1).toUpperCase()}</span><div className="site-main"><strong>{site.name}</strong><span>{site.origin}</span></div><div className="site-state"><span className="state-dot" />Ready for authorization</div></li>)}
+              {sites.map((site) => <li key={site.id}><a href={`/sites/${site.id}`} className="site-row"><span className="site-monogram" aria-hidden="true">{site.name.slice(0, 1).toUpperCase()}</span><div className="site-main"><strong>{site.name}</strong><span>{site.origin}</span></div><div className="site-state"><span className="state-dot" />Ready for authorization</div></a></li>)}
             </ul>
           )}
         </section>
