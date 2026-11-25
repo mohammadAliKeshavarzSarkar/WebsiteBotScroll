@@ -15,7 +15,16 @@ const stable = (value: unknown): unknown => value instanceof Date ? value.toISOS
   ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => [key, stable(item)])) : value;
 const same = (a: unknown, b: unknown) => JSON.stringify(stable(a)) === JSON.stringify(stable(b));
 const buildSnapshotBytes = (snapshot: unknown) => { const bytes = Buffer.from(`${JSON.stringify(stable(snapshot))}\n`, "utf8"); return { bytes, sha256: createHash("sha256").update(bytes).digest("hex") }; };
-const parityDigest = (rows: Array<{ key: string; status: string; payload: unknown; reasons: unknown; provenance: unknown }>) => createHash("sha256").update(JSON.stringify(stable(rows.sort((left, right) => left.key < right.key ? -1 : left.key > right.key ? 1 : 0))), "utf8").digest("hex");
+const parityDigest = (rows: Array<{ key: string; status: string; payload: unknown; reasons: unknown; provenance: unknown }>) => {
+  // Several pages can share a definition key. Break ties using the complete
+  // canonical row so the digest is independent of database retrieval order.
+  const canonical = rows.map((row) => ({ key: row.key, encoded: JSON.stringify(stable(row)) }));
+  canonical.sort((left, right) => {
+    if (left.key !== right.key) return left.key < right.key ? -1 : 1;
+    return left.encoded < right.encoded ? -1 : left.encoded > right.encoded ? 1 : 0;
+  });
+  return createHash("sha256").update(`[${canonical.map(({ encoded }) => encoded).join(",")}]`, "utf8").digest("hex");
+};
 const readParity = async (tx: Prisma.TransactionClient, runId: string) => {
   const [legacy, generalized] = await Promise.all([
     tx.evidenceObservation.findMany({ where: { page: { crawlRunId: runId } }, include: { page: true } }),

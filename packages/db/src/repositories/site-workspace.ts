@@ -156,7 +156,9 @@ export class SiteWorkspaceRepository {
               ...latestRun.errors.map(({ code, message, url, retryable }) => ({ code, message, url, retryable })),
               ...latestRun.evidenceErrors.map(({ code, retryable }) => ({
                 code,
-                message: code === "timeout" ? "The page request timed out." : "The page could not be collected.",
+                message: code === "timeout" ? "The page request timed out."
+                  : code === "evidence_persistence_error" ? "The page was fetched, but its evidence could not be saved."
+                  : "The page could not be collected.",
                 url: null,
                 retryable,
               })),

@@ -89,9 +89,20 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
   const allowedHosts = new Set(Array.isArray(scope?.allowed_hosts) ? scope.allowed_hosts.filter((value): value is string => typeof value === "string") : []);
   if (seedUrls.length === 0 || allowedHosts.size === 0) throw new Error("authorized crawl scope is empty");
 
-  const queue = seedUrls.map((url) => ({ url, depth: 0 }));
-  const discovered = new Set(seedUrls);
-  const processed = new Set(Array.isArray(stored.processedUrls) ? stored.processedUrls.filter((value): value is string => typeof value === "string") : []);
+  const identify = (url: string) => normalizeUrlIdentity(url, { removeTrackingParameters: true }, job.normalizationPolicyVersion);
+  const queue: Array<{ identity: ReturnType<typeof identify>; depth: number }> = [];
+  const discovered = new Set<string>();
+  const discover = (url: string, depth: number) => {
+    const identity = identify(url);
+    if (discovered.has(identity.normalizedUrl)) return;
+    discovered.add(identity.normalizedUrl);
+    queue.push({ identity, depth });
+  };
+  for (const url of seedUrls) discover(url, 0);
+  const processed = new Set(Array.isArray(stored.processedUrls)
+    ? stored.processedUrls.filter((value): value is string => typeof value === "string").map((url) => identify(url).normalizedUrl)
+    : []);
+  for (const url of processed) discovered.add(url);
   let attempted = stored.attemptedCount;
   let collected = stored.collectedCount;
   let failed = stored.failedCount;
@@ -131,14 +142,16 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
   while (queue.length > 0 && attempted < job.limits.maxPages) {
     if (durationController.signal.aborted || Date.now() - startedAt >= job.limits.maxDurationMs) { durationLimited = true; break; }
     const next = queue.shift()!;
-    if (processed.has(next.url)) continue;
-    if (!canCrawl(robots, new URL(next.url), "WebsiteBotScroll/1.0")) { partial = true; robotsLimited = true; processed.add(next.url); await dependencies.evidence.appendLimitation(job.organizationId, job.crawlRunId, { id: createEvidenceId("limitation", [job.crawlRunId, "robots_disallowed", next.url]), code: "robots_disallowed", message: "robots.txt disallows collection of this URL." }); continue; }
-    processed.add(next.url);
+    const { identity } = next;
+    const url = identity.normalizedUrl;
+    if (processed.has(url)) continue;
+    if (!canCrawl(robots, new URL(url), "WebsiteBotScroll/1.0")) { partial = true; robotsLimited = true; await dependencies.evidence.appendLimitation(job.organizationId, job.crawlRunId, { id: createEvidenceId("limitation", [job.crawlRunId, "robots_disallowed", url]), code: "robots_disallowed", message: "robots.txt disallows collection of this URL." }); continue; }
+    processed.add(url);
     attempted += 1;
-    const identity = normalizeUrlIdentity(next.url, { removeTrackingParameters: true }, job.normalizationPolicyVersion);
     const pageId = createEvidenceId("page", [job.crawlRunId, identity.normalizedUrl]);
     const buffered: CrawlEvidenceEvent[] = [];
     const evidenceSink: EvidenceSink = { record: async (event) => { buffered.push(event); } };
+    let stage = "http_fetch";
     try {
       const result = await fetchPage({
         url: new URL(identity.normalizedUrl), resolver: dependencies.resolver, transport: dependencies.transport,
@@ -146,6 +159,7 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
         maxDecompressedBytes: job.limits.maxResponseBytes, evidenceSink,
         evidenceContext: { runId: job.crawlRunId, pageId }, now, sleep: async () => undefined, allowedHosts, signal: durationController.signal,
       });
+      stage = "evidence_persistence";
       const transactions = buffered.filter((event): event is Extract<CrawlEvidenceEvent, { kind: "http_transaction" }> => event.kind === "http_transaction");
       const collectionErrors = buffered.filter((item): item is Extract<CrawlEvidenceEvent, { kind: "collection_error" }> => item.kind === "collection_error");
       const httpStatus = result.kind === "html" || result.kind === "non-html" || result.kind === "rate-limited" ? "observed" : "partial";
@@ -185,7 +199,7 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
           for (const link of links) {
             if (link && typeof link === "object" && "target_url" in link && typeof link.target_url === "string") {
               const target = new URL(link.target_url);
-              if (allowedHosts.has(target.hostname) && !discovered.has(target.href)) { discovered.add(target.href); queue.push({ url: target.href, depth: next.depth + 1 }); }
+              if (allowedHosts.has(target.hostname)) discover(target.href, next.depth + 1);
             }
           }
         }
@@ -196,8 +210,9 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
       failed += 1;
       partial = true;
       await dependencies.evidence.appendError(job.organizationId, job.crawlRunId, {
-        id: createEvidenceId("error", [job.crawlRunId, next.url, String(attempted)]), stage: "crawl",
-        code: "network_error", message: error instanceof Error ? error.message : "Crawl failed", occurredAt: now().toISOString(), retryable: false,
+        id: createEvidenceId("error", [job.crawlRunId, url, String(attempted)]), stage,
+        code: stage === "http_fetch" ? "network_error" : "evidence_persistence_error",
+        message: error instanceof Error ? error.message : "Crawl failed", occurredAt: now().toISOString(), retryable: false,
       });
     }
     await dependencies.prisma.crawlRun.update({
