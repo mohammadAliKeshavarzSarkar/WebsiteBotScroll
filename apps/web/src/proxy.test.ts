@@ -19,7 +19,7 @@ describe("protectRequest", () => {
   });
 
   it("registers both workspace pages and the site creation endpoint as protected", () => {
-    expect(config.matcher).toEqual(["/sites/:path*", "/api/sites"]);
+    expect(config.matcher).toEqual(["/sites/:path*", "/api/sites/:path*"]);
   });
 });
 

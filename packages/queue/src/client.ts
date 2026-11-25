@@ -1,10 +1,10 @@
 import type { DatabaseClient } from "@website-bot-scroll/db";
 import { Queue } from "bullmq";
 
-import { crawlScopeSchema, runCrawlJobSchema, type CrawlTrigger, type RunCrawlJob } from "./contracts.js";
-import { CRAWL_QUEUE_NAME, crawlJobOptions, RUN_CRAWL_JOB_NAME } from "./worker-options.js";
+import { crawlScopeSchema, runCrawlJobSchema, type CrawlTrigger, type RunCrawlJob } from "./contracts.ts";
+import { CRAWL_QUEUE_NAME, crawlJobOptions, RUN_CRAWL_JOB_NAME } from "./worker-options.ts";
 
-export type EnqueueCrawlInput = Omit<RunCrawlJob, "crawlRunId">;
+export type EnqueueCrawlInput = Omit<RunCrawlJob, "crawlRunId"> & { requestedByUserId?: string };
 export interface QueueProducer { add(name: string, data: RunCrawlJob, options: { jobId: string }): Promise<unknown> }
 export interface CloseableQueueProducer extends QueueProducer { close(): Promise<void> }
 export interface EnqueueDependencies { prisma: DatabaseClient; producer: QueueProducer }
@@ -23,6 +23,8 @@ export function createCrawlQueueProducer(redisUrl: string): CloseableQueueProduc
       ...(url.username ? { username: decodeURIComponent(url.username) } : {}),
       ...(url.password ? { password: decodeURIComponent(url.password) } : {}),
       ...(url.protocol === "rediss:" ? { tls: {} } : {}),
+      maxRetriesPerRequest: 1,
+      enableOfflineQueue: false,
     },
   });
   return {
@@ -58,15 +60,21 @@ export async function enqueueCrawl(input: EnqueueCrawlInput, dependencies: Enque
   if (!authorization) throw new Error("Export authorization does not belong to the organization and site");
   const authorizationScope = crawlScopeSchema.parse(authorization.scope);
 
+  let run;
   try {
-    const run = await dependencies.prisma.crawlRun.create({ data: {
-      organizationId: input.organizationId, siteId: input.siteId, trigger: input.trigger, idempotencyKey: input.idempotencyKey,
-      activeSiteKey: input.siteId, authorizationId: input.authorizationRef, scope: authorizationScope,
-      limits: { max_pages: input.limits.maxPages, max_depth: input.limits.maxDepth, max_duration_ms: input.limits.maxDurationMs, max_response_bytes: input.limits.maxResponseBytes },
-      producerVersion: input.producerVersion, normalizationPolicyVersion: input.normalizationPolicyVersion, extractorVersion: input.extractorVersion,
-    } });
-    await publish(run, dependencies.producer);
-    return run.id;
+    run = await dependencies.prisma.$transaction(async (transaction) => {
+      const created = await transaction.crawlRun.create({ data: {
+        organizationId: input.organizationId, siteId: input.siteId, trigger: input.trigger, idempotencyKey: input.idempotencyKey,
+        activeSiteKey: input.siteId, authorizationId: input.authorizationRef, scope: authorizationScope,
+        limits: { max_pages: input.limits.maxPages, max_depth: input.limits.maxDepth, max_duration_ms: input.limits.maxDurationMs, max_response_bytes: input.limits.maxResponseBytes },
+        producerVersion: input.producerVersion, normalizationPolicyVersion: input.normalizationPolicyVersion, extractorVersion: input.extractorVersion,
+      } });
+      if (input.requestedByUserId) await transaction.auditEvent.create({ data: {
+        organizationId: input.organizationId, userId: input.requestedByUserId, siteId: input.siteId,
+        action: "site.crawl_requested", targetId: created.id,
+      } });
+      return created;
+    });
   } catch (error) {
     if (!isUniqueViolation(error)) throw error;
     const duplicate = await dependencies.prisma.crawlRun.findUnique({ where: { siteId_idempotencyKey: { siteId: input.siteId, idempotencyKey: input.idempotencyKey } } });
@@ -75,5 +83,14 @@ export async function enqueueCrawl(input: EnqueueCrawlInput, dependencies: Enque
       return duplicate.id;
     }
     throw new CrawlOverlapError();
+  }
+  try {
+    await publish(run, dependencies.producer);
+    return run.id;
+  } catch (error) {
+    await dependencies.prisma.crawlRun.deleteMany({
+      where: { id: run.id, status: "PENDING", activeSiteKey: input.siteId, attemptCount: 0 },
+    });
+    throw error;
   }
 }

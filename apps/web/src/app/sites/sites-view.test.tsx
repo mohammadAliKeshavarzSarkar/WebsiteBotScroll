@@ -21,6 +21,7 @@ describe("owner sites workspace", () => {
     expect(html).toContain("Main shop");
     expect(html).toContain("https://example.com");
     expect(html).toContain("Ready for authorization");
+    expect(html).toContain('href="/sites/site-1"');
     expect(html).not.toContain("SEO score");
   });
 

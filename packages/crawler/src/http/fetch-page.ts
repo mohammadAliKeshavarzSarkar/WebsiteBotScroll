@@ -6,8 +6,8 @@ export interface TransportRequest { url: URL; method: "GET" | "HEAD"; destinatio
 export interface TransportResponse { status: number; headers: Record<string, string | string[] | undefined>; body: AsyncIterable<Uint8Array>; compressedBytes?: number }
 export interface HttpTransport { request(request: TransportRequest): Promise<TransportResponse> }
 
-interface CommonRequest { url: URL; resolver: DnsResolver; transport: HttpTransport; timeoutMs?: number; sleep?: (milliseconds: number) => Promise<void>; evidenceSink?: EvidenceSink; evidenceContext?: EvidenceContext; now?: () => Date }
-export interface FetchPageRequest extends CommonRequest { attempts?: number; maxRedirects?: number; retryDelaysMs?: number[]; maxCompressedBytes?: number; maxDecompressedBytes?: number; maxOtherBytes?: number }
+interface CommonRequest { url: URL; resolver: DnsResolver; transport: HttpTransport; timeoutMs?: number; signal?: AbortSignal; sleep?: (milliseconds: number) => Promise<void>; evidenceSink?: EvidenceSink; evidenceContext?: EvidenceContext; now?: () => Date }
+export interface FetchPageRequest extends CommonRequest { attempts?: number; maxRedirects?: number; retryDelaysMs?: number[]; maxCompressedBytes?: number; maxDecompressedBytes?: number; maxOtherBytes?: number; allowedHosts?: ReadonlySet<string> }
 export type FetchPageResult =
   | { kind: "html"; url: string; status: number; body: Uint8Array; compressedBytes: number; decompressedBytes: number }
   | { kind: "non-html"; url: string; status: number; contentType?: string; bytes: number }
@@ -27,8 +27,10 @@ const evidenceHeaders = (headers: TransportResponse["headers"]): EvidenceHeaderI
   return allowedHeaderNames.has(name) && values.length > 0 ? [{ name, values }] : [];
 });
 
-async function requestWithTimeout(transport: HttpTransport, request: Omit<TransportRequest, "signal">, timeoutMs: number): Promise<TransportResponse> {
+async function requestWithTimeout(transport: HttpTransport, request: Omit<TransportRequest, "signal">, timeoutMs: number, parentSignal?: AbortSignal): Promise<TransportResponse> {
   const controller = new AbortController();
+  const abort = () => controller.abort();
+  if (parentSignal?.aborted) controller.abort(); else parentSignal?.addEventListener("abort", abort, { once: true });
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     return await Promise.race([
@@ -40,10 +42,20 @@ async function requestWithTimeout(transport: HttpTransport, request: Omit<Transp
   }
 }
 
-async function collect(body: AsyncIterable<Uint8Array>, maximum: number, label: string): Promise<Uint8Array> {
+async function collect(body: AsyncIterable<Uint8Array>, maximum: number, label: string, signal?: AbortSignal): Promise<Uint8Array> {
   const chunks: Uint8Array[] = [];
   let total = 0;
-  for await (const chunk of body) {
+  const iterator = body[Symbol.asyncIterator]();
+  while (true) {
+    const next = signal ? await Promise.race([
+      iterator.next(),
+      new Promise<never>((_, reject) => {
+        const abort = () => reject(new Error("Request aborted"));
+        if (signal.aborted) abort(); else signal.addEventListener("abort", abort, { once: true });
+      }),
+    ]) : await iterator.next();
+    if (next.done) break;
+    const chunk = next.value;
     total += chunk.byteLength;
     if (total > maximum) throw new Error(`${label} body exceeds limit`);
     chunks.push(chunk);
@@ -52,6 +64,10 @@ async function collect(body: AsyncIterable<Uint8Array>, maximum: number, label: 
   let offset = 0;
   for (const chunk of chunks) { combined.set(chunk, offset); offset += chunk.byteLength; }
   return combined;
+}
+
+async function discard(response: TransportResponse): Promise<void> {
+  await collect(response.body, 64 * 1024, "discarded response");
 }
 
 export async function fetchPage(request: FetchPageRequest): Promise<FetchPageResult> {
@@ -93,32 +109,36 @@ export async function fetchPage(request: FetchPageRequest): Promise<FetchPageRes
     let current = request.url;
     try {
       for (let redirect = 0; redirect <= (request.maxRedirects ?? 5); redirect += 1) {
+        if (request.allowedHosts && !request.allowedHosts.has(current.hostname.toLowerCase())) throw new Error(`Destination is outside the authorized host: ${current.hostname}`);
         const destination = await assertAllowedDestination(current, request.resolver);
         const startedAt = now();
         let response: TransportResponse;
         try {
-          response = await requestWithTimeout(request.transport, { url: current, method: "GET", destination, headers: {}, }, timeoutMs);
+          response = await requestWithTimeout(request.transport, { url: current, method: "GET", destination, headers: {}, }, timeoutMs, request.signal);
         } catch (error) {
           if (error instanceof RequestTimeoutError) throw error;
           throw new RetryableRequestError(error instanceof Error ? error.message : "Network request failed");
         }
-        if (response.status === 429) { await recordTransaction(attempt, redirect, current, response, startedAt, 0, null); return { kind: "rate-limited", url: current.href, status: 429 }; }
-        if (response.status >= 500) { await recordTransaction(attempt, redirect, current, response, startedAt, 0, null); throw new RetryableRequestError(`Server returned ${response.status}`); }
+        if (response.status === 429) { await discard(response); await recordTransaction(attempt, redirect, current, response, startedAt, 0, null); return { kind: "rate-limited", url: current.href, status: 429 }; }
+        if (response.status >= 500) { await discard(response); await recordTransaction(attempt, redirect, current, response, startedAt, 0, null); throw new RetryableRequestError(`Server returned ${response.status}`); }
         if (response.status >= 300 && response.status < 400) {
           const location = firstOf(response.headers.location);
           if (!location) throw new Error("Redirect is missing Location");
           if (redirect === (request.maxRedirects ?? 5)) throw new Error("Redirect limit exceeded");
           const redirectUrl = new URL(location, current);
+          await discard(response);
           await recordTransaction(attempt, redirect, current, response, startedAt, 0, redirectUrl.href);
           current = redirectUrl;
           continue;
         }
         const contentType = firstOf(response.headers["content-type"])?.split(";", 1)[0]?.trim().toLowerCase();
+        const contentEncoding = firstOf(response.headers["content-encoding"])?.trim().toLowerCase();
+        if (contentEncoding && contentEncoding !== "identity") { await discard(response); throw new Error(`Unsupported content encoding: ${contentEncoding}`); }
         const compressedBytes = response.compressedBytes ?? 0;
         const html = contentType === "text/html" || contentType === "application/xhtml+xml";
         const compressedLimit = html ? (request.maxCompressedBytes ?? 5 * 1024 * 1024) : (request.maxOtherBytes ?? 10 * 1024 * 1024);
         if (compressedBytes > compressedLimit) throw new Error("compressed body exceeds limit");
-        const bytes = await collect(response.body, html ? (request.maxDecompressedBytes ?? 20 * 1024 * 1024) : (request.maxOtherBytes ?? 10 * 1024 * 1024), html ? "decompressed" : "response");
+        const bytes = await collect(response.body, html ? (request.maxDecompressedBytes ?? 20 * 1024 * 1024) : (request.maxOtherBytes ?? 10 * 1024 * 1024), html ? "decompressed" : "response", request.signal);
         await recordTransaction(attempt, redirect, current, response, startedAt, bytes.byteLength, null);
         if (!html) return { kind: "non-html", url: current.href, status: response.status, ...(contentType ? { contentType } : {}), bytes: bytes.byteLength };
         return { kind: "html", url: current.href, status: response.status, body: bytes, compressedBytes: compressedBytes || bytes.byteLength, decompressedBytes: bytes.byteLength };

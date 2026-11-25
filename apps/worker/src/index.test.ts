@@ -2,9 +2,10 @@ import { describe, expect, it, vi } from "vitest";
 import { startWorker } from "./index.js";
 
 describe("startWorker", () => {
-  it("logs a structured ready event after validating configuration", () => {
+  it("logs a structured ready event and returns a closeable runtime", async () => {
     const write = vi.fn();
-    startWorker(
+    const close = vi.fn(async () => undefined);
+    const runtime = startWorker(
       {
         DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/website_bot_scroll",
         REDIS_URL: "redis://localhost:6379",
@@ -15,10 +16,13 @@ describe("startWorker", () => {
         BOOTSTRAP_OWNER_PASSWORD: "correct-horse-battery-staple",
       },
       write,
+      () => ({ close }),
     );
 
     expect(write).toHaveBeenCalledWith(
       JSON.stringify({ component: "worker", event: "ready" }),
     );
+    await runtime.close();
+    expect(close).toHaveBeenCalledOnce();
   });
 });

@@ -8,13 +8,15 @@ The following foundations are runnable today:
 
 - Evidence-first product landing page and owner login
 - Protected, tenant-scoped website registration workspace
-- Background worker bootstrap
+- Owner-declared crawl authorization with exact registered-origin scope
+- Bounded manual crawl submission and persisted run status
+- BullMQ worker consumption with production DNS and HTTP(S) adapters
 - PostgreSQL persistence and tenant-safe repositories
 - Owner authentication and session storage
 - URL normalization and SSRF/network-boundary protection
 - `robots.txt` evaluation and bounded sitemap discovery
 
-An authenticated owner can now register a website and see it in the `/sites` workspace. The end-to-end workflow that authorizes a target, starts or schedules a crawl, and presents findings is **not connected yet**. The interface labels newly registered websites `Ready for authorization` and does not invent audit results.
+An authenticated owner can register a website, record an owner declaration, and start one bounded manual crawl. The detail page shows persisted lifecycle, coverage, stop reason, and safe collection errors. This is not technical domain verification, scheduled monitoring, or an SEO findings/recommendations product.
 
 ## Requirements
 
@@ -80,6 +82,12 @@ Get-Content .env | Where-Object { $_ -match '^[^#].*=.*$' } | ForEach-Object {
 
 Repeat that command in each new terminal before running the worker, migrations, or integration tests.
 
+The web process also records the exact source revision on every crawl. Set it from the checked-out commit in each application terminal:
+
+```powershell
+$env:SOURCE_REVISION = git rev-parse HEAD
+```
+
 ### 3. Start PostgreSQL and Redis
 
 ```powershell
@@ -114,9 +122,9 @@ Open:
 - Login page: <http://localhost:3000/login>
 - Owner website workspace: <http://localhost:3000/sites>
 
-The worker prints a JSON `ready` event when its environment is valid.
+The worker prints a JSON `ready` event after configuration is valid and its BullMQ runtime is created. Redis must remain running while crawl requests are submitted and processed.
 
-Open the home page, select **Open workspace**, and sign in with the owner account already bootstrapped in your local database. In `/sites`, enter a short label and an absolute `http://` or `https://` URL, then select **Add website**. WebsiteBotScroll stores only the normalized origin; pasted paths, queries, and fragments are removed. See the [web onboarding guide](docs/operations/web-onboarding.md) for the exact flow and current boundary.
+Open the home page, select **Open workspace**, and sign in with the owner account already bootstrapped in your local database. In `/sites`, register an absolute HTTP(S) URL, open the website row, and record the owner declaration. Choose maximum pages (1–100), depth (0–3), and duration (10–300 seconds), then start the crawl. The response limit is fixed at 5 MiB, scope cannot expand beyond the registered host, and only one run can be active per website. Refresh the detail page to inspect persisted status; active runs refresh automatically every five seconds.
 
 Owner bootstrap logic exists in `packages/db/src/seed.ts`, but a production-style seed command is not wired yet. A fresh database therefore needs an owner record created through the existing bootstrap function before the login flow can be used.
 
@@ -156,7 +164,7 @@ pnpm --filter @website-bot-scroll/crawler test
 
 ## Stop local services
 
-Stop containers while preserving their data:
+Stop the web and worker processes with `Ctrl+C` in the terminal running `pnpm dev`. Then stop containers while preserving their data:
 
 ```powershell
 docker compose down
@@ -240,6 +248,18 @@ Start only the web app on another port:
 ```powershell
 pnpm --filter web dev -- --port 3001
 ```
+
+### Crawl submission says the queue is unavailable
+
+Confirm Redis and the worker are running, and that `SOURCE_REVISION` is the exact 40-character output of `git rev-parse HEAD`:
+
+```powershell
+docker compose ps
+docker compose logs redis
+$env:SOURCE_REVISION
+```
+
+If publication fails, the newly-created pending run is removed so it does not permanently block a retry.
 
 ### Generated Prisma client is stale
 
