@@ -43,6 +43,7 @@ export type WorkspaceCrawlRun = {
     unattempted: number | null;
   };
   errors: WorkspaceCrawlError[];
+  pages?: { url: string; statusCode: number | null }[];
 };
 
 export type SiteWorkspace = {
@@ -126,6 +127,10 @@ export class SiteWorkspaceRepository {
           include: {
             errors: { orderBy: [{ createdAt: "asc" }, { id: "asc" }] },
             evidenceErrors: { orderBy: [{ occurredAt: "asc" }, { id: "asc" }] },
+            evidencePages: {
+              orderBy: { position: "asc" },
+              select: { finalUrl: true, transactions: { orderBy: { position: "desc" }, take: 1, select: { statusCode: true } } },
+            },
           },
         },
       },
@@ -145,6 +150,9 @@ export class SiteWorkspaceRepository {
             startedAt: latestRun.startedAt,
             finishedAt: latestRun.finishedAt,
             stopReason: latestRun.stopReason,
+            pages: latestRun.evidencePages.map(({ finalUrl, transactions }) => ({
+              url: finalUrl, statusCode: transactions[0]?.statusCode ?? null,
+            })),
             coverage: {
               discovered: latestRun.discoveredCount,
               attempted: latestRun.attemptedCount,

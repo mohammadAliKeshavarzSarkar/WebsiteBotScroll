@@ -25,10 +25,25 @@ describe("owner site detail", () => {
     expect(html).toContain('value="25"');
     expect(html).toContain('name="maxDepth"');
     expect(html).toContain('name="maxDurationSeconds"');
-    expect(html).toContain("FAILED");
+    expect(html).toContain("Crawl failed");
     expect(html).toContain("1 collected");
     expect(html).toContain("The page could not be collected.");
     expect(html).not.toContain("SEO score");
+  });
+
+  it("explains a completed crawl and shows the collected page and status", () => {
+    const html = renderToStaticMarkup(<SiteDetailView site={site} authorization={null} latestRun={{
+      id: "run-1", status: "COMPLETED", createdAt: new Date(0), startedAt: new Date(0),
+      finishedAt: new Date(4000), stopReason: "frontier_exhausted",
+      coverage: { discovered: 1, attempted: 1, collected: 1, failed: 0, unattempted: 0 },
+      pages: [{ url: "https://example.com/about", statusCode: 200 }], errors: [],
+    }} />);
+    expect(html).toContain("Crawl complete");
+    expect(html).toContain("4 seconds");
+    expect(html).toContain("Finished checking the pages found");
+    expect(html).toContain("https://example.com/about");
+    expect(html).toContain("HTTP 200");
+    expect(html).not.toContain("frontier_exhausted");
   });
 
   it("marks active runs for safe refresh and disables overlapping starts", () => {
