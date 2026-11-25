@@ -12,6 +12,8 @@ export async function startSiteCrawl(request: Request, siteId: string, dependenc
   let session;
   try { session = await requireOwnerSession(request, dependencies.authStore); }
   catch (error) { if (error instanceof AuthenticationRequired) return redirect(request, error.location); throw error; }
+  try { await dependencies.crawl.requireSite({ organizationId: session.organizationId, siteId }); }
+  catch (error) { if (error instanceof CrawlSiteNotFoundError) return new Response("Not found", { status: 404 }); throw error; }
   const form = await request.formData();
   let limits;
   try { limits = parseStartCrawlInput({ maxPages: form.get("maxPages") ?? undefined, maxDepth: form.get("maxDepth") ?? undefined, maxDurationSeconds: form.get("maxDurationSeconds") ?? undefined }); }

@@ -1,10 +1,13 @@
-import { organizationId, siteId as toSiteId, userId } from "@website-bot-scroll/domain/ids";
+import { organizationId as toOrganizationId, siteId as toSiteId, userId } from "@website-bot-scroll/domain/ids";
 import { AuthenticationRequired, requireOwnerSession, type AuthStore } from "../../../../../lib/auth";
 import { parseAuthorizationInput } from "../../../../../lib/crawl-input";
 import { getAuthStore } from "../../../../../lib/server-auth-store";
 import { getSiteWorkspaceRepository } from "../../../../../lib/server-site-workspace-repository";
 
-type Authorizer = { authorizeOwnerDeclaration(input: { organizationId: ReturnType<typeof organizationId>; siteId: ReturnType<typeof toSiteId>; userId: ReturnType<typeof userId> }): Promise<unknown | null> };
+type Authorizer = {
+  get(organizationId: ReturnType<typeof toOrganizationId>, siteId: ReturnType<typeof toSiteId>): Promise<unknown | null>;
+  authorizeOwnerDeclaration(input: { organizationId: ReturnType<typeof toOrganizationId>; siteId: ReturnType<typeof toSiteId>; userId: ReturnType<typeof userId> }): Promise<unknown | null>;
+};
 type Dependencies = { authStore: AuthStore; workspace: Authorizer };
 const redirect = (request: Request, path: string) => new Response(null, { status: 303, headers: { location: new URL(path, request.url).toString() } });
 
@@ -15,6 +18,7 @@ export async function authorizeSite(request: Request, pathSiteId: string, depend
     if (error instanceof AuthenticationRequired) return redirect(request, error.location);
     throw error;
   }
+  if (!await dependencies.workspace.get(toOrganizationId(session.organizationId), toSiteId(pathSiteId))) return new Response("Not found", { status: 404 });
   const form = await request.formData();
   try { parseAuthorizationInput({ declaration: form.get("declaration") }); }
   catch (error) {
@@ -22,7 +26,7 @@ export async function authorizeSite(request: Request, pathSiteId: string, depend
     return redirect(request, `/sites/${encodeURIComponent(pathSiteId)}?${new URLSearchParams({ error: message })}`);
   }
   const result = await dependencies.workspace.authorizeOwnerDeclaration({
-    organizationId: organizationId(session.organizationId), siteId: toSiteId(pathSiteId), userId: userId(session.userId),
+    organizationId: toOrganizationId(session.organizationId), siteId: toSiteId(pathSiteId), userId: userId(session.userId),
   });
   if (!result) return new Response("Not found", { status: 404 });
   return redirect(request, `/sites/${encodeURIComponent(pathSiteId)}?authorized=1`);

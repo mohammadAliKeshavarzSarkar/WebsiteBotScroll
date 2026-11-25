@@ -48,6 +48,12 @@ describe("fetchPage", () => {
     expect(transport.request).toHaveBeenCalledTimes(1);
   });
 
+  it("rejects a public redirect outside the authorized host before sending it", async () => {
+    const transport: HttpTransport = { request: vi.fn().mockResolvedValue(response(302, { headers: { location: "https://other.example/" } })) };
+    await expect(fetchPage({ url: new URL("https://example.com"), resolver, transport, allowedHosts: new Set(["example.com"]) })).rejects.toThrow("authorized host");
+    expect(transport.request).toHaveBeenCalledTimes(1);
+  });
+
   it("preserves a completed public hop and records an error before a private redirect request", async () => {
     const events: CrawlEvidenceEvent[] = [];
     const changingResolver: DnsResolver = { resolve: vi.fn().mockResolvedValueOnce(["93.184.216.34"]).mockResolvedValueOnce(["127.0.0.1"]) };
@@ -78,6 +84,14 @@ describe("fetchPage", () => {
     await expect(fetchPage({ url: new URL("https://example.com"), resolver, transport: huge, maxDecompressedBytes: 9 })).rejects.toThrow("decompressed");
     const hanging: HttpTransport = { request: vi.fn(() => new Promise<TransportResponse>(() => undefined)) };
     await expect(fetchPage({ url: new URL("https://example.com"), resolver, transport: hanging, timeoutMs: 5, attempts: 1 })).rejects.toThrow("timed out");
+  });
+
+  it("aborts a response body that stalls after headers", async () => {
+    const transport: HttpTransport = { request: vi.fn(({ signal }) => Promise.resolve(response(200, { body: { [Symbol.asyncIterator]() { return { next: () => new Promise<IteratorResult<Uint8Array>>((_resolve, reject) => signal.addEventListener("abort", () => reject(new Error("body aborted")), { once: true })) }; } } }))) };
+    const controller = new AbortController();
+    const pending = fetchPage({ url: new URL("https://example.com"), resolver, transport, signal: controller.signal, attempts: 1 });
+    controller.abort();
+    await expect(pending).rejects.toThrow(/abort/i);
   });
 });
 

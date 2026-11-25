@@ -20,13 +20,13 @@ type Dependencies = {
 
 function redisConnection(redisUrl: string): Record<string, unknown> {
   const url = new URL(redisUrl);
-  return { host: url.hostname, port: Number(url.port || 6379), ...(url.username ? { username: decodeURIComponent(url.username) } : {}), ...(url.password ? { password: decodeURIComponent(url.password) } : {}), ...(url.protocol === "rediss:" ? { tls: {} } : {}) };
+  return { host: url.hostname, port: Number(url.port || 6379), maxRetriesPerRequest: 1, enableOfflineQueue: false, ...(url.username ? { username: decodeURIComponent(url.username) } : {}), ...(url.password ? { password: decodeURIComponent(url.password) } : {}), ...(url.protocol === "rediss:" ? { tls: {} } : {}) };
 }
 
 export async function failCrawlRun(job: RunCrawlJob, _error: unknown, prisma: DatabaseClient): Promise<void> {
   await prisma.$transaction(async (transaction) => {
     const updated = await transaction.crawlRun.updateMany({
-      where: { id: job.crawlRunId, organizationId: job.organizationId, siteId: job.siteId },
+      where: { id: job.crawlRunId, organizationId: job.organizationId, siteId: job.siteId, status: { in: ["PENDING", "RUNNING"] } },
       data: { status: "FAILED", activeSiteKey: null, finishedAt: new Date() },
     });
     if (updated.count > 0) await transaction.crawlError.create({ data: {

@@ -29,8 +29,12 @@ describe("crawl BullMQ worker", () => {
     const updateMany = vi.fn(async () => ({ count: 1 })); const create = vi.fn(async () => ({}));
     const prisma = { $transaction: (callback: (transaction: unknown) => Promise<void>) => callback({ crawlRun: { updateMany }, crawlError: { create } }) };
     await failCrawlRun(job, new Error("redis://user:secret@internal:6379"), prisma as never);
-    expect(updateMany).toHaveBeenCalledWith({ where: { id: job.crawlRunId, organizationId: job.organizationId, siteId: job.siteId }, data: { status: "FAILED", activeSiteKey: null, finishedAt: expect.any(Date) } });
+    expect(updateMany).toHaveBeenCalledWith({ where: { id: job.crawlRunId, organizationId: job.organizationId, siteId: job.siteId, status: { in: ["PENDING", "RUNNING"] } }, data: { status: "FAILED", activeSiteKey: null, finishedAt: expect.any(Date) } });
     expect(create).toHaveBeenCalledWith({ data: { crawlRunId: job.crawlRunId, code: "worker_failed", message: "The crawl worker could not complete this run.", retryable: true } });
     expect(JSON.stringify(create.mock.calls)).not.toContain("secret");
+  });
+
+  it("has the installed Redis runtime driver available to BullMQ", async () => {
+    await expect(import("ioredis")).resolves.toBeTruthy();
   });
 });

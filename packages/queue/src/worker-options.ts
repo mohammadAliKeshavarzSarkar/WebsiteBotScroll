@@ -9,8 +9,7 @@ export const crawlWorkerOptions = {
 } as const;
 
 export const crawlJobOptions = {
-  attempts: 3,
-  backoff: { type: "custom", delay: 5_000 },
+  attempts: 1,
   removeOnComplete: 100,
   removeOnFail: 1_000,
 } as const;

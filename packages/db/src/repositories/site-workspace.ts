@@ -89,6 +89,26 @@ function toAuthorization(record: {
   };
 }
 
+function ownerDeclarationScope(origin: string): OwnerDeclarationScope {
+  const registeredOrigin = new URL(origin);
+  return { seed_urls: [`${registeredOrigin.origin}/`], allowed_hosts: [registeredOrigin.hostname], include_patterns: [], exclude_patterns: [] };
+}
+
+function isOwnerDeclaration(record: { description: string; scope: unknown }, origin: string): boolean {
+  if (record.description !== "Owner-declared crawl authorization" || !record.scope || typeof record.scope !== "object" || Array.isArray(record.scope)) return false;
+  const actual = record.scope as Record<string, unknown>;
+  const expected = ownerDeclarationScope(origin);
+  return Object.keys(actual).length === 4
+    && JSON.stringify(actual.seed_urls) === JSON.stringify(expected.seed_urls)
+    && JSON.stringify(actual.allowed_hosts) === JSON.stringify(expected.allowed_hosts)
+    && JSON.stringify(actual.include_patterns) === "[]"
+    && JSON.stringify(actual.exclude_patterns) === "[]";
+}
+
+function isUniqueViolation(error: unknown): boolean {
+  return typeof error === "object" && error !== null && "code" in error && error.code === "P2002";
+}
+
 export class SiteWorkspaceRepository {
   constructor(private readonly prisma: DatabaseClient) {}
 
@@ -99,18 +119,20 @@ export class SiteWorkspaceRepository {
         exportAuthorizations: {
           where: { revokedAt: null },
           orderBy: { createdAt: "desc" },
-          take: 1,
         },
         crawlRuns: {
           orderBy: [{ createdAt: "desc" }, { id: "desc" }],
           take: 1,
-          include: { errors: { orderBy: [{ createdAt: "asc" }, { id: "asc" }] } },
+          include: {
+            errors: { orderBy: [{ createdAt: "asc" }, { id: "asc" }] },
+            evidenceErrors: { orderBy: [{ occurredAt: "asc" }, { id: "asc" }] },
+          },
         },
       },
     });
     if (!record) return null;
 
-    const authorization = record.exportAuthorizations[0];
+    const authorization = record.exportAuthorizations.find((candidate) => isOwnerDeclaration(candidate, record.origin));
     const latestRun = record.crawlRuns[0];
     return {
       site: toSite(record),
@@ -130,12 +152,15 @@ export class SiteWorkspaceRepository {
               failed: latestRun.failedCount,
               unattempted: latestRun.unattemptedCount,
             },
-            errors: latestRun.errors.map(({ code, message, url, retryable }) => ({
-              code,
-              message,
-              url,
-              retryable,
-            })),
+            errors: [
+              ...latestRun.errors.map(({ code, message, url, retryable }) => ({ code, message, url, retryable })),
+              ...latestRun.evidenceErrors.map(({ code, retryable }) => ({
+                code,
+                message: code === "timeout" ? "The page request timed out." : "The page could not be collected.",
+                url: null,
+                retryable,
+              })),
+            ],
           }
         : null,
     };
@@ -144,7 +169,7 @@ export class SiteWorkspaceRepository {
   async authorizeOwnerDeclaration(
     input: AuthorizeOwnerDeclarationInput,
   ): Promise<WorkspaceAuthorization | null> {
-    return this.prisma.$transaction(async (transaction) => {
+    const authorize = () => this.prisma.$transaction(async (transaction) => {
       const site = await transaction.site.findFirst({
         where: { id: input.siteId, organizationId: input.organizationId },
         select: { id: true, organizationId: true, origin: true },
@@ -157,13 +182,7 @@ export class SiteWorkspaceRepository {
         data: { revokedAt: now },
       });
 
-      const registeredOrigin = new URL(site.origin);
-      const scope: OwnerDeclarationScope = {
-        seed_urls: [`${registeredOrigin.origin}/`],
-        allowed_hosts: [registeredOrigin.hostname],
-        include_patterns: [],
-        exclude_patterns: [],
-      };
+      const scope = ownerDeclarationScope(site.origin);
       const authorization = await transaction.exportAuthorization.create({
         data: {
           id: `owner-declaration-${randomUUID()}`,
@@ -185,5 +204,7 @@ export class SiteWorkspaceRepository {
       });
       return toAuthorization(authorization);
     });
+    try { return await authorize(); }
+    catch (error) { if (!isUniqueViolation(error)) throw error; return authorize(); }
   }
 }

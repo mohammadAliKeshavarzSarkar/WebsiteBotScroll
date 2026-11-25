@@ -14,7 +14,6 @@ type WorkspaceReader = { get(organizationId: ReturnType<typeof toOrganizationId>
 type Dependencies = {
   workspace: WorkspaceReader;
   enqueue(input: EnqueueCrawlInput): Promise<string>;
-  audit(input: { organizationId: string; userId: string; siteId: string; crawlRunId: string }): Promise<void>;
   revisions: { producerVersion: string; normalizationPolicyVersion: string; extractorVersion: string };
   idempotencyKey(): string;
 };
@@ -25,13 +24,12 @@ export async function startManualCrawl(input: StartInput, dependencies: Dependen
   if (!workspace.authorization) throw new CrawlAuthorizationRequiredError();
   const crawlRunId = await dependencies.enqueue({
     organizationId: input.organizationId, siteId: input.siteId, authorizationRef: workspace.authorization.id,
-    trigger: "MANUAL", idempotencyKey: dependencies.idempotencyKey(), limits: input.limits, ...dependencies.revisions,
+    trigger: "MANUAL", idempotencyKey: dependencies.idempotencyKey(), requestedByUserId: input.userId, limits: input.limits, ...dependencies.revisions,
   });
-  await dependencies.audit({ organizationId: input.organizationId, userId: input.userId, siteId: input.siteId, crawlRunId });
   return crawlRunId;
 }
 
-export type CrawlService = { start(input: StartInput): Promise<string> };
+export type CrawlService = { requireSite(input: { organizationId: string; siteId: string }): Promise<void>; start(input: StartInput): Promise<string> };
 let cachedService: CrawlService | undefined;
 
 function createProductionService(): CrawlService {
@@ -43,11 +41,13 @@ function createProductionService(): CrawlService {
   const dependencies: Dependencies = {
     workspace: getSiteWorkspaceRepository(),
     enqueue: (input) => enqueueCrawl(input, { prisma, producer }),
-    audit: async ({ organizationId, userId, siteId, crawlRunId }) => { await prisma.auditEvent.create({ data: { organizationId, userId, siteId, action: "site.crawl_requested", targetId: crawlRunId } }); },
     revisions: { producerVersion, normalizationPolicyVersion: "normalize/1", extractorVersion: "html/1" },
     idempotencyKey: randomUUID,
   };
-  return { start: (input) => startManualCrawl(input, dependencies) };
+  return {
+    requireSite: async (input) => { if (!await dependencies.workspace.get(toOrganizationId(input.organizationId), toSiteId(input.siteId))) throw new CrawlSiteNotFoundError(); },
+    start: (input) => startManualCrawl(input, dependencies),
+  };
 }
 
 export function getCrawlService(factory: () => CrawlService = createProductionService): CrawlService {

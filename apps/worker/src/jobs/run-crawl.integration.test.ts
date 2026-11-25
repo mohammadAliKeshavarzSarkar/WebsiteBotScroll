@@ -25,6 +25,7 @@ describeDatabase("idempotent crawl orchestration", () => {
   const prisma = createPrismaClient(databaseUrl!);
   const producer: QueueProducer = { add: vi.fn().mockResolvedValue(undefined) };
   let organizationId: string;
+  let userId: string;
   let siteId: string;
   let authorizationRef: string;
   const evidenceControl = () => ({
@@ -43,24 +44,27 @@ describeDatabase("idempotent crawl orchestration", () => {
     await prisma.site.deleteMany();
     await prisma.organization.deleteMany();
     organizationId = randomUUID();
+    userId = randomUUID();
     siteId = randomUUID();
     authorizationRef = `auth-${randomUUID()}`;
     await prisma.organization.create({ data: { id: organizationId, name: "Owner" } });
+    await prisma.user.create({ data: { id: userId, organizationId, email: `${userId}@example.test`, passwordHash: "test" } });
     await prisma.site.create({ data: { id: siteId, organizationId, name: "Example", origin: "https://example.com" } });
     await prisma.exportAuthorization.create({ data: {
-      id: authorizationRef, organizationId, siteId, description: "Worker test",
-      scope: { seed_urls: ["https://example.com/"], allowed_hosts: ["example.com"] },
+      id: authorizationRef, organizationId, siteId, description: "Owner-declared crawl authorization",
+      scope: { seed_urls: ["https://example.com/"], allowed_hosts: ["example.com"], include_patterns: [], exclude_patterns: [] },
     } });
   });
 
   afterAll(async () => prisma.$disconnect());
 
   it("enqueues one run per idempotency key and prevents site overlap", async () => {
-    const input = { organizationId, siteId, ...evidenceControl(), trigger: "MANUAL" as const, idempotencyKey: "manual-1" };
+    const input = { organizationId, siteId, requestedByUserId: userId, ...evidenceControl(), trigger: "MANUAL" as const, idempotencyKey: "manual-1" };
     const first = await enqueueCrawl(input, { prisma, producer });
     const duplicate = await enqueueCrawl(input, { prisma, producer });
     expect(duplicate).toBe(first);
     expect(await prisma.crawlRun.count()).toBe(1);
+    expect(await prisma.auditEvent.findFirst({ where: { targetId: first } })).toMatchObject({ organizationId, userId, siteId, action: "site.crawl_requested" });
     expect(producer.add).toHaveBeenCalledTimes(2);
     await expect(enqueueCrawl({ ...input, idempotencyKey: "manual-2" }, { prisma, producer })).rejects.toBeInstanceOf(CrawlOverlapError);
   });
@@ -108,10 +112,9 @@ describeDatabase("idempotent crawl orchestration", () => {
   });
 
   it("collects, extracts, persists, and freezes an authorized HTML crawl", async () => {
-    const exchangeAuthorizationRef = `auth-${randomUUID()}`;
+    const exchangeAuthorizationRef = authorizationRef;
     const crawlRunId = randomUUID();
-    const scope = { seed_urls: ["https://example.com/"], allowed_hosts: ["example.com"] };
-    await prisma.exportAuthorization.create({ data: { id: exchangeAuthorizationRef, organizationId, siteId, description: "Synthetic", scope } });
+    const scope = { seed_urls: ["https://example.com/"], allowed_hosts: ["example.com"], include_patterns: [], exclude_patterns: [] };
     await prisma.crawlRun.create({ data: {
       id: crawlRunId, organizationId, siteId, authorizationId: exchangeAuthorizationRef, trigger: "MANUAL", idempotencyKey: "evidence-1",
       scope, limits: { max_pages: 1, max_depth: 0, max_duration_ms: 10_000, max_response_bytes: 1_000_000 },
@@ -169,7 +172,7 @@ describeDatabase("idempotent crawl orchestration", () => {
     await prisma.crawlRun.create({ data: {
       id: crawlRunId, organizationId, siteId, authorizationId: authorizationRef, trigger: "MANUAL", idempotencyKey: job.idempotencyKey,
       status: "RUNNING", startedAt: new Date("2026-11-19T00:00:00.000Z"), processedUrls: [pageUrl],
-      scope: { seed_urls: [pageUrl], allowed_hosts: ["example.com"] },
+      scope: { seed_urls: [pageUrl], allowed_hosts: ["example.com"], include_patterns: [], exclude_patterns: [] },
       limits: { max_pages: 2, max_depth: 1, max_duration_ms: 10_000, max_response_bytes: 1_000_000 },
       producerVersion: job.producerVersion, normalizationPolicyVersion: job.normalizationPolicyVersion, extractorVersion: job.extractorVersion,
       discoveredCount: 1, attemptedCount: 1, collectedCount: 1, failedCount: 0, unattemptedCount: 0,
@@ -191,5 +194,40 @@ describeDatabase("idempotent crawl orchestration", () => {
     expect(transport.request).not.toHaveBeenCalled();
     expect(await prisma.evidenceTransaction.count({ where: { page: { crawlRunId } } })).toBe(1);
     expect((await repository.loadFrozenRun(organizationId, crawlRunId)).coverage.collected).toBe(1);
+  });
+
+  it("rejects a revoked authorization before network collection", async () => {
+    const crawlRunId = randomUUID();
+    const job = { organizationId, siteId, crawlRunId, trigger: "MANUAL" as const, idempotencyKey: "revoked-1", ...evidenceControl() };
+    await prisma.crawlRun.create({ data: { id: crawlRunId, organizationId, siteId, authorizationId: authorizationRef, trigger: "MANUAL", idempotencyKey: job.idempotencyKey, activeSiteKey: siteId, scope: { seed_urls: ["https://example.com/"], allowed_hosts: ["example.com"], include_patterns: [], exclude_patterns: [] }, limits: { max_pages: 1, max_depth: 0, max_duration_ms: 10_000, max_response_bytes: 5_242_880 }, producerVersion: job.producerVersion, normalizationPolicyVersion: job.normalizationPolicyVersion, extractorVersion: job.extractorVersion } });
+    await prisma.exportAuthorization.update({ where: { id: authorizationRef }, data: { revokedAt: new Date() } });
+    const transport: HttpTransport = { request: vi.fn() };
+    await expect(executeAuthorizedCrawl(job, { prisma, evidence: new EvidenceRepository(prisma), resolver: { resolve: vi.fn() }, transport })).rejects.toThrow("active owner declaration");
+    expect(transport.request).not.toHaveBeenCalled();
+  });
+
+  it("honors robots.txt before collecting an authorized page", async () => {
+    const crawlRunId = randomUUID();
+    const job = { organizationId, siteId, crawlRunId, trigger: "MANUAL" as const, idempotencyKey: "robots-1", ...evidenceControl() };
+    await prisma.crawlRun.create({ data: { id: crawlRunId, organizationId, siteId, authorizationId: authorizationRef, trigger: "MANUAL", idempotencyKey: job.idempotencyKey, activeSiteKey: siteId, scope: { seed_urls: ["https://example.com/"], allowed_hosts: ["example.com"], include_patterns: [], exclude_patterns: [] }, limits: { max_pages: 1, max_depth: 0, max_duration_ms: 10_000, max_response_bytes: 5_242_880 }, producerVersion: job.producerVersion, normalizationPolicyVersion: job.normalizationPolicyVersion, extractorVersion: job.extractorVersion } });
+    const body = new TextEncoder().encode("User-agent: *\nDisallow: /");
+    const transport: HttpTransport = { request: vi.fn().mockResolvedValue({ status: 200, headers: { "content-type": "text/plain" }, body: { async *[Symbol.asyncIterator]() { yield body; } } }) };
+    const result = await executeAuthorizedCrawl(job, { prisma, evidence: new EvidenceRepository(prisma), resolver: { resolve: vi.fn().mockResolvedValue(["93.184.216.34"]) }, transport });
+    expect(result.status).toBe("PARTIAL");
+    expect(transport.request).toHaveBeenCalledTimes(1);
+    expect(await prisma.evidenceLimitation.findFirst({ where: { crawlRunId, code: "robots_disallowed" } })).not.toBeNull();
+  });
+
+  it("stops a stalled page body at the run duration limit", async () => {
+    const crawlRunId = randomUUID();
+    const job = { organizationId, siteId, crawlRunId, trigger: "MANUAL" as const, idempotencyKey: "duration-1", ...evidenceControl(), limits: { ...evidenceControl().limits, maxDurationMs: 30 } };
+    await prisma.crawlRun.create({ data: { id: crawlRunId, organizationId, siteId, authorizationId: authorizationRef, trigger: "MANUAL", idempotencyKey: job.idempotencyKey, activeSiteKey: siteId, scope: { seed_urls: ["https://example.com/"], allowed_hosts: ["example.com"], include_patterns: [], exclude_patterns: [] }, limits: { max_pages: 1, max_depth: 0, max_duration_ms: 30, max_response_bytes: 5_242_880 }, producerVersion: job.producerVersion, normalizationPolicyVersion: job.normalizationPolicyVersion, extractorVersion: job.extractorVersion } });
+    const robots = new TextEncoder().encode("User-agent: *\nAllow: /");
+    const transport: HttpTransport = { request: vi.fn()
+      .mockResolvedValueOnce({ status: 200, headers: { "content-type": "text/plain" }, body: { async *[Symbol.asyncIterator]() { yield robots; } } })
+      .mockResolvedValueOnce({ status: 200, headers: { "content-type": "text/html" }, body: { [Symbol.asyncIterator]() { return { next: () => new Promise<IteratorResult<Uint8Array>>(() => undefined) }; } } }) };
+    const result = await executeAuthorizedCrawl(job, { prisma, evidence: new EvidenceRepository(prisma), resolver: { resolve: vi.fn().mockResolvedValue(["93.184.216.34"]) }, transport });
+    expect(result.status).toBe("PARTIAL");
+    expect((await prisma.crawlRun.findUniqueOrThrow({ where: { id: crawlRunId } })).stopReason).toBe("duration_limit_reached");
   });
 });

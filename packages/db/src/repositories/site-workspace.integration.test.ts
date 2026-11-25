@@ -113,6 +113,14 @@ describeDatabase("SiteWorkspaceRepository", () => {
     ).resolves.toBe(1);
   });
 
+  it("serializes concurrent declarations to one active authorization", async () => {
+    await Promise.all([
+      workspace.authorizeOwnerDeclaration({ organizationId: ownerOrganizationId, siteId: ownerSiteId, userId: ownerUserId }),
+      workspace.authorizeOwnerDeclaration({ organizationId: ownerOrganizationId, siteId: ownerSiteId, userId: ownerUserId }),
+    ]);
+    await expect(prisma.exportAuthorization.count({ where: { organizationId: ownerOrganizationId, siteId: ownerSiteId, revokedAt: null } })).resolves.toBe(1);
+  });
+
   it("projects the active authorization, latest run, and structured crawl errors", async () => {
     const authorization = await workspace.authorizeOwnerDeclaration({
       organizationId: ownerOrganizationId,
@@ -160,6 +168,7 @@ describeDatabase("SiteWorkspaceRepository", () => {
         retryable: true,
       },
     });
+    await prisma.evidenceError.create({ data: { id: "evidence-error-1", crawlRunId: latestRunId, stage: "crawl", code: "network_error", message: "redis://user:secret@internal", occurredAt: new Date("2026-11-24T09:00:02.000Z"), retryable: true } });
 
     await expect(workspace.get(ownerOrganizationId, ownerSiteId)).resolves.toMatchObject({
       site: { id: ownerSiteId, organizationId: ownerOrganizationId, origin: "https://Example.COM:443" },
@@ -176,6 +185,7 @@ describeDatabase("SiteWorkspaceRepository", () => {
             url: "https://example.com/private",
             retryable: true,
           },
+          { code: "network_error", message: "The page could not be collected.", url: null, retryable: true },
         ],
       },
     });

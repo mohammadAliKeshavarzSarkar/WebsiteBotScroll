@@ -13,21 +13,21 @@ const request = (body: URLSearchParams, authenticated = true) => new Request(`ht
 describe("POST /api/sites/[siteId]/authorize", () => {
   it("redirects unauthenticated requests without writing", async () => {
     const authorizeOwnerDeclaration = vi.fn();
-    const response = await authorizeSite(request(new URLSearchParams({ declaration: "on" }), false), siteId, { authStore: authStore(false), workspace: { authorizeOwnerDeclaration } });
+    const response = await authorizeSite(request(new URLSearchParams({ declaration: "on" }), false), siteId, { authStore: authStore(false), workspace: { get: vi.fn(), authorizeOwnerDeclaration } });
     expect(response.status).toBe(303); expect(response.headers.get("location")).toBe("https://app.example/login"); expect(authorizeOwnerDeclaration).not.toHaveBeenCalled();
   });
   it("returns not found across tenants", async () => {
-    const response = await authorizeSite(request(new URLSearchParams({ declaration: "on" })), siteId, { authStore: authStore(true), workspace: { authorizeOwnerDeclaration: vi.fn(async () => null) } });
+    const response = await authorizeSite(request(new URLSearchParams()), siteId, { authStore: authStore(true), workspace: { get: vi.fn(async () => null), authorizeOwnerDeclaration: vi.fn(async () => null) } });
     expect(response.status).toBe(404);
   });
   it("rejects a missing declaration without writing", async () => {
     const authorizeOwnerDeclaration = vi.fn();
-    const response = await authorizeSite(request(new URLSearchParams()), siteId, { authStore: authStore(true), workspace: { authorizeOwnerDeclaration } });
+    const response = await authorizeSite(request(new URLSearchParams()), siteId, { authStore: authStore(true), workspace: { get: vi.fn(async () => ({})), authorizeOwnerDeclaration } });
     const location = new URL(response.headers.get("location")!); expect(location.pathname).toBe(`/sites/${siteId}`); expect(location.searchParams.get("error")).toContain("authorized to crawl"); expect(authorizeOwnerDeclaration).not.toHaveBeenCalled();
   });
   it("uses only session and path identities, ignoring manipulated scope fields", async () => {
     const authorizeOwnerDeclaration = vi.fn(async () => ({ id: "auth-1" }));
-    const response = await authorizeSite(request(new URLSearchParams({ declaration: "on", allowedHost: "evil.example" })), siteId, { authStore: authStore(true), workspace: { authorizeOwnerDeclaration } });
+    const response = await authorizeSite(request(new URLSearchParams({ declaration: "on", allowedHost: "evil.example" })), siteId, { authStore: authStore(true), workspace: { get: vi.fn(async () => ({})), authorizeOwnerDeclaration } });
     expect(authorizeOwnerDeclaration).toHaveBeenCalledWith({ organizationId: "11111111-1111-4111-8111-111111111111", siteId, userId: "22222222-2222-4222-8222-222222222222" });
     expect(response.headers.get("location")).toBe(`https://app.example/sites/${siteId}?authorized=1`);
   });
