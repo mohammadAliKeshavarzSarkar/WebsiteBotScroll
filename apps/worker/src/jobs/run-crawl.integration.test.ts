@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { enqueueCrawl, CrawlOverlapError, type QueueProducer } from "@website-bot-scroll/queue/client";
+import { enqueueCrawl, recoverPendingCrawls, CrawlOverlapError, type QueueProducer } from "@website-bot-scroll/queue/client";
 import { createPrismaClient } from "@website-bot-scroll/db";
 import { EvidenceRepository } from "@website-bot-scroll/db/evidence";
 import { FilesystemArtifactStore } from "@website-bot-scroll/db/artifacts";
@@ -17,6 +17,7 @@ import { computeObservationParityDigest } from "@website-bot-scroll/crawler/evid
 import { PLATFORM_OBSERVATION_DEFINITIONS } from "@website-bot-scroll/crawler/evidence/definitions";
 import { processPage } from "./process-page.js";
 import { executeAuthorizedCrawl, finishCrawlRun, processRunCrawl } from "./run-crawl.js";
+import { createCrawlWorker } from "../crawl-worker.js";
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
 const describeDatabase = databaseUrl ? describe : describe.skip;
@@ -87,6 +88,97 @@ describeDatabase("idempotent crawl orchestration", () => {
     await expect(enqueueCrawl(input, { prisma, producer: recovering })).rejects.toThrow("redis unavailable");
     expect((await prisma.crawlRun.findUniqueOrThrow({ where: { id: crawlRunId } })).activeSiteKey).toBe(siteId);
     await expect(enqueueCrawl(input, { prisma, producer: recovering })).resolves.toBe(crawlRunId);
+  });
+
+  it("publishes a pending run from PostgreSQL after the original publisher disappears", async () => {
+    const input = { organizationId, siteId, ...evidenceControl(), trigger: "MANUAL" as const, idempotencyKey: "stranded" };
+    const crawlRunId = await enqueueCrawl(input, { prisma, producer });
+    const jobs: Array<{ id: string; runId: string }> = [];
+    const recoveryProducer: QueueProducer = { add: async (_name, data, options) => { jobs.push({ id: options.jobId, runId: data.crawlRunId }); } };
+    await prisma.crawlRun.update({ where: { id: crawlRunId }, data: { createdAt: new Date(0) } });
+    await recoverPendingCrawls({ prisma, producer: recoveryProducer });
+    expect(jobs).toEqual([{ id: crawlRunId, runId: crawlRunId }]);
+  });
+
+  const simulateHttp = (response: (url: URL) => Promise<{ status: number; html: string }>): HttpTransport => ({
+    request: async ({ url }) => {
+      const { status, html } = url.pathname === "/robots.txt" ? { status: 404, html: "" } : await response(url);
+      return { status, headers: { "content-type": "text/html" }, body: { async *[Symbol.asyncIterator]() { yield new TextEncoder().encode(html); } } };
+    },
+  });
+  const publicResolver: DnsResolver = { resolve: async () => ["93.184.216.34"] };
+  const createJob = async (idempotencyKey: string) => {
+    const input = { organizationId, siteId, ...evidenceControl(), trigger: "MANUAL" as const, idempotencyKey };
+    return { ...input, crawlRunId: await enqueueCrawl(input, { prisma, producer }) };
+  };
+
+  it.skipIf(!process.env.TEST_REDIS_URL)("recovers a stranded run through a real worker and Redis", async () => {
+    const job = await createJob("real-redis-recovery");
+    await prisma.crawlRun.update({ where: { id: job.crawlRunId }, data: { createdAt: new Date(0) } });
+    const worker = createCrawlWorker({
+      DATABASE_URL: databaseUrl!, REDIS_URL: process.env.TEST_REDIS_URL!, AUTH_SECRET: "a".repeat(32),
+      APP_BASE_URL: "http://localhost:3000", CRAWLER_CONTACT_URL: "https://example.com/contact",
+      BOOTSTRAP_OWNER_EMAIL: "owner@example.com", BOOTSTRAP_OWNER_PASSWORD: "correct-horse-battery-staple",
+    }, { prisma, resolver: publicResolver, transport: simulateHttp(async () => ({ status: 200, html: "<html></html>" })) });
+    try {
+      await vi.waitFor(async () => {
+        expect(await prisma.crawlRun.findUniqueOrThrow({ where: { id: job.crawlRunId } })).toMatchObject({
+          status: "COMPLETED", attemptCount: 1, activeSiteKey: null, frozenAt: expect.any(Date),
+        });
+      }, { timeout: 10_000, interval: 100 });
+    } finally {
+      await worker.close();
+    }
+  }, 15_000);
+
+  it("commits discovered children with the seed evidence before fetching the next page", async () => {
+    const job = await createJob("atomic-frontier");
+    const observed: unknown[] = [];
+    const transport = simulateHttp(async (url) => {
+      if (url.pathname === "/") return { status: 200, html: '<html><a href="/child">Child</a></html>' };
+      observed.push(await prisma.crawlRun.findUniqueOrThrow({
+        where: { id: job.crawlRunId }, select: { frontier: true, processedUrls: true, collectedCount: true },
+      }));
+      return { status: 200, html: "<html></html>" };
+    });
+    await executeAuthorizedCrawl(job, { prisma, evidence: new EvidenceRepository(prisma), resolver: publicResolver, transport });
+    expect(observed).toEqual([{
+      frontier: { pending: [{ url: "https://example.com/child", depth: 1 }], skipped: [], robotsLimited: false },
+      processedUrls: ["https://example.com/"], collectedCount: 1,
+    }]);
+  });
+
+  it("resumes the saved frontier after the seed was processed", async () => {
+    const job = await createJob("resume-frontier");
+    await prisma.crawlRun.update({ where: { id: job.crawlRunId }, data: {
+      status: "RUNNING", startedAt: new Date(), processedUrls: ["https://example.com/"],
+      frontier: { pending: [{ url: "https://example.com/child", depth: 1 }], robotsLimited: false },
+      discoveredCount: 2, attemptedCount: 1, failedCount: 1, unattemptedCount: 1,
+    } });
+    const transport = simulateHttp(async (url) => ({ status: url.pathname === "/child" ? 200 : 500, html: "<html></html>" }));
+    const result = await executeAuthorizedCrawl(job, { prisma, evidence: new EvidenceRepository(prisma), resolver: publicResolver, transport });
+    expect(result).toMatchObject({ status: "PARTIAL", coverage: { discovered: 2, attempted: 2, collected: 1, failed: 1, unattempted: 0 } });
+  });
+
+  it("does not publish terminal success if saving the snapshot fails", async () => {
+    const job = await createJob("freeze-rollback");
+    const transport = simulateHttp(async () => {
+      await prisma.exportAuthorization.update({ where: { id: authorizationRef }, data: { revokedAt: new Date() } });
+      return { status: 200, html: "<html></html>" };
+    });
+    await expect(executeAuthorizedCrawl(job, { prisma, evidence: new EvidenceRepository(prisma), resolver: publicResolver, transport })).rejects.toThrow("authorization scope mismatch");
+    expect(await prisma.crawlRun.findUniqueOrThrow({ where: { id: job.crawlRunId } })).toMatchObject({ status: "RUNNING", activeSiteKey: siteId, frozenAt: null });
+    expect(await prisma.platformMigrationState.findUnique({ where: { crawlRunId: job.crawlRunId } })).toBeNull();
+  });
+
+  it.each([404, 429])("counts HTTP %s as an unavailable page without extracting its HTML", async (status) => {
+    const job = await createJob(`response-${status}`);
+    const transport = simulateHttp(async () => ({ status, html: '<html><a href="/error-link">Error</a></html>' }));
+    const result = await executeAuthorizedCrawl(job, { prisma, evidence: new EvidenceRepository(prisma), resolver: publicResolver, transport });
+    expect(result).toMatchObject({ status: "PARTIAL", coverage: { discovered: 1, attempted: 1, collected: 0, failed: 1 } });
+    expect(await prisma.evidenceError.findFirst({ where: { crawlRunId: job.crawlRunId } })).toMatchObject({ code: `http_${status}` });
+    expect(await prisma.evidencePage.count({ where: { crawlRunId: job.crawlRunId } })).toBe(0);
+    expect(await prisma.platformSnapshot.count({ where: { crawlRunId: job.crawlRunId } })).toBe(1);
   });
 
   it("resumes duplicate worker delivery and checkpoints a page once", async () => {

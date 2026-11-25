@@ -98,16 +98,22 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
     discovered.add(identity.normalizedUrl);
     queue.push({ identity, depth });
   };
-  for (const url of seedUrls) discover(url, 0);
+  const checkpoint = Array.isArray(stored.frontier) ? null
+    : stored.frontier as { pending?: Array<{ url: string; depth: number }>; skipped?: string[]; robotsLimited?: boolean } | null;
+  for (const item of checkpoint?.pending ?? seedUrls.map((url) => ({ url, depth: 0 }))) discover(item.url, item.depth);
   const processed = new Set(Array.isArray(stored.processedUrls)
     ? stored.processedUrls.filter((value): value is string => typeof value === "string").map((url) => identify(url).normalizedUrl)
     : []);
+  const skipped = new Set(checkpoint?.skipped ?? []);
   for (const url of processed) discovered.add(url);
+  for (const url of skipped) discovered.add(url);
   let attempted = stored.attemptedCount;
   let collected = stored.collectedCount;
   let failed = stored.failedCount;
-  let partial = false;
-  let robotsLimited = false;
+  let robotsLimited = checkpoint?.robotsLimited ?? false;
+  const incompleteLegacyFrontier = !checkpoint && stored.discoveredCount > discovered.size;
+  const discoveredCount = () => Math.max(stored.discoveredCount, discovered.size);
+  let partial = failed > 0 || robotsLimited || incompleteLegacyFrontier;
   const now = dependencies.now ?? (() => new Date());
   const durationController = new AbortController();
   const durationTimer = setTimeout(() => durationController.abort(), job.limits.maxDurationMs);
@@ -137,6 +143,14 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
     throw new Error("robots redirect limit exceeded");
   } };
   const robots = await loadRobots(registeredOrigin, fetcher, { cache: false, now: () => now().getTime() });
+  const saveProgress = (prisma: Pick<DatabaseClient, "crawlRun">, collectedCount = collected) => prisma.crawlRun.update({
+    where: { id: job.crawlRunId },
+    data: {
+      frontier: { pending: queue.map(({ identity, depth }) => ({ url: identity.discoveredUrl, depth })), skipped: [...skipped], robotsLimited },
+      processedUrls: [...processed], discoveredCount: discoveredCount(), attemptedCount: attempted,
+      collectedCount, failedCount: failed, unattemptedCount: discoveredCount() - attempted,
+    },
+  });
 
   try {
   while (queue.length > 0 && attempted < job.limits.maxPages) {
@@ -144,14 +158,28 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
     const next = queue.shift()!;
     const { identity } = next;
     const url = identity.normalizedUrl;
-    if (processed.has(url)) continue;
-    if (!canCrawl(robots, new URL(url), "WebsiteBotScroll/1.0")) { partial = true; robotsLimited = true; await dependencies.evidence.appendLimitation(job.organizationId, job.crawlRunId, { id: createEvidenceId("limitation", [job.crawlRunId, "robots_disallowed", url]), code: "robots_disallowed", message: "robots.txt disallows collection of this URL." }); continue; }
+    if (processed.has(url) || skipped.has(url)) continue;
+    if (!canCrawl(robots, new URL(url), "WebsiteBotScroll/1.0")) {
+      partial = true;
+      robotsLimited = true;
+      skipped.add(url);
+      await dependencies.prisma.$transaction(async (transaction) => {
+        const evidence = new EvidenceRepository(transaction as unknown as DatabaseClient);
+        await evidence.appendLimitation(job.organizationId, job.crawlRunId, {
+          id: createEvidenceId("limitation", [job.crawlRunId, "robots_disallowed", url]),
+          code: "robots_disallowed", message: "robots.txt disallows collection of this URL.",
+        });
+        await saveProgress(transaction);
+      });
+      continue;
+    }
     processed.add(url);
     attempted += 1;
     const pageId = createEvidenceId("page", [job.crawlRunId, identity.normalizedUrl]);
     const buffered: CrawlEvidenceEvent[] = [];
     const evidenceSink: EvidenceSink = { record: async (event) => { buffered.push(event); } };
     let stage = "http_fetch";
+    let httpFailure: number | undefined;
     try {
       const result = await fetchPage({
         url: new URL(identity.normalizedUrl), resolver: dependencies.resolver, transport: dependencies.transport,
@@ -159,14 +187,17 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
         maxDecompressedBytes: job.limits.maxResponseBytes, evidenceSink,
         evidenceContext: { runId: job.crawlRunId, pageId }, now, sleep: async () => undefined, allowedHosts, signal: durationController.signal,
       });
+      if (result.status < 200 || result.status >= 300) {
+        httpFailure = result.status;
+        throw new Error(`Page returned HTTP ${result.status}`);
+      }
       stage = "evidence_persistence";
       const transactions = buffered.filter((event): event is Extract<CrawlEvidenceEvent, { kind: "http_transaction" }> => event.kind === "http_transaction");
       const collectionErrors = buffered.filter((item): item is Extract<CrawlEvidenceEvent, { kind: "collection_error" }> => item.kind === "collection_error");
-      const httpStatus = result.kind === "html" || result.kind === "non-html" || result.kind === "rate-limited" ? "observed" : "partial";
       const httpObservation = defineObservation({
-        id: createEvidenceId("observation", [job.crawlRunId, pageId, "http"]), method: "http", status: httpStatus,
+        id: createEvidenceId("observation", [job.crawlRunId, pageId, "http"]), method: "http", status: "observed",
         value: { transactions: transactions.map(({ transaction }) => transaction.id), final_transaction_id: transactions.at(-1)?.transaction.id },
-        reasons: httpStatus === "partial" ? [`http_${result.kind}`] : [], provenance: { collector: "http", version: job.producerVersion, collectedAt: now().toISOString() },
+        reasons: [], provenance: { collector: "http", version: job.producerVersion, collectedAt: now().toISOString() },
       });
       const extractedObservations = result.kind === "html" ? extractHtmlObservations({
         runId: job.crawlRunId, pageId, pageUrl: result.url, html: result.body, collectedAt: now().toISOString(),
@@ -174,6 +205,18 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
       }) : [];
       const pageObservations = [httpObservation, ...extractedObservations];
       const platformBatch = buildPlatformPageBatch({ organizationId: job.organizationId, runId: job.crawlRunId, pageId, attempt: 0, observations: pageObservations });
+      const children: string[] = [];
+      const links = extractedObservations.find(({ method }) => method === "links")?.value;
+      if (next.depth < job.limits.maxDepth && Array.isArray(links)) {
+        for (const link of links) {
+          if (!link || typeof link !== "object" || !("target_url" in link) || typeof link.target_url !== "string") continue;
+          const target = new URL(link.target_url);
+          if (allowedHosts.has(target.hostname)) children.push(target.href);
+        }
+      }
+      const pendingBeforePage = queue.length;
+      for (const child of children) discover(child, next.depth + 1);
+      try {
       await dependencies.prisma.$transaction(async (transaction) => {
         const client = transaction as unknown as DatabaseClient;
         const legacy = new EvidenceRepository(client);
@@ -192,37 +235,39 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
         await platform.startExecution(job.organizationId, platformBatch.execution);
         for (const observation of platformBatch.records) await platform.appendObservation(job.organizationId, observation);
         await platform.finishExecution(job.organizationId, { executionId: platformBatch.execution.id, status: "completed", finishedAt: now().toISOString() });
+        await saveProgress(transaction, collected + 1);
       });
-      if (result.kind === "html") {
-        const links = extractedObservations.find(({ method }) => method === "links")?.value;
-        if (next.depth < job.limits.maxDepth && Array.isArray(links)) {
-          for (const link of links) {
-            if (link && typeof link === "object" && "target_url" in link && typeof link.target_url === "string") {
-              const target = new URL(link.target_url);
-              if (allowedHosts.has(target.hostname)) discover(target.href, next.depth + 1);
-            }
-          }
-        }
+      } catch (error) {
+        for (const item of queue.splice(pendingBeforePage)) discovered.delete(item.identity.normalizedUrl);
+        throw error;
       }
       collected += 1;
     } catch (error) {
-      if (durationController.signal.aborted || Date.now() - startedAt >= job.limits.maxDurationMs) { durationLimited = true; partial = true; failed += 1; break; }
       failed += 1;
       partial = true;
-      await dependencies.evidence.appendError(job.organizationId, job.crawlRunId, {
-        id: createEvidenceId("error", [job.crawlRunId, url, String(attempted)]), stage,
-        code: stage === "http_fetch" ? "network_error" : "evidence_persistence_error",
-        message: error instanceof Error ? error.message : "Crawl failed", occurredAt: now().toISOString(), retryable: false,
+      durationLimited = durationController.signal.aborted || Date.now() - startedAt >= job.limits.maxDurationMs;
+      const lastStatus = buffered.findLast((event) => event.kind === "http_transaction");
+      if (stage === "http_fetch" && lastStatus?.kind === "http_transaction" && lastStatus.transaction.statusCode >= 400) {
+        httpFailure ??= lastStatus.transaction.statusCode;
+      }
+      await dependencies.prisma.$transaction(async (transaction) => {
+        const evidence = new EvidenceRepository(transaction as unknown as DatabaseClient);
+        await evidence.appendError(job.organizationId, job.crawlRunId, {
+          id: createEvidenceId("error", [job.crawlRunId, url, String(attempted)]), stage,
+          code: httpFailure !== undefined ? `http_${httpFailure}` : durationLimited ? "timeout"
+            : stage === "http_fetch" ? "network_error" : "evidence_persistence_error",
+          message: httpFailure !== undefined ? `Page returned HTTP ${httpFailure}`
+            : error instanceof Error ? error.message : "Crawl failed",
+          occurredAt: now().toISOString(), retryable: httpFailure === 429 || (httpFailure !== undefined && httpFailure >= 500),
+        });
+        await saveProgress(transaction);
       });
+      if (durationLimited) break;
     }
-    await dependencies.prisma.crawlRun.update({
-      where: { id: job.crawlRunId },
-      data: { processedUrls: [...processed], discoveredCount: discovered.size, attemptedCount: attempted, collectedCount: collected, failedCount: failed, unattemptedCount: discovered.size - attempted },
-    });
   }
   } finally { clearTimeout(durationTimer); }
 
-  const unattempted = discovered.size - attempted;
+  const unattempted = discoveredCount() - attempted;
   const pageLimited = queue.length > 0 && attempted >= job.limits.maxPages;
   if (pageLimited) {
     partial = true;
@@ -235,15 +280,16 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
     partial = true;
     await dependencies.evidence.appendLimitation(job.organizationId, job.crawlRunId, { id: createEvidenceId("limitation", [job.crawlRunId, "duration_limit_reached"]), code: "duration_limit_reached", message: "The bounded crawl stopped at its configured duration limit." });
   }
-  const coverage = { discovered: discovered.size, attempted, collected, failed, unattempted };
-  await dependencies.evidence.updateCoverage(job.organizationId, job.crawlRunId, { ...coverage, stopReason: durationLimited ? "duration_limit_reached" : pageLimited ? "page_limit_reached" : robotsLimited ? "robots_disallowed" : "frontier_exhausted" });
+  if (incompleteLegacyFrontier) {
+    await dependencies.evidence.appendLimitation(job.organizationId, job.crawlRunId, {
+      id: createEvidenceId("limitation", [job.crawlRunId, "frontier_checkpoint_missing"]),
+      code: "frontier_checkpoint_missing", message: "The previous worker did not save all discovered URLs.",
+    });
+  }
+  const coverage = { discovered: discoveredCount(), attempted, collected, failed, unattempted };
+  await dependencies.evidence.updateCoverage(job.organizationId, job.crawlRunId, { ...coverage, stopReason: durationLimited ? "duration_limit_reached" : pageLimited ? "page_limit_reached" : incompleteLegacyFrontier ? "frontier_checkpoint_missing" : robotsLimited ? "robots_disallowed" : "frontier_exhausted" });
   const status = partial ? "PARTIAL" : "COMPLETED";
-  await finishCrawlRun(job.crawlRunId, status, dependencies.prisma);
   const snapshots = new SnapshotRepository(dependencies.prisma);
-  const parity = await snapshots.inspectObservationParity(job.organizationId, job.crawlRunId);
-  if (parity.legacyDigest !== parity.generalizedDigest) throw new Error("persisted observation parity mismatch");
-  await snapshots.recordParityCheckpoint(job.organizationId, job.crawlRunId, { checkpoint: { legacyCount: parity.legacyCount, generalizedCount: parity.generalizedCount }, parityDigest: parity.legacyDigest });
-  await snapshots.switchToGeneralizedReads(job.organizationId, job.crawlRunId);
-  await snapshots.freezePlatformSnapshot(job.organizationId, job.crawlRunId);
+  await snapshots.finalizePlatformCrawl(job.organizationId, job.crawlRunId, status);
   return { crawlRunId: job.crawlRunId, status, coverage };
 }

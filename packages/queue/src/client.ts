@@ -27,21 +27,66 @@ export function createCrawlQueueProducer(redisUrl: string): CloseableQueueProduc
       enableOfflineQueue: false,
     },
   });
+  queue.on("error", () => { /* Connection failures surface through add(). */ });
   return {
-    add: (name, data, options) => queue.add(name, data, { ...crawlJobOptions, ...options }),
+    add: async (name, data, options) => {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      try {
+        await Promise.race([
+          queue.waitUntilReady(),
+          new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error("Crawl queue connection timed out")), 5_000); }),
+        ]);
+      } finally {
+        clearTimeout(timer);
+      }
+      return queue.add(name, data, { ...crawlJobOptions, ...options });
+    },
     close: () => queue.close(),
   };
 }
 
-async function publish(run: { id: string; organizationId: string; siteId: string; trigger: CrawlTrigger; idempotencyKey: string; authorizationId: string | null; limits: unknown; producerVersion: string | null; normalizationPolicyVersion: string | null; extractorVersion: string | null }, producer: QueueProducer): Promise<void> {
+type StoredCrawl = { id: string; organizationId: string; siteId: string; trigger: CrawlTrigger; idempotencyKey: string; authorizationId: string | null; limits: unknown; producerVersion: string | null; normalizationPolicyVersion: string | null; extractorVersion: string | null };
+
+function storedJob(run: StoredCrawl) {
   const limits = run.limits as { max_pages?: number; max_depth?: number; max_duration_ms?: number; max_response_bytes?: number } | null;
-  const job = runCrawlJobSchema.parse({
+  return {
     organizationId: run.organizationId, siteId: run.siteId, crawlRunId: run.id, trigger: run.trigger, idempotencyKey: run.idempotencyKey,
     authorizationRef: run.authorizationId,
     limits: { maxPages: limits?.max_pages, maxDepth: limits?.max_depth, maxDurationMs: limits?.max_duration_ms, maxResponseBytes: limits?.max_response_bytes },
     producerVersion: run.producerVersion, normalizationPolicyVersion: run.normalizationPolicyVersion, extractorVersion: run.extractorVersion,
-  });
-  await producer.add(RUN_CRAWL_JOB_NAME, job, { jobId: run.id });
+  };
+}
+
+async function publish(run: StoredCrawl, producer: QueueProducer): Promise<void> {
+  await producer.add(RUN_CRAWL_JOB_NAME, runCrawlJobSchema.parse(storedJob(run)), { jobId: run.id });
+}
+
+export async function recoverPendingCrawls({ prisma, producer }: EnqueueDependencies): Promise<void> {
+  const cutoff = new Date(Date.now() - 30_000);
+  let afterId: string | undefined;
+  let hadFailure = false;
+  for (;;) {
+    const runs = await prisma.crawlRun.findMany({
+      where: {
+        status: "PENDING", trigger: "MANUAL", attemptCount: 0,
+        activeSiteKey: { not: null }, createdAt: { lt: cutoff },
+        ...(afterId === undefined ? {} : { id: { gt: afterId } }),
+      },
+      orderBy: { id: "asc" },
+      take: 50,
+    });
+    for (const run of runs) {
+      const job = runCrawlJobSchema.safeParse(storedJob(run));
+      if (!job.success) {
+        hadFailure = true;
+        continue;
+      }
+      await producer.add(RUN_CRAWL_JOB_NAME, job.data, { jobId: run.id });
+    }
+    if (runs.length < 50) break;
+    afterId = runs.at(-1)!.id;
+  }
+  if (hadFailure) throw new Error("Some pending crawls could not be republished");
 }
 
 function isUniqueViolation(error: unknown): boolean {

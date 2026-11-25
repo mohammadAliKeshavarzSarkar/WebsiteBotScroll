@@ -158,6 +158,7 @@ export class SiteWorkspaceRepository {
                 code,
                 message: code === "timeout" ? "The page request timed out."
                   : code === "evidence_persistence_error" ? "The page was fetched, but its evidence could not be saved."
+                  : /^http_[1-5]\d{2}$/.test(code) ? `The page returned HTTP ${code.slice(5)}.`
                   : "The page could not be collected.",
                 url: null,
                 retryable,

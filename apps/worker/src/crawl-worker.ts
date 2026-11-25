@@ -5,6 +5,7 @@ import { EvidenceRepository } from "@website-bot-scroll/db/evidence";
 import type { DnsResolver } from "@website-bot-scroll/crawler/network/resolve-public";
 import type { HttpTransport } from "@website-bot-scroll/crawler/http/fetch-page";
 import { runCrawlJobSchema, type RunCrawlJob } from "@website-bot-scroll/queue/contracts";
+import { createCrawlQueueProducer, recoverPendingCrawls } from "@website-bot-scroll/queue/client";
 import { CRAWL_QUEUE_NAME, RUN_CRAWL_JOB_NAME, crawlWorkerOptions } from "@website-bot-scroll/queue/worker-options";
 import { executeAuthorizedCrawl, type CrawlDependencies } from "./jobs/run-crawl.js";
 import { createDnsResolver, createNodeHttpTransport } from "./network.js";
@@ -20,7 +21,7 @@ type Dependencies = {
 
 function redisConnection(redisUrl: string): Record<string, unknown> {
   const url = new URL(redisUrl);
-  return { host: url.hostname, port: Number(url.port || 6379), maxRetriesPerRequest: 1, enableOfflineQueue: false, ...(url.username ? { username: decodeURIComponent(url.username) } : {}), ...(url.password ? { password: decodeURIComponent(url.password) } : {}), ...(url.protocol === "rediss:" ? { tls: {} } : {}) };
+  return { host: url.hostname, port: Number(url.port || 6379), maxRetriesPerRequest: null, ...(url.username ? { username: decodeURIComponent(url.username) } : {}), ...(url.password ? { password: decodeURIComponent(url.password) } : {}), ...(url.protocol === "rediss:" ? { tls: {} } : {}) };
 }
 
 export async function failCrawlRun(job: RunCrawlJob, _error: unknown, prisma: DatabaseClient): Promise<void> {
@@ -50,5 +51,22 @@ export function createCrawlWorker(environment: AppEnv, provided: Dependencies = 
     catch (error) { await fail(job, error, prisma); throw error; }
   };
   const createWorker = provided.createWorker ?? ((name, handler, options) => new Worker(name, (job: Job) => handler({ name: job.name, data: job.data }), options as never));
-  return createWorker(CRAWL_QUEUE_NAME, processor, { connection: redisConnection(environment.REDIS_URL), ...crawlWorkerOptions });
+  const worker = createWorker(CRAWL_QUEUE_NAME, processor, { connection: redisConnection(environment.REDIS_URL), ...crawlWorkerOptions });
+  if (provided.createWorker) return worker;
+
+  const producer = createCrawlQueueProducer(environment.REDIS_URL);
+  let recovery: Promise<void> | undefined;
+  const recover = () => {
+    recovery ??= recoverPendingCrawls({ prisma, producer })
+      .catch(() => { console.warn("Crawl queue recovery will retry on the next pass"); })
+      .finally(() => { recovery = undefined; });
+  };
+  const timer = setInterval(recover, 30_000);
+  timer.unref();
+  recover();
+  return { close: async () => {
+    clearInterval(timer);
+    await recovery;
+    await Promise.all([worker.close(), producer.close()]);
+  } };
 }

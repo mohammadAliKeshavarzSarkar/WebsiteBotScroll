@@ -78,8 +78,33 @@ export class SnapshotRepository {
     });
   }
 
-  async freezePlatformSnapshot(organizationId: string, runId: string) {
+  async finalizePlatformCrawl(organizationId: string, runId: string, status: "COMPLETED" | "PARTIAL") {
     return this.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "crawl_runs" WHERE "id" = ${runId}::uuid AND "organization_id" = ${organizationId}::uuid FOR UPDATE`;
+      const existing = await tx.platformSnapshot.findFirst({ where: { crawlRunId: runId, organizationId } });
+      if (existing) return existing;
+      const updated = await tx.crawlRun.updateMany({
+        where: { id: runId, organizationId, status: "RUNNING", frozenAt: null },
+        data: { status, finishedAt: new Date(), activeSiteKey: null },
+      });
+      if (!updated.count) throw new Error("crawl run is not active");
+      const parity = await readParity(tx, runId);
+      if (parity.legacyDigest !== parity.generalizedDigest) throw new Error("persisted observation parity mismatch");
+      const now = new Date();
+      await tx.platformMigrationState.create({ data: {
+        organizationId, crawlRunId: runId, readAuthority: "generalized",
+        checkpoint: json({ legacyCount: parity.legacyCount, generalizedCount: parity.generalizedCount }),
+        parityDigest: parity.legacyDigest, parityVerifiedAt: now, switchedAt: now,
+      } });
+      return this.freezeSnapshot(tx, organizationId, runId);
+    }, { timeout: 30_000 });
+  }
+
+  async freezePlatformSnapshot(organizationId: string, runId: string) {
+    return this.prisma.$transaction(async (tx) => this.freezeSnapshot(tx, organizationId, runId));
+  }
+
+  private async freezeSnapshot(tx: Prisma.TransactionClient, organizationId: string, runId: string) {
       await tx.$queryRaw`SELECT "id" FROM "crawl_runs" WHERE "id" = ${runId}::uuid AND "organization_id" = ${organizationId}::uuid FOR UPDATE`;
       const existing = await tx.platformSnapshot.findFirst({ where: { crawlRunId: runId, organizationId } });
       if (existing) return existing;
@@ -145,7 +170,6 @@ export class SnapshotRepository {
       const snapshot = await tx.platformSnapshot.create({ data: { organizationId, crawlRunId: runId, producerRevision: run.producerVersion, sha256: built.sha256, payload: json(JSON.parse(built.bytes.toString("utf8"))) } });
       await tx.crawlRun.update({ where: { id: runId }, data: { frozenAt: snapshot.frozenAt } });
       return snapshot;
-    });
   }
 
   async loadSnapshot(organizationId: string, snapshotId: string) {
