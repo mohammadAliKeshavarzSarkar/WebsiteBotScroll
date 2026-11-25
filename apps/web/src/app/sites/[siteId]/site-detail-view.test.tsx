@@ -1,9 +1,10 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { SiteDetailView } from "./site-detail-view";
 
 Object.assign(globalThis, { React });
+vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh() {} }) }));
 const site = { id: "site-1", name: "Main shop", origin: "https://example.com" };
 
 describe("owner site detail", () => {
@@ -26,7 +27,7 @@ describe("owner site detail", () => {
     expect(html).toContain('name="maxDepth"');
     expect(html).toContain('name="maxDurationSeconds"');
     expect(html).toContain("Crawl failed");
-    expect(html).toContain("1 collected");
+    expect(html).toContain("<dt>Pages collected</dt><dd>1</dd>");
     expect(html).toContain("The page could not be collected.");
     expect(html).not.toContain("SEO score");
   });
@@ -49,7 +50,8 @@ describe("owner site detail", () => {
   it("marks active runs for safe refresh and disables overlapping starts", () => {
     const html = renderToStaticMarkup(<SiteDetailView site={site} authorization={{ id: "auth-1", description: "Owner-declared crawl authorization", scope: { seed_urls: ["https://example.com/"], allowed_hosts: ["example.com"], include_patterns: [], exclude_patterns: [] }, createdAt: new Date("2026-11-24T09:00:00Z") }} latestRun={{ id: "run-1", status: "RUNNING", createdAt: new Date(), startedAt: new Date(), finishedAt: null, stopReason: null, coverage: { discovered: 1, attempted: 0, collected: 0, failed: 0, unattempted: 1 }, errors: [] }} />);
     expect(html).toContain('data-active-run="true"');
-    expect(html).toContain("A crawl is already active");
+    expect(html).toContain("updates automatically while this tab is visible");
+    expect(html).not.toContain('http-equiv="refresh"');
     expect(html).not.toContain('action="/api/sites/site-1/crawl"');
   });
 

@@ -127,10 +127,6 @@ export class SiteWorkspaceRepository {
           include: {
             errors: { orderBy: [{ createdAt: "asc" }, { id: "asc" }] },
             evidenceErrors: { orderBy: [{ occurredAt: "asc" }, { id: "asc" }] },
-            evidencePages: {
-              orderBy: { position: "asc" },
-              select: { finalUrl: true, transactions: { orderBy: { position: "desc" }, take: 1, select: { statusCode: true } } },
-            },
           },
         },
       },
@@ -139,6 +135,11 @@ export class SiteWorkspaceRepository {
 
     const authorization = record.exportAuthorizations.find((candidate) => isOwnerDeclaration(candidate, record.origin));
     const latestRun = record.crawlRuns[0];
+    const pages = latestRun?.frozenAt ? await this.prisma.evidencePage.findMany({
+      where: { crawlRunId: latestRun.id },
+      orderBy: { position: "asc" },
+      select: { finalUrl: true, transactions: { orderBy: { position: "desc" }, take: 1, select: { statusCode: true } } },
+    }) : [];
     return {
       site: toSite(record),
       authorization: authorization ? toAuthorization(authorization) : null,
@@ -150,7 +151,7 @@ export class SiteWorkspaceRepository {
             startedAt: latestRun.startedAt,
             finishedAt: latestRun.finishedAt,
             stopReason: latestRun.stopReason,
-            pages: latestRun.evidencePages.map(({ finalUrl, transactions }) => ({
+            pages: pages.map(({ finalUrl, transactions }) => ({
               url: finalUrl, statusCode: transactions[0]?.statusCode ?? null,
             })),
             coverage: {

@@ -1,4 +1,5 @@
 import type { OwnerDeclarationScope, WorkspaceCrawlRun } from "@website-bot-scroll/db/site-workspace";
+import { CrawlRefresh } from "./crawl-refresh";
 
 type SiteSummary = { id: string; name: string; origin: string };
 type AuthorizationSummary = { id: string; description: string; scope: OwnerDeclarationScope; createdAt: Date };
@@ -22,19 +23,22 @@ function CrawlSummary({ run }: { run: WorkspaceCrawlRun }) {
   const { coverage, startedAt, finishedAt, pages, errors } = run;
   const seconds = startedAt && finishedAt ? Math.max(0, Math.round((finishedAt.getTime() - startedAt.getTime()) / 1000)) : null;
   const duration = seconds === null ? null : seconds < 1 ? "Under 1 second" : seconds < 60 ? `${seconds} seconds` : `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+  const metrics = [
+    { label: "Pages collected", value: coverage.collected },
+    { label: "Pages failed", value: coverage.failed },
+    { label: "Pages discovered", value: coverage.discovered },
+    { label: "Not attempted", value: coverage.unattempted ?? Math.max(0, coverage.discovered - coverage.attempted) },
+  ];
   return <>
     <div className="run-heading">
-      <h3>{runLabels[run.status]}</h3>
+      <h3 className={run.status === "COMPLETED" ? "crawl-complete" : undefined}>{runLabels[run.status]}</h3>
       {duration ? <span>{duration}</span> : null}
     </div>
     {run.stopReason && Object.hasOwn(stopMessages, run.stopReason) ? <p>{stopMessages[run.stopReason]}</p> : null}
     {run.status === "PENDING" ? <p>Waiting for a crawl worker.</p> : null}
-    <div className="coverage-grid">
-      <span>{coverage.collected} collected</span>
-      <span>{coverage.failed} failed</span>
-      <span>{coverage.discovered} discovered</span>
-      <span>{coverage.unattempted ?? Math.max(0, coverage.discovered - coverage.attempted)} not attempted</span>
-    </div>
+    <dl className="coverage-grid">
+      {metrics.map(({ label, value }) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
+    </dl>
     {pages?.length ? <details className="crawl-result-details">
       <summary>View collected pages ({pages.length})</summary>
       <ol className="crawl-page-list">{pages.map(({ url, statusCode }, index) => <li key={index}>
@@ -53,7 +57,7 @@ function CrawlSummary({ run }: { run: WorkspaceCrawlRun }) {
 export function SiteDetailView({ site, authorization, latestRun, feedback = {} }: { site: SiteSummary; authorization: AuthorizationSummary | null; latestRun: WorkspaceCrawlRun | null; feedback?: Feedback }) {
   const activeRun = latestRun?.status === "PENDING" || latestRun?.status === "RUNNING";
   return <main className="workspace-shell detail-shell">
-    {activeRun ? <meta httpEquiv="refresh" content="5" /> : null}
+    {activeRun ? <CrawlRefresh /> : null}
     <header className="workspace-header"><a className="brand" href="/"><span className="brand-mark" aria-hidden="true">W</span><span>WebsiteBotScroll</span></a><a className="text-link" href="/sites">← All websites</a></header>
     <section className="detail-hero"><div><p className="eyebrow">Registered website</p><h1>{site.name}</h1><p className="detail-origin">{site.origin}</p></div><span className={`status-chip ${authorization ? "status-ready" : ""}`}>{authorization ? "Authorized" : "Authorization required"}</span></section>
     {feedback.authorized ? <div className="notice notice-success" role="status"><strong>Authorization recorded.</strong> You can now configure a bounded manual crawl.</div> : null}
@@ -64,7 +68,7 @@ export function SiteDetailView({ site, authorization, latestRun, feedback = {} }
       </section>
       <section className="detail-panel"><h2>Latest crawl</h2>
         <div data-active-run={activeRun ? "true" : "false"}>{!latestRun ? <p className="muted-copy">No crawl has been run yet.</p> : <CrawlSummary run={latestRun} />}</div>
-        {authorization ? activeRun ? <p className="notice notice-error">A crawl is already active. This page refreshes every five seconds.</p> : <form className="site-form crawl-form" method="post" action={`/api/sites/${site.id}/crawl`}><label>Maximum pages<input name="maxPages" type="number" min="1" max="100" step="1" defaultValue="25" required /></label><label>Maximum depth<input name="maxDepth" type="number" min="0" max="3" step="1" defaultValue="1" required /></label><label>Maximum duration (seconds)<input name="maxDurationSeconds" type="number" min="10" max="300" step="1" defaultValue="60" required /></label><p className="field-help">Each response is limited to 5 MiB. The registered host is the only allowed scope.</p><button className="button button-primary form-submit" type="submit">Start bounded crawl</button></form> : null}
+        {authorization ? activeRun ? <p className="muted-copy">The summary updates automatically while this tab is visible.</p> : <details className="crawl-result-details" open={!latestRun}><summary>{latestRun ? "Configure another crawl" : "Configure your first crawl"}</summary><form className="site-form crawl-form" method="post" action={`/api/sites/${site.id}/crawl`}><label>Maximum pages<input name="maxPages" type="number" min="1" max="100" step="1" defaultValue="25" required /></label><label>Maximum depth<input name="maxDepth" type="number" min="0" max="3" step="1" defaultValue="1" required /></label><label>Maximum duration (seconds)<input name="maxDurationSeconds" type="number" min="10" max="300" step="1" defaultValue="60" required /></label><p className="field-help">Each response is limited to 5 MiB. The registered host is the only allowed scope.</p><button className="button button-primary form-submit" type="submit">Start crawl</button></form></details> : null}
       </section>
     </div>
   </main>;
