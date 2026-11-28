@@ -36,6 +36,31 @@ export async function failCrawlRun(job: RunCrawlJob, _error: unknown, prisma: Da
   });
 }
 
+export async function recoverRunningCrawls(prisma: DatabaseClient, getJobState: (id: string) => Promise<string>): Promise<void> {
+  const staleBefore = new Date(Date.now() - crawlWorkerOptions.lockDuration);
+  const runs = await prisma.crawlRun.findMany({
+    where: { status: "RUNNING", trigger: "MANUAL", activeSiteKey: { not: null }, updatedAt: { lt: staleBefore } },
+    select: { id: true, startedAt: true, updatedAt: true, limits: true },
+  });
+  for (const run of runs) {
+    const state = await getJobState(run.id);
+    const limits = run.limits as { max_duration_ms?: number } | null;
+    const deadline = (run.startedAt ?? run.updatedAt).getTime() + (limits?.max_duration_ms ?? 300_000);
+    // A lost Redis job may still have a worker finishing an in-flight request.
+    const orphaned = state === "unknown" && deadline < staleBefore.getTime();
+    if (!orphaned && state !== "failed" && state !== "completed") continue;
+    await prisma.$transaction(async (tx) => {
+      const updated = await tx.crawlRun.updateMany({
+        where: { id: run.id, status: "RUNNING", updatedAt: run.updatedAt },
+        data: { status: "FAILED", activeSiteKey: null, finishedAt: new Date(), stopReason: "worker_error" },
+      });
+      if (updated.count) await tx.crawlError.create({ data: {
+        crawlRunId: run.id, code: "crawl_interrupted", message: "This crawl was interrupted. You can start another crawl.", retryable: true,
+      } });
+    });
+  }
+}
+
 export function createCrawlWorker(environment: AppEnv, provided: Dependencies = {}): Closeable {
   const prisma = provided.prisma ?? createPrismaClient(environment.DATABASE_URL);
   const evidence = provided.evidence ?? new EvidenceRepository(prisma);
@@ -57,7 +82,8 @@ export function createCrawlWorker(environment: AppEnv, provided: Dependencies = 
   const producer = createCrawlQueueProducer(environment.REDIS_URL);
   let recovery: Promise<void> | undefined;
   const recover = () => {
-    recovery ??= recoverPendingCrawls({ prisma, producer })
+    recovery ??= recoverRunningCrawls(prisma, producer.getJobState)
+      .then(() => recoverPendingCrawls({ prisma, producer }))
       .catch(() => { console.warn("Crawl queue recovery will retry on the next pass"); })
       .finally(() => { recovery = undefined; });
   };

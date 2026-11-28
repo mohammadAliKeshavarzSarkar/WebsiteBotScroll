@@ -29,21 +29,16 @@ export interface CrawlExecutionResult {
   coverage: { discovered: number; attempted: number; collected: number; failed: number; unattempted: number };
 }
 
-export async function processRunCrawl(rawJob: unknown, prisma: DatabaseClient): Promise<{ crawlRunId: string; resumed: boolean }> {
+export async function processRunCrawl(rawJob: unknown, prisma: DatabaseClient) {
   const job = runCrawlJobSchema.parse(rawJob);
   const run = await prisma.crawlRun.findFirstOrThrow({ where: { id: job.crawlRunId, siteId: job.siteId, organizationId: job.organizationId, idempotencyKey: job.idempotencyKey } });
   const resumed = run.status !== "PENDING";
-  if (run.status === "PENDING" || run.status === "RUNNING") {
-    await prisma.crawlRun.update({
-      where: { id: run.id },
-      data: {
-        status: "RUNNING",
-        attemptCount: { increment: 1 },
-        ...(run.startedAt ? {} : { startedAt: new Date() }),
-      },
-    });
-  }
-  return { crawlRunId: run.id, resumed };
+  const startedAt = run.startedAt ?? new Date();
+  await prisma.crawlRun.update({
+    where: { id: run.id, status: { in: ["PENDING", "RUNNING"] } },
+    data: { status: "RUNNING", attemptCount: { increment: 1 }, startedAt },
+  });
+  return { crawlRunId: run.id, resumed, startedAt };
 }
 
 export async function finishCrawlRun(crawlRunId: string, rawStatus: TerminalCrawlStatus, prisma: DatabaseClient): Promise<void> {
@@ -83,7 +78,7 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
   const definitions = new DefinitionRepository(dependencies.prisma, { canPublish: true });
   for (const definition of PLATFORM_OBSERVATION_DEFINITIONS) await definitions.publishObservationDefinition(definition);
   await definitions.publishCollectorDefinition(PLATFORM_CRAWLER_DEFINITION);
-  await processRunCrawl(job, dependencies.prisma);
+  const { startedAt } = await processRunCrawl(job, dependencies.prisma);
   const scope = stored.scope as { seed_urls?: unknown; allowed_hosts?: unknown } | null;
   const seedUrls = Array.isArray(scope?.seed_urls) ? scope.seed_urls.filter((value): value is string => typeof value === "string") : [];
   const allowedHosts = new Set(Array.isArray(scope?.allowed_hosts) ? scope.allowed_hosts.filter((value): value is string => typeof value === "string") : []);
@@ -116,14 +111,18 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
   let partial = failed > 0 || robotsLimited || incompleteLegacyFrontier;
   const now = dependencies.now ?? (() => new Date());
   const durationController = new AbortController();
-  const durationTimer = setTimeout(() => durationController.abort(), job.limits.maxDurationMs);
-  const startedAt = Date.now();
+  const deadline = startedAt.getTime() + job.limits.maxDurationMs;
+  const remaining = Math.max(0, deadline - Date.now());
+  if (remaining === 0) durationController.abort();
+  const durationTimer = setTimeout(() => durationController.abort(), remaining);
+  const expired = () => durationController.signal.aborted || Date.now() >= deadline;
   let durationLimited = false;
   const fetcher: SafeTextFetcher = { fetch: async (url, options = {}) => {
     let current = url;
     for (let redirects = 0; redirects <= 5; redirects += 1) {
       if (!allowedHosts.has(current.hostname.toLowerCase())) throw new Error(`Destination is outside the authorized host: ${current.hostname}`);
       const destination = await assertAllowedDestination(current, dependencies.resolver);
+      durationController.signal.throwIfAborted();
       const response = await dependencies.transport.request({ url: current, method: "GET", destination, headers: {}, signal: durationController.signal });
       if (response.status >= 300 && response.status < 400) {
         const location = Array.isArray(response.headers.location) ? response.headers.location[0] : response.headers.location;
@@ -142,9 +141,8 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
     }
     throw new Error("robots redirect limit exceeded");
   } };
-  const robots = await loadRobots(registeredOrigin, fetcher, { cache: false, now: () => now().getTime() });
   const saveProgress = (prisma: Pick<DatabaseClient, "crawlRun">, collectedCount = collected) => prisma.crawlRun.update({
-    where: { id: job.crawlRunId },
+    where: { id: job.crawlRunId, status: "RUNNING" },
     data: {
       frontier: { pending: queue.map(({ identity, depth }) => ({ url: identity.discoveredUrl, depth })), skipped: [...skipped], robotsLimited },
       processedUrls: [...processed], discoveredCount: discoveredCount(), attemptedCount: attempted,
@@ -153,12 +151,16 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
   });
 
   try {
+  const robots = !expired() && queue.some(({ identity }) => !processed.has(identity.normalizedUrl) && !skipped.has(identity.normalizedUrl))
+    ? await loadRobots(registeredOrigin, fetcher, { cache: false, now: () => now().getTime() })
+    : null;
   while (queue.length > 0 && attempted < job.limits.maxPages) {
-    if (durationController.signal.aborted || Date.now() - startedAt >= job.limits.maxDurationMs) { durationLimited = true; break; }
     const next = queue.shift()!;
     const { identity } = next;
     const url = identity.normalizedUrl;
     if (processed.has(url) || skipped.has(url)) continue;
+    if (expired()) { durationLimited = true; break; }
+    if (!robots) throw new Error("robots policy unavailable");
     if (!canCrawl(robots, new URL(url), "WebsiteBotScroll/1.0")) {
       partial = true;
       robotsLimited = true;
@@ -245,7 +247,7 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
     } catch (error) {
       failed += 1;
       partial = true;
-      durationLimited = durationController.signal.aborted || Date.now() - startedAt >= job.limits.maxDurationMs;
+      durationLimited = expired();
       const lastStatus = buffered.findLast((event) => event.kind === "http_transaction");
       if (stage === "http_fetch" && lastStatus?.kind === "http_transaction" && lastStatus.transaction.statusCode >= 400) {
         httpFailure ??= lastStatus.transaction.statusCode;

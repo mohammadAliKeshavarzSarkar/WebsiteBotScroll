@@ -17,7 +17,7 @@ import { computeObservationParityDigest } from "@website-bot-scroll/crawler/evid
 import { PLATFORM_OBSERVATION_DEFINITIONS } from "@website-bot-scroll/crawler/evidence/definitions";
 import { processPage } from "./process-page.js";
 import { executeAuthorizedCrawl, finishCrawlRun, processRunCrawl } from "./run-crawl.js";
-import { createCrawlWorker } from "../crawl-worker.js";
+import { createCrawlWorker, recoverRunningCrawls } from "../crawl-worker.js";
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
 const describeDatabase = databaseUrl ? describe : describe.skip;
@@ -111,6 +111,33 @@ describeDatabase("idempotent crawl orchestration", () => {
     const input = { organizationId, siteId, ...evidenceControl(), trigger: "MANUAL" as const, idempotencyKey };
     return { ...input, crawlRunId: await enqueueCrawl(input, { prisma, producer }) };
   };
+
+  it.each(["unknown", "failed"])("releases a stranded running crawl when Redis reports %s", async (state) => {
+    const job = await createJob("stranded-running");
+    await prisma.crawlRun.update({ where: { id: job.crawlRunId }, data: {
+      status: "RUNNING", attemptCount: 1, startedAt: new Date(0), updatedAt: new Date(0),
+    } });
+    await recoverRunningCrawls(prisma, async () => "active");
+    expect(await prisma.crawlRun.findUniqueOrThrow({ where: { id: job.crawlRunId } })).toMatchObject({ status: "RUNNING", activeSiteKey: siteId });
+    await recoverRunningCrawls(prisma, async () => state);
+    expect(await prisma.crawlRun.findUniqueOrThrow({ where: { id: job.crawlRunId } })).toMatchObject({ status: "FAILED", activeSiteKey: null });
+    expect(await prisma.crawlError.count({ where: { crawlRunId: job.crawlRunId, code: "crawl_interrupted" } })).toBe(1);
+    await expect(createJob("after-recovery")).resolves.toBeTruthy();
+  });
+
+  it("does not send requests when the original deadline expired before restart", async () => {
+    const job = await createJob("expired-resume");
+    await prisma.crawlRun.update({ where: { id: job.crawlRunId }, data: {
+      status: "RUNNING", startedAt: new Date(0), attemptCount: 1,
+    } });
+    const request = vi.fn();
+    const result = await executeAuthorizedCrawl(job, { prisma, evidence: new EvidenceRepository(prisma), resolver: publicResolver, transport: { request } });
+    expect(request).not.toHaveBeenCalled();
+    expect(result).toMatchObject({ status: "PARTIAL", coverage: { attempted: 0, unattempted: 1 } });
+    expect(await prisma.crawlRun.findUniqueOrThrow({ where: { id: job.crawlRunId } })).toMatchObject({
+      stopReason: "duration_limit_reached", startedAt: new Date(0), activeSiteKey: null, frozenAt: expect.any(Date),
+    });
+  });
 
   it.skipIf(!process.env.TEST_REDIS_URL)("recovers a stranded run through a real worker and Redis", async () => {
     const job = await createJob("real-redis-recovery");

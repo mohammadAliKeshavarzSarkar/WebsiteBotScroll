@@ -6,7 +6,10 @@ import { CRAWL_QUEUE_NAME, crawlJobOptions, RUN_CRAWL_JOB_NAME } from "./worker-
 
 export type EnqueueCrawlInput = Omit<RunCrawlJob, "crawlRunId"> & { requestedByUserId?: string };
 export interface QueueProducer { add(name: string, data: RunCrawlJob, options: { jobId: string }): Promise<unknown> }
-export interface CloseableQueueProducer extends QueueProducer { close(): Promise<void> }
+export interface CloseableQueueProducer extends QueueProducer {
+  getJobState(id: string): Promise<string>;
+  close(): Promise<void>;
+}
 export interface EnqueueDependencies { prisma: DatabaseClient; producer: QueueProducer }
 
 export class CrawlOverlapError extends Error {
@@ -27,20 +30,24 @@ export function createCrawlQueueProducer(redisUrl: string): CloseableQueueProduc
       enableOfflineQueue: false,
     },
   });
-  queue.on("error", () => { /* Connection failures surface through add(). */ });
+  queue.on("error", () => { /* Connection failures surface through queue operations. */ });
+  async function withQueueDeadline<T>(operation: () => Promise<T>): Promise<T> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      return await Promise.race([
+        operation(),
+        new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error("Crawl queue connection timed out")), 5_000); }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
   return {
     add: async (name, data, options) => {
-      let timer: ReturnType<typeof setTimeout> | undefined;
-      try {
-        await Promise.race([
-          queue.waitUntilReady(),
-          new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error("Crawl queue connection timed out")), 5_000); }),
-        ]);
-      } finally {
-        clearTimeout(timer);
-      }
+      await withQueueDeadline(() => queue.waitUntilReady());
       return queue.add(name, data, { ...crawlJobOptions, ...options });
     },
+    getJobState: (id) => withQueueDeadline(() => queue.getJobState(id)),
     close: () => queue.close(),
   };
 }

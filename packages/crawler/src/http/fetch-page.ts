@@ -109,8 +109,10 @@ export async function fetchPage(request: FetchPageRequest): Promise<FetchPageRes
     let current = request.url;
     try {
       for (let redirect = 0; redirect <= (request.maxRedirects ?? 5); redirect += 1) {
+        request.signal?.throwIfAborted();
         if (request.allowedHosts && !request.allowedHosts.has(current.hostname.toLowerCase())) throw new Error(`Destination is outside the authorized host: ${current.hostname}`);
         const destination = await assertAllowedDestination(current, request.resolver);
+        request.signal?.throwIfAborted();
         const startedAt = now();
         let response: TransportResponse;
         try {
