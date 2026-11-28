@@ -21,7 +21,22 @@ export interface CrawlDependencies {
   resolver: DnsResolver;
   transport: HttpTransport;
   now?: () => Date;
+  reportTimings?: (timings: CrawlTimings) => void;
 }
+
+type CrawlTimings = {
+  crawlRunId: string;
+  delivery: number;
+  queueWaitMs: number;
+  deliveryMs: number;
+  robotsMs: number;
+  fetchMs: number;
+  evidenceWriteMs: number;
+  finalizationMs: number;
+  attempted: number;
+  collected: number;
+  failed: number;
+};
 
 export interface CrawlExecutionResult {
   crawlRunId: string;
@@ -36,7 +51,7 @@ export async function processRunCrawl(rawJob: unknown, prisma: DatabaseClient) {
   const startedAt = run.startedAt ?? new Date();
   await prisma.crawlRun.update({
     where: { id: run.id, status: { in: ["PENDING", "RUNNING"] } },
-    data: { status: "RUNNING", attemptCount: { increment: 1 }, startedAt },
+    data: { status: "RUNNING", attemptCount: { increment: 1 }, startedAt, stopReason: null },
   });
   return { crawlRunId: run.id, resumed, startedAt };
 }
@@ -50,6 +65,7 @@ export async function finishCrawlRun(crawlRunId: string, rawStatus: TerminalCraw
 }
 
 export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: CrawlDependencies): Promise<CrawlExecutionResult> {
+  const deliveryStarted = performance.now();
   const job = runCrawlJobSchema.parse(rawJob);
   const stored = await dependencies.prisma.crawlRun.findFirstOrThrow({
     where: { id: job.crawlRunId, organizationId: job.organizationId, siteId: job.siteId, authorizationId: job.authorizationRef },
@@ -79,6 +95,12 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
   for (const definition of PLATFORM_OBSERVATION_DEFINITIONS) await definitions.publishObservationDefinition(definition);
   await definitions.publishCollectorDefinition(PLATFORM_CRAWLER_DEFINITION);
   const { startedAt } = await processRunCrawl(job, dependencies.prisma);
+  const timings = { robotsMs: 0, fetchMs: 0, evidenceWriteMs: 0, finalizationMs: 0 };
+  async function measure<T>(phase: keyof typeof timings, operation: () => Promise<T>): Promise<T> {
+    const started = performance.now();
+    try { return await operation(); }
+    finally { timings[phase] += performance.now() - started; }
+  }
   const scope = stored.scope as { seed_urls?: unknown; allowed_hosts?: unknown } | null;
   const seedUrls = Array.isArray(scope?.seed_urls) ? scope.seed_urls.filter((value): value is string => typeof value === "string") : [];
   const allowedHosts = new Set(Array.isArray(scope?.allowed_hosts) ? scope.allowed_hosts.filter((value): value is string => typeof value === "string") : []);
@@ -152,7 +174,7 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
 
   try {
   const robots = !expired() && queue.some(({ identity }) => !processed.has(identity.normalizedUrl) && !skipped.has(identity.normalizedUrl))
-    ? await loadRobots(registeredOrigin, fetcher, { cache: false, now: () => now().getTime() })
+    ? await measure("robotsMs", () => loadRobots(registeredOrigin, fetcher, { cache: false, now: () => now().getTime() }))
     : null;
   while (queue.length > 0 && attempted < job.limits.maxPages) {
     const next = queue.shift()!;
@@ -165,14 +187,14 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
       partial = true;
       robotsLimited = true;
       skipped.add(url);
-      await dependencies.prisma.$transaction(async (transaction) => {
+      await measure("evidenceWriteMs", () => dependencies.prisma.$transaction(async (transaction) => {
         const evidence = new EvidenceRepository(transaction as unknown as DatabaseClient);
         await evidence.appendLimitation(job.organizationId, job.crawlRunId, {
           id: createEvidenceId("limitation", [job.crawlRunId, "robots_disallowed", url]),
           code: "robots_disallowed", message: "robots.txt disallows collection of this URL.",
         });
         await saveProgress(transaction);
-      });
+      }));
       continue;
     }
     processed.add(url);
@@ -183,12 +205,12 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
     let stage = "http_fetch";
     let httpFailure: number | undefined;
     try {
-      const result = await fetchPage({
+      const result = await measure("fetchMs", () => fetchPage({
         url: new URL(identity.normalizedUrl), resolver: dependencies.resolver, transport: dependencies.transport,
         maxOtherBytes: job.limits.maxResponseBytes, maxCompressedBytes: job.limits.maxResponseBytes,
         maxDecompressedBytes: job.limits.maxResponseBytes, evidenceSink,
         evidenceContext: { runId: job.crawlRunId, pageId }, now, sleep: async () => undefined, allowedHosts, signal: durationController.signal,
-      });
+      }));
       if (result.status < 200 || result.status >= 300) {
         httpFailure = result.status;
         throw new Error(`Page returned HTTP ${result.status}`);
@@ -219,7 +241,7 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
       const pendingBeforePage = queue.length;
       for (const child of children) discover(child, next.depth + 1);
       try {
-      await dependencies.prisma.$transaction(async (transaction) => {
+      await measure("evidenceWriteMs", () => dependencies.prisma.$transaction(async (transaction) => {
         const client = transaction as unknown as DatabaseClient;
         const legacy = new EvidenceRepository(client);
         const platform = new ObservationRepository(client);
@@ -238,7 +260,7 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
         for (const observation of platformBatch.records) await platform.appendObservation(job.organizationId, observation);
         await platform.finishExecution(job.organizationId, { executionId: platformBatch.execution.id, status: "completed", finishedAt: now().toISOString() });
         await saveProgress(transaction, collected + 1);
-      });
+      }));
       } catch (error) {
         for (const item of queue.splice(pendingBeforePage)) discovered.delete(item.identity.normalizedUrl);
         throw error;
@@ -252,7 +274,7 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
       if (stage === "http_fetch" && lastStatus?.kind === "http_transaction" && lastStatus.transaction.statusCode >= 400) {
         httpFailure ??= lastStatus.transaction.statusCode;
       }
-      await dependencies.prisma.$transaction(async (transaction) => {
+      await measure("evidenceWriteMs", () => dependencies.prisma.$transaction(async (transaction) => {
         const evidence = new EvidenceRepository(transaction as unknown as DatabaseClient);
         await evidence.appendError(job.organizationId, job.crawlRunId, {
           id: createEvidenceId("error", [job.crawlRunId, url, String(attempted)]), stage,
@@ -263,7 +285,7 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
           occurredAt: now().toISOString(), retryable: httpFailure === 429 || (httpFailure !== undefined && httpFailure >= 500),
         });
         await saveProgress(transaction);
-      });
+      }));
       if (durationLimited) break;
     }
   }
@@ -292,6 +314,19 @@ export async function executeAuthorizedCrawl(rawJob: RunCrawlJob, dependencies: 
   await dependencies.evidence.updateCoverage(job.organizationId, job.crawlRunId, { ...coverage, stopReason: durationLimited ? "duration_limit_reached" : pageLimited ? "page_limit_reached" : incompleteLegacyFrontier ? "frontier_checkpoint_missing" : robotsLimited ? "robots_disallowed" : "frontier_exhausted" });
   const status = partial ? "PARTIAL" : "COMPLETED";
   const snapshots = new SnapshotRepository(dependencies.prisma);
-  await snapshots.finalizePlatformCrawl(job.organizationId, job.crawlRunId, status);
+  await measure("finalizationMs", () => snapshots.finalizePlatformCrawl(job.organizationId, job.crawlRunId, status));
+  dependencies.reportTimings?.({
+    crawlRunId: job.crawlRunId,
+    delivery: stored.attemptCount + 1,
+    queueWaitMs: Math.max(0, startedAt.getTime() - stored.createdAt.getTime()),
+    deliveryMs: Math.round(performance.now() - deliveryStarted),
+    robotsMs: Math.round(timings.robotsMs),
+    fetchMs: Math.round(timings.fetchMs),
+    evidenceWriteMs: Math.round(timings.evidenceWriteMs),
+    finalizationMs: Math.round(timings.finalizationMs),
+    attempted: attempted - stored.attemptedCount,
+    collected: collected - stored.collectedCount,
+    failed: failed - stored.failedCount,
+  });
   return { crawlRunId: job.crawlRunId, status, coverage };
 }

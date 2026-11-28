@@ -71,7 +71,10 @@ export function createCrawlWorker(environment: AppEnv, provided: Dependencies = 
   const processor = async (raw: { name: string; data: unknown }) => {
     if (raw.name !== RUN_CRAWL_JOB_NAME) throw new Error(`Unsupported crawl job: ${raw.name}`);
     const job = runCrawlJobSchema.parse(raw.data);
-    const crawlDependencies: CrawlDependencies = { prisma, evidence, resolver, transport };
+    const crawlDependencies: CrawlDependencies = {
+      prisma, evidence, resolver, transport,
+      reportTimings: (timings) => console.log(JSON.stringify({ component: "worker", event: "crawl_timing", ...timings })),
+    };
     try { return await execute(job, crawlDependencies); }
     catch (error) { await fail(job, error, prisma); throw error; }
   };

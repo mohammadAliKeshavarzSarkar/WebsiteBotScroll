@@ -21,10 +21,19 @@ const stopMessages: Record<string, string> = {
 
 const completionDate = new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" });
 
+function formatDuration(ms: number): string {
+  const seconds = Math.max(0, Math.round(ms / 1000));
+  if (seconds < 1) return "Under 1 second";
+  if (seconds === 1) return "1 second";
+  if (seconds < 60) return `${seconds} seconds`;
+  return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+}
+
 function CrawlSummary({ run }: { run: WorkspaceCrawlRun }) {
   const { coverage, startedAt, finishedAt, pages, errors } = run;
-  const seconds = startedAt && finishedAt ? Math.max(0, Math.round((finishedAt.getTime() - startedAt.getTime()) / 1000)) : null;
-  const duration = seconds === null ? null : seconds < 1 ? "Under 1 second" : seconds === 1 ? "1 second" : seconds < 60 ? `${seconds} seconds` : `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+  const duration = startedAt && finishedAt ? formatDuration(finishedAt.getTime() - startedAt.getTime()) : null;
+  const queueWait = startedAt ? formatDuration(startedAt.getTime() - run.createdAt.getTime()) : null;
+  const saving = run.status === "RUNNING" && run.stopReason !== null;
   const notAttempted = coverage.unattempted ?? Math.max(0, coverage.discovered - coverage.attempted);
   const reason = run.stopReason && Object.hasOwn(stopMessages, run.stopReason) ? stopMessages[run.stopReason] : null;
   const metrics = [
@@ -35,11 +44,13 @@ function CrawlSummary({ run }: { run: WorkspaceCrawlRun }) {
   ];
   return <>
     <div className="crawl-outcome" data-outcome={run.status.toLowerCase()} role="status">
-      <h3><span className="crawl-outcome-dot" aria-hidden="true" />{runLabels[run.status]}</h3>
-      {reason || run.status === "PENDING" ? <p>{reason ?? "Waiting for a crawl worker. The time limit starts when the crawl begins."}</p> : null}
-      {finishedAt ? <div className="crawl-run-meta">
-        <time dateTime={finishedAt.toISOString()}>{completionDate.format(finishedAt)} UTC</time>
-        {duration ? <span>{duration}</span> : null}
+      <h3><span className="crawl-outcome-dot" aria-hidden="true" />{saving ? "Saving results" : runLabels[run.status]}</h3>
+      {saving ? <p>Page collection has ended. The worker is saving the crawl report.</p>
+        : reason || run.status === "PENDING" ? <p>{reason ?? "Waiting for a crawl worker. The time limit starts when the crawl begins."}</p> : null}
+      {finishedAt || queueWait ? <div className="crawl-run-meta">
+        {finishedAt ? <time dateTime={finishedAt.toISOString()}>{completionDate.format(finishedAt)} UTC</time> : null}
+        {queueWait ? <span>Queue wait: {queueWait}</span> : null}
+        {duration ? <span>Processing time: {duration}</span> : null}
       </div> : null}
     </div>
     {coverage.discovered > 0 ? <div className="crawl-coverage">

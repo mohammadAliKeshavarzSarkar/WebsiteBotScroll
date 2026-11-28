@@ -254,7 +254,13 @@ describeDatabase("idempotent crawl orchestration", () => {
       producerVersion: "a".repeat(40), normalizationPolicyVersion: "normalize/1", extractorVersion: "extract/1",
     };
 
-    await executeAuthorizedCrawl(job, { prisma, evidence: new EvidenceRepository(prisma), resolver, transport });
+    const reportTimings = vi.fn();
+    await executeAuthorizedCrawl(job, { prisma, evidence: new EvidenceRepository(prisma), resolver, transport, reportTimings });
+    expect(reportTimings).toHaveBeenCalledOnce();
+    expect(reportTimings).toHaveBeenCalledWith(expect.objectContaining({
+      crawlRunId, delivery: 1, attempted: 1, collected: 1, failed: 0,
+      queueWaitMs: expect.any(Number), fetchMs: expect.any(Number), evidenceWriteMs: expect.any(Number), finalizationMs: expect.any(Number),
+    }));
 
     const run = await prisma.crawlRun.findUniqueOrThrow({ where: { id: crawlRunId } });
     expect(run.frozenAt).not.toBeNull();

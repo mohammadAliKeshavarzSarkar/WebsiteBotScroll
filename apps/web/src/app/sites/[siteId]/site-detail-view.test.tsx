@@ -40,7 +40,8 @@ describe("owner site detail", () => {
       pages: [{ url: "https://example.com/about", statusCode: 200 }], errors: [],
     }} />);
     expect(html).toContain("Crawl complete");
-    expect(html).toContain("4 seconds");
+    expect(html).toContain("Processing time: 4 seconds");
+    expect(html).toContain("Queue wait: Under 1 second");
     expect(html).toContain("Finished checking the pages found");
     expect(html).toContain("https://example.com/about");
     expect(html).toContain("HTTP 200");
@@ -48,6 +49,17 @@ describe("owner site detail", () => {
     expect(html).toMatch(/<time datetime="1970-01-01T00:00:04\.000Z"/i);
     expect(html).toContain('<th scope="col">Final URL</th>');
     expect(html).not.toContain("frontier_exhausted");
+  });
+
+  it("distinguishes saving the report from crawling and completion", () => {
+    const html = renderToStaticMarkup(<SiteDetailView site={site} authorization={null} latestRun={{
+      id: "run-1", status: "RUNNING", createdAt: new Date(0), startedAt: new Date(4000),
+      finishedAt: null, stopReason: "frontier_exhausted",
+      coverage: { discovered: 1, attempted: 1, collected: 1, failed: 0, unattempted: 0 }, errors: [],
+    }} />);
+    expect(html).toContain("Saving results");
+    expect(html).toContain("Queue wait: 4 seconds");
+    expect(html).not.toContain("Crawl complete");
   });
 
   it("marks active runs for safe refresh and disables overlapping starts", () => {
