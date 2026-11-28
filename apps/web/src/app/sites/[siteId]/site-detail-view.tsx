@@ -36,7 +36,7 @@ function CrawlSummary({ run }: { run: WorkspaceCrawlRun }) {
   return <>
     <div className="crawl-outcome" data-outcome={run.status.toLowerCase()} role="status">
       <h3><span className="crawl-outcome-dot" aria-hidden="true" />{runLabels[run.status]}</h3>
-      {reason || run.status === "PENDING" ? <p>{reason ?? "Waiting for a crawl worker."}</p> : null}
+      {reason || run.status === "PENDING" ? <p>{reason ?? "Waiting for a crawl worker. The time limit starts when the crawl begins."}</p> : null}
       {finishedAt ? <div className="crawl-run-meta">
         <time dateTime={finishedAt.toISOString()}>{completionDate.format(finishedAt)} UTC</time>
         {duration ? <span>{duration}</span> : null}

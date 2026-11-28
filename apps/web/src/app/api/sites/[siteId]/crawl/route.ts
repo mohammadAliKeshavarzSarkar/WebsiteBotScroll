@@ -1,7 +1,7 @@
 import { CrawlOverlapError } from "@website-bot-scroll/queue/client";
 import { AuthenticationRequired, requireOwnerSession, type AuthStore } from "../../../../../lib/auth";
 import { parseStartCrawlInput } from "../../../../../lib/crawl-input";
-import { CrawlAuthorizationRequiredError, CrawlSiteNotFoundError, getCrawlService, type CrawlService } from "../../../../../lib/server-crawl-service";
+import { CrawlAuthorizationRequiredError, CrawlSiteNotFoundError, CrawlWorkerUnavailableError, getCrawlService, type CrawlService } from "../../../../../lib/server-crawl-service";
 import { getAuthStore } from "../../../../../lib/server-auth-store";
 
 type Dependencies = { authStore: AuthStore; crawl: CrawlService };
@@ -24,6 +24,7 @@ export async function startSiteCrawl(request: Request, siteId: string, dependenc
   } catch (error) {
     if (error instanceof CrawlSiteNotFoundError) return new Response("Not found", { status: 404 });
     if (error instanceof CrawlAuthorizationRequiredError) return errorRedirect(request, siteId, "Authorize this website before starting a crawl");
+    if (error instanceof CrawlWorkerUnavailableError) return errorRedirect(request, siteId, "No crawl worker is connected. Start the worker, then try again.");
     if (error instanceof CrawlOverlapError || (error instanceof Error && error.name === "CrawlOverlapError")) return errorRedirect(request, siteId, "A crawl is already active for this website");
     return errorRedirect(request, siteId, "The crawl queue is unavailable. Check Redis and the worker, then try again.");
   }

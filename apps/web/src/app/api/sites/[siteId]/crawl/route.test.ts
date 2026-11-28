@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { AuthStore } from "../../../../../lib/auth";
-import { CrawlAuthorizationRequiredError, CrawlSiteNotFoundError, startManualCrawl } from "../../../../../lib/server-crawl-service";
+import { CrawlAuthorizationRequiredError, CrawlSiteNotFoundError, CrawlWorkerUnavailableError, startManualCrawl } from "../../../../../lib/server-crawl-service";
 import { startSiteCrawl } from "./route";
 
 const organizationId = "11111111-1111-4111-8111-111111111111";
@@ -34,7 +34,7 @@ describe("POST /api/sites/[siteId]/crawl", () => {
   it("returns stable validation, authorization, overlap, publication, and not-found responses", async () => {
     const invalid = await startSiteCrawl(request({ maxPages: "101" }), siteId, { authStore: authStore(), crawl: { requireSite: vi.fn(async () => undefined), start: vi.fn() } });
     expect(new URL(invalid.headers.get("location")!).searchParams.get("error")).toContain("1 to 100");
-    for (const [error, message] of [[new CrawlAuthorizationRequiredError(), "Authorize this website"], [Object.assign(new Error(), { name: "CrawlOverlapError" }), "already active"], [new Error("redis secret"), "queue is unavailable"]] as const) {
+    for (const [error, message] of [[new CrawlAuthorizationRequiredError(), "Authorize this website"], [new CrawlWorkerUnavailableError(), "No crawl worker is connected"], [Object.assign(new Error(), { name: "CrawlOverlapError" }), "already active"], [new Error("redis secret"), "queue is unavailable"]] as const) {
       const response = await startSiteCrawl(request(), siteId, { authStore: authStore(), crawl: { requireSite: vi.fn(async () => undefined), start: vi.fn(async () => { throw error; }) } });
       expect(new URL(response.headers.get("location")!).searchParams.get("error")).toContain(message);
       expect(response.headers.get("location")).not.toContain("redis%20secret");

@@ -8,6 +8,7 @@ import { getSiteWorkspaceRepository } from "./server-site-workspace-repository";
 
 export class CrawlSiteNotFoundError extends Error { constructor() { super("Site not found"); this.name = "CrawlSiteNotFoundError"; } }
 export class CrawlAuthorizationRequiredError extends Error { constructor() { super("Crawl authorization required"); this.name = "CrawlAuthorizationRequiredError"; } }
+export class CrawlWorkerUnavailableError extends Error { constructor() { super("No crawl worker is connected"); this.name = "CrawlWorkerUnavailableError"; } }
 
 type StartInput = { organizationId: string; siteId: string; userId: string; limits: ReturnTypeOfStartCrawlInput };
 type WorkspaceReader = { get(organizationId: ReturnType<typeof toOrganizationId>, siteId: ReturnType<typeof toSiteId>): Promise<{ site: { id: string }; authorization: { id: string } | null; latestRun: unknown } | null> };
@@ -40,7 +41,10 @@ function createProductionService(): CrawlService {
   if (!producerVersion || !/^[a-f0-9]{40}$/.test(producerVersion)) throw new Error("SOURCE_REVISION must be the exact 40-character Git commit");
   const dependencies: Dependencies = {
     workspace: getSiteWorkspaceRepository(),
-    enqueue: (input) => enqueueCrawl(input, { prisma, producer }),
+    enqueue: async (input) => {
+      if (await producer.getWorkerCount() === 0) throw new CrawlWorkerUnavailableError();
+      return enqueueCrawl(input, { prisma, producer });
+    },
     revisions: { producerVersion, normalizationPolicyVersion: "normalize/1", extractorVersion: "html/1" },
     idempotencyKey: randomUUID,
   };

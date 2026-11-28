@@ -8,6 +8,7 @@ export type EnqueueCrawlInput = Omit<RunCrawlJob, "crawlRunId"> & { requestedByU
 export interface QueueProducer { add(name: string, data: RunCrawlJob, options: { jobId: string }): Promise<unknown> }
 export interface CloseableQueueProducer extends QueueProducer {
   getJobState(id: string): Promise<string>;
+  getWorkerCount(): Promise<number>;
   close(): Promise<void>;
 }
 export interface EnqueueDependencies { prisma: DatabaseClient; producer: QueueProducer }
@@ -48,6 +49,7 @@ export function createCrawlQueueProducer(redisUrl: string): CloseableQueueProduc
       return queue.add(name, data, { ...crawlJobOptions, ...options });
     },
     getJobState: (id) => withQueueDeadline(() => queue.getJobState(id)),
+    getWorkerCount: () => withQueueDeadline(() => queue.getWorkersCount()),
     close: () => queue.close(),
   };
 }
