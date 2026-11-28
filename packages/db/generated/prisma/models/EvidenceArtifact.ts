@@ -275,6 +275,7 @@ export type EvidenceArtifactWhereInput = {
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   crawlRun?: Prisma.XOR<Prisma.CrawlRunScalarRelationFilter, Prisma.CrawlRunWhereInput>
   observations?: Prisma.ObservationArtifactListRelationFilter
+  projectionOutputs?: Prisma.ProjectionExecutionListRelationFilter
 }
 
 export type EvidenceArtifactOrderByWithRelationInput = {
@@ -293,11 +294,12 @@ export type EvidenceArtifactOrderByWithRelationInput = {
   organization?: Prisma.OrganizationOrderByWithRelationInput
   crawlRun?: Prisma.CrawlRunOrderByWithRelationInput
   observations?: Prisma.ObservationArtifactOrderByRelationAggregateInput
+  projectionOutputs?: Prisma.ProjectionExecutionOrderByRelationAggregateInput
 }
 
 export type EvidenceArtifactWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  organizationId_sha256?: Prisma.EvidenceArtifactOrganizationIdSha256CompoundUniqueInput
+  crawlRunId_sha256?: Prisma.EvidenceArtifactCrawlRunIdSha256CompoundUniqueInput
   AND?: Prisma.EvidenceArtifactWhereInput | Prisma.EvidenceArtifactWhereInput[]
   OR?: Prisma.EvidenceArtifactWhereInput[]
   NOT?: Prisma.EvidenceArtifactWhereInput | Prisma.EvidenceArtifactWhereInput[]
@@ -315,7 +317,8 @@ export type EvidenceArtifactWhereUniqueInput = Prisma.AtLeast<{
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   crawlRun?: Prisma.XOR<Prisma.CrawlRunScalarRelationFilter, Prisma.CrawlRunWhereInput>
   observations?: Prisma.ObservationArtifactListRelationFilter
-}, "id" | "organizationId_sha256">
+  projectionOutputs?: Prisma.ProjectionExecutionListRelationFilter
+}, "id" | "crawlRunId_sha256">
 
 export type EvidenceArtifactOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -369,6 +372,7 @@ export type EvidenceArtifactCreateInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutEvidenceArtifactsInput
   crawlRun: Prisma.CrawlRunCreateNestedOneWithoutEvidenceArtifactsInput
   observations?: Prisma.ObservationArtifactCreateNestedManyWithoutArtifactInput
+  projectionOutputs?: Prisma.ProjectionExecutionCreateNestedManyWithoutOutputArtifactInput
 }
 
 export type EvidenceArtifactUncheckedCreateInput = {
@@ -385,6 +389,7 @@ export type EvidenceArtifactUncheckedCreateInput = {
   pinnedAt?: Date | string | null
   createdAt?: Date | string
   observations?: Prisma.ObservationArtifactUncheckedCreateNestedManyWithoutArtifactInput
+  projectionOutputs?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOutputArtifactInput
 }
 
 export type EvidenceArtifactUpdateInput = {
@@ -401,6 +406,7 @@ export type EvidenceArtifactUpdateInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutEvidenceArtifactsNestedInput
   crawlRun?: Prisma.CrawlRunUpdateOneRequiredWithoutEvidenceArtifactsNestedInput
   observations?: Prisma.ObservationArtifactUpdateManyWithoutArtifactNestedInput
+  projectionOutputs?: Prisma.ProjectionExecutionUpdateManyWithoutOutputArtifactNestedInput
 }
 
 export type EvidenceArtifactUncheckedUpdateInput = {
@@ -417,6 +423,7 @@ export type EvidenceArtifactUncheckedUpdateInput = {
   pinnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   observations?: Prisma.ObservationArtifactUncheckedUpdateManyWithoutArtifactNestedInput
+  projectionOutputs?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOutputArtifactNestedInput
 }
 
 export type EvidenceArtifactCreateManyInput = {
@@ -472,8 +479,13 @@ export type EvidenceArtifactOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type EvidenceArtifactOrganizationIdSha256CompoundUniqueInput = {
-  organizationId: string
+export type EvidenceArtifactScalarRelationFilter = {
+  is?: Prisma.EvidenceArtifactWhereInput
+  isNot?: Prisma.EvidenceArtifactWhereInput
+}
+
+export type EvidenceArtifactCrawlRunIdSha256CompoundUniqueInput = {
+  crawlRunId: string
   sha256: string
 }
 
@@ -528,11 +540,6 @@ export type EvidenceArtifactMinOrderByAggregateInput = {
 
 export type EvidenceArtifactSumOrderByAggregateInput = {
   byteLength?: Prisma.SortOrder
-}
-
-export type EvidenceArtifactScalarRelationFilter = {
-  is?: Prisma.EvidenceArtifactWhereInput
-  isNot?: Prisma.EvidenceArtifactWhereInput
 }
 
 export type EvidenceArtifactCreateNestedManyWithoutOrganizationInput = {
@@ -619,6 +626,20 @@ export type EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunNestedInput = {
   deleteMany?: Prisma.EvidenceArtifactScalarWhereInput | Prisma.EvidenceArtifactScalarWhereInput[]
 }
 
+export type EvidenceArtifactCreateNestedOneWithoutProjectionOutputsInput = {
+  create?: Prisma.XOR<Prisma.EvidenceArtifactCreateWithoutProjectionOutputsInput, Prisma.EvidenceArtifactUncheckedCreateWithoutProjectionOutputsInput>
+  connectOrCreate?: Prisma.EvidenceArtifactCreateOrConnectWithoutProjectionOutputsInput
+  connect?: Prisma.EvidenceArtifactWhereUniqueInput
+}
+
+export type EvidenceArtifactUpdateOneRequiredWithoutProjectionOutputsNestedInput = {
+  create?: Prisma.XOR<Prisma.EvidenceArtifactCreateWithoutProjectionOutputsInput, Prisma.EvidenceArtifactUncheckedCreateWithoutProjectionOutputsInput>
+  connectOrCreate?: Prisma.EvidenceArtifactCreateOrConnectWithoutProjectionOutputsInput
+  upsert?: Prisma.EvidenceArtifactUpsertWithoutProjectionOutputsInput
+  connect?: Prisma.EvidenceArtifactWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EvidenceArtifactUpdateToOneWithWhereWithoutProjectionOutputsInput, Prisma.EvidenceArtifactUpdateWithoutProjectionOutputsInput>, Prisma.EvidenceArtifactUncheckedUpdateWithoutProjectionOutputsInput>
+}
+
 export type EvidenceArtifactCreateNestedOneWithoutObservationsInput = {
   create?: Prisma.XOR<Prisma.EvidenceArtifactCreateWithoutObservationsInput, Prisma.EvidenceArtifactUncheckedCreateWithoutObservationsInput>
   connectOrCreate?: Prisma.EvidenceArtifactCreateOrConnectWithoutObservationsInput
@@ -646,6 +667,7 @@ export type EvidenceArtifactCreateWithoutOrganizationInput = {
   createdAt?: Date | string
   crawlRun: Prisma.CrawlRunCreateNestedOneWithoutEvidenceArtifactsInput
   observations?: Prisma.ObservationArtifactCreateNestedManyWithoutArtifactInput
+  projectionOutputs?: Prisma.ProjectionExecutionCreateNestedManyWithoutOutputArtifactInput
 }
 
 export type EvidenceArtifactUncheckedCreateWithoutOrganizationInput = {
@@ -661,6 +683,7 @@ export type EvidenceArtifactUncheckedCreateWithoutOrganizationInput = {
   pinnedAt?: Date | string | null
   createdAt?: Date | string
   observations?: Prisma.ObservationArtifactUncheckedCreateNestedManyWithoutArtifactInput
+  projectionOutputs?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOutputArtifactInput
 }
 
 export type EvidenceArtifactCreateOrConnectWithoutOrganizationInput = {
@@ -720,6 +743,7 @@ export type EvidenceArtifactCreateWithoutCrawlRunInput = {
   createdAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutEvidenceArtifactsInput
   observations?: Prisma.ObservationArtifactCreateNestedManyWithoutArtifactInput
+  projectionOutputs?: Prisma.ProjectionExecutionCreateNestedManyWithoutOutputArtifactInput
 }
 
 export type EvidenceArtifactUncheckedCreateWithoutCrawlRunInput = {
@@ -735,6 +759,7 @@ export type EvidenceArtifactUncheckedCreateWithoutCrawlRunInput = {
   pinnedAt?: Date | string | null
   createdAt?: Date | string
   observations?: Prisma.ObservationArtifactUncheckedCreateNestedManyWithoutArtifactInput
+  projectionOutputs?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOutputArtifactInput
 }
 
 export type EvidenceArtifactCreateOrConnectWithoutCrawlRunInput = {
@@ -763,6 +788,86 @@ export type EvidenceArtifactUpdateManyWithWhereWithoutCrawlRunInput = {
   data: Prisma.XOR<Prisma.EvidenceArtifactUpdateManyMutationInput, Prisma.EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunInput>
 }
 
+export type EvidenceArtifactCreateWithoutProjectionOutputsInput = {
+  id?: string
+  sha256: string
+  byteLength: number
+  mediaType: string
+  locator: string
+  sensitivity: string
+  retentionClass: string
+  availability?: string
+  pinnedAt?: Date | string | null
+  createdAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutEvidenceArtifactsInput
+  crawlRun: Prisma.CrawlRunCreateNestedOneWithoutEvidenceArtifactsInput
+  observations?: Prisma.ObservationArtifactCreateNestedManyWithoutArtifactInput
+}
+
+export type EvidenceArtifactUncheckedCreateWithoutProjectionOutputsInput = {
+  id?: string
+  organizationId: string
+  crawlRunId: string
+  sha256: string
+  byteLength: number
+  mediaType: string
+  locator: string
+  sensitivity: string
+  retentionClass: string
+  availability?: string
+  pinnedAt?: Date | string | null
+  createdAt?: Date | string
+  observations?: Prisma.ObservationArtifactUncheckedCreateNestedManyWithoutArtifactInput
+}
+
+export type EvidenceArtifactCreateOrConnectWithoutProjectionOutputsInput = {
+  where: Prisma.EvidenceArtifactWhereUniqueInput
+  create: Prisma.XOR<Prisma.EvidenceArtifactCreateWithoutProjectionOutputsInput, Prisma.EvidenceArtifactUncheckedCreateWithoutProjectionOutputsInput>
+}
+
+export type EvidenceArtifactUpsertWithoutProjectionOutputsInput = {
+  update: Prisma.XOR<Prisma.EvidenceArtifactUpdateWithoutProjectionOutputsInput, Prisma.EvidenceArtifactUncheckedUpdateWithoutProjectionOutputsInput>
+  create: Prisma.XOR<Prisma.EvidenceArtifactCreateWithoutProjectionOutputsInput, Prisma.EvidenceArtifactUncheckedCreateWithoutProjectionOutputsInput>
+  where?: Prisma.EvidenceArtifactWhereInput
+}
+
+export type EvidenceArtifactUpdateToOneWithWhereWithoutProjectionOutputsInput = {
+  where?: Prisma.EvidenceArtifactWhereInput
+  data: Prisma.XOR<Prisma.EvidenceArtifactUpdateWithoutProjectionOutputsInput, Prisma.EvidenceArtifactUncheckedUpdateWithoutProjectionOutputsInput>
+}
+
+export type EvidenceArtifactUpdateWithoutProjectionOutputsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sha256?: Prisma.StringFieldUpdateOperationsInput | string
+  byteLength?: Prisma.IntFieldUpdateOperationsInput | number
+  mediaType?: Prisma.StringFieldUpdateOperationsInput | string
+  locator?: Prisma.StringFieldUpdateOperationsInput | string
+  sensitivity?: Prisma.StringFieldUpdateOperationsInput | string
+  retentionClass?: Prisma.StringFieldUpdateOperationsInput | string
+  availability?: Prisma.StringFieldUpdateOperationsInput | string
+  pinnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutEvidenceArtifactsNestedInput
+  crawlRun?: Prisma.CrawlRunUpdateOneRequiredWithoutEvidenceArtifactsNestedInput
+  observations?: Prisma.ObservationArtifactUpdateManyWithoutArtifactNestedInput
+}
+
+export type EvidenceArtifactUncheckedUpdateWithoutProjectionOutputsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  crawlRunId?: Prisma.StringFieldUpdateOperationsInput | string
+  sha256?: Prisma.StringFieldUpdateOperationsInput | string
+  byteLength?: Prisma.IntFieldUpdateOperationsInput | number
+  mediaType?: Prisma.StringFieldUpdateOperationsInput | string
+  locator?: Prisma.StringFieldUpdateOperationsInput | string
+  sensitivity?: Prisma.StringFieldUpdateOperationsInput | string
+  retentionClass?: Prisma.StringFieldUpdateOperationsInput | string
+  availability?: Prisma.StringFieldUpdateOperationsInput | string
+  pinnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  observations?: Prisma.ObservationArtifactUncheckedUpdateManyWithoutArtifactNestedInput
+}
+
 export type EvidenceArtifactCreateWithoutObservationsInput = {
   id?: string
   sha256: string
@@ -776,6 +881,7 @@ export type EvidenceArtifactCreateWithoutObservationsInput = {
   createdAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutEvidenceArtifactsInput
   crawlRun: Prisma.CrawlRunCreateNestedOneWithoutEvidenceArtifactsInput
+  projectionOutputs?: Prisma.ProjectionExecutionCreateNestedManyWithoutOutputArtifactInput
 }
 
 export type EvidenceArtifactUncheckedCreateWithoutObservationsInput = {
@@ -791,6 +897,7 @@ export type EvidenceArtifactUncheckedCreateWithoutObservationsInput = {
   availability?: string
   pinnedAt?: Date | string | null
   createdAt?: Date | string
+  projectionOutputs?: Prisma.ProjectionExecutionUncheckedCreateNestedManyWithoutOutputArtifactInput
 }
 
 export type EvidenceArtifactCreateOrConnectWithoutObservationsInput = {
@@ -822,6 +929,7 @@ export type EvidenceArtifactUpdateWithoutObservationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutEvidenceArtifactsNestedInput
   crawlRun?: Prisma.CrawlRunUpdateOneRequiredWithoutEvidenceArtifactsNestedInput
+  projectionOutputs?: Prisma.ProjectionExecutionUpdateManyWithoutOutputArtifactNestedInput
 }
 
 export type EvidenceArtifactUncheckedUpdateWithoutObservationsInput = {
@@ -837,6 +945,7 @@ export type EvidenceArtifactUncheckedUpdateWithoutObservationsInput = {
   availability?: Prisma.StringFieldUpdateOperationsInput | string
   pinnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectionOutputs?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOutputArtifactNestedInput
 }
 
 export type EvidenceArtifactCreateManyOrganizationInput = {
@@ -866,6 +975,7 @@ export type EvidenceArtifactUpdateWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   crawlRun?: Prisma.CrawlRunUpdateOneRequiredWithoutEvidenceArtifactsNestedInput
   observations?: Prisma.ObservationArtifactUpdateManyWithoutArtifactNestedInput
+  projectionOutputs?: Prisma.ProjectionExecutionUpdateManyWithoutOutputArtifactNestedInput
 }
 
 export type EvidenceArtifactUncheckedUpdateWithoutOrganizationInput = {
@@ -881,6 +991,7 @@ export type EvidenceArtifactUncheckedUpdateWithoutOrganizationInput = {
   pinnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   observations?: Prisma.ObservationArtifactUncheckedUpdateManyWithoutArtifactNestedInput
+  projectionOutputs?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOutputArtifactNestedInput
 }
 
 export type EvidenceArtifactUncheckedUpdateManyWithoutOrganizationInput = {
@@ -924,6 +1035,7 @@ export type EvidenceArtifactUpdateWithoutCrawlRunInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutEvidenceArtifactsNestedInput
   observations?: Prisma.ObservationArtifactUpdateManyWithoutArtifactNestedInput
+  projectionOutputs?: Prisma.ProjectionExecutionUpdateManyWithoutOutputArtifactNestedInput
 }
 
 export type EvidenceArtifactUncheckedUpdateWithoutCrawlRunInput = {
@@ -939,6 +1051,7 @@ export type EvidenceArtifactUncheckedUpdateWithoutCrawlRunInput = {
   pinnedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   observations?: Prisma.ObservationArtifactUncheckedUpdateManyWithoutArtifactNestedInput
+  projectionOutputs?: Prisma.ProjectionExecutionUncheckedUpdateManyWithoutOutputArtifactNestedInput
 }
 
 export type EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunInput = {
@@ -962,10 +1075,12 @@ export type EvidenceArtifactUncheckedUpdateManyWithoutCrawlRunInput = {
 
 export type EvidenceArtifactCountOutputType = {
   observations: number
+  projectionOutputs: number
 }
 
 export type EvidenceArtifactCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   observations?: boolean | EvidenceArtifactCountOutputTypeCountObservationsArgs
+  projectionOutputs?: boolean | EvidenceArtifactCountOutputTypeCountProjectionOutputsArgs
 }
 
 /**
@@ -985,6 +1100,13 @@ export type EvidenceArtifactCountOutputTypeCountObservationsArgs<ExtArgs extends
   where?: Prisma.ObservationArtifactWhereInput
 }
 
+/**
+ * EvidenceArtifactCountOutputType without action
+ */
+export type EvidenceArtifactCountOutputTypeCountProjectionOutputsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectionExecutionWhereInput
+}
+
 
 export type EvidenceArtifactSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1002,6 +1124,7 @@ export type EvidenceArtifactSelect<ExtArgs extends runtime.Types.Extensions.Inte
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   crawlRun?: boolean | Prisma.CrawlRunDefaultArgs<ExtArgs>
   observations?: boolean | Prisma.EvidenceArtifact$observationsArgs<ExtArgs>
+  projectionOutputs?: boolean | Prisma.EvidenceArtifact$projectionOutputsArgs<ExtArgs>
   _count?: boolean | Prisma.EvidenceArtifactCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["evidenceArtifact"]>
 
@@ -1059,6 +1182,7 @@ export type EvidenceArtifactInclude<ExtArgs extends runtime.Types.Extensions.Int
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   crawlRun?: boolean | Prisma.CrawlRunDefaultArgs<ExtArgs>
   observations?: boolean | Prisma.EvidenceArtifact$observationsArgs<ExtArgs>
+  projectionOutputs?: boolean | Prisma.EvidenceArtifact$projectionOutputsArgs<ExtArgs>
   _count?: boolean | Prisma.EvidenceArtifactCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EvidenceArtifactIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1076,6 +1200,7 @@ export type $EvidenceArtifactPayload<ExtArgs extends runtime.Types.Extensions.In
     organization: Prisma.$OrganizationPayload<ExtArgs>
     crawlRun: Prisma.$CrawlRunPayload<ExtArgs>
     observations: Prisma.$ObservationArtifactPayload<ExtArgs>[]
+    projectionOutputs: Prisma.$ProjectionExecutionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1487,6 +1612,7 @@ export interface Prisma__EvidenceArtifactClient<T, Null = never, ExtArgs extends
   organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   crawlRun<T extends Prisma.CrawlRunDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CrawlRunDefaultArgs<ExtArgs>>): Prisma.Prisma__CrawlRunClient<runtime.Types.Result.GetResult<Prisma.$CrawlRunPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   observations<T extends Prisma.EvidenceArtifact$observationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EvidenceArtifact$observationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ObservationArtifactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projectionOutputs<T extends Prisma.EvidenceArtifact$projectionOutputsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EvidenceArtifact$projectionOutputsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectionExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1950,6 +2076,30 @@ export type EvidenceArtifact$observationsArgs<ExtArgs extends runtime.Types.Exte
   take?: number
   skip?: number
   distinct?: Prisma.ObservationArtifactScalarFieldEnum | Prisma.ObservationArtifactScalarFieldEnum[]
+}
+
+/**
+ * EvidenceArtifact.projectionOutputs
+ */
+export type EvidenceArtifact$projectionOutputsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProjectionExecution
+   */
+  select?: Prisma.ProjectionExecutionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProjectionExecution
+   */
+  omit?: Prisma.ProjectionExecutionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionExecutionInclude<ExtArgs> | null
+  where?: Prisma.ProjectionExecutionWhereInput
+  orderBy?: Prisma.ProjectionExecutionOrderByWithRelationInput | Prisma.ProjectionExecutionOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectionExecutionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectionExecutionScalarFieldEnum | Prisma.ProjectionExecutionScalarFieldEnum[]
 }
 
 /**

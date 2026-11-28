@@ -274,6 +274,7 @@ export type PlatformObservationWhereInput = {
   execution?: Prisma.XOR<Prisma.ObservationExecutionScalarRelationFilter, Prisma.ObservationExecutionWhereInput>
   definition?: Prisma.XOR<Prisma.ObservationDefinitionScalarRelationFilter, Prisma.ObservationDefinitionWhereInput>
   artifacts?: Prisma.ObservationArtifactListRelationFilter
+  diagnosticInputs?: Prisma.DiagnosticResultInputListRelationFilter
 }
 
 export type PlatformObservationOrderByWithRelationInput = {
@@ -296,6 +297,7 @@ export type PlatformObservationOrderByWithRelationInput = {
   execution?: Prisma.ObservationExecutionOrderByWithRelationInput
   definition?: Prisma.ObservationDefinitionOrderByWithRelationInput
   artifacts?: Prisma.ObservationArtifactOrderByRelationAggregateInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputOrderByRelationAggregateInput
 }
 
 export type PlatformObservationWhereUniqueInput = Prisma.AtLeast<{
@@ -322,6 +324,7 @@ export type PlatformObservationWhereUniqueInput = Prisma.AtLeast<{
   execution?: Prisma.XOR<Prisma.ObservationExecutionScalarRelationFilter, Prisma.ObservationExecutionWhereInput>
   definition?: Prisma.XOR<Prisma.ObservationDefinitionScalarRelationFilter, Prisma.ObservationDefinitionWhereInput>
   artifacts?: Prisma.ObservationArtifactListRelationFilter
+  diagnosticInputs?: Prisma.DiagnosticResultInputListRelationFilter
 }, "id" | "executionId_sequence">
 
 export type PlatformObservationOrderByWithAggregationInput = {
@@ -379,6 +382,7 @@ export type PlatformObservationCreateInput = {
   execution: Prisma.ObservationExecutionCreateNestedOneWithoutObservationsInput
   definition: Prisma.ObservationDefinitionCreateNestedOneWithoutObservationsInput
   artifacts?: Prisma.ObservationArtifactCreateNestedManyWithoutObservationInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputCreateNestedManyWithoutObservationInput
 }
 
 export type PlatformObservationUncheckedCreateInput = {
@@ -396,6 +400,7 @@ export type PlatformObservationUncheckedCreateInput = {
   collectedAt: Date | string
   createdAt?: Date | string
   artifacts?: Prisma.ObservationArtifactUncheckedCreateNestedManyWithoutObservationInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUncheckedCreateNestedManyWithoutObservationInput
 }
 
 export type PlatformObservationUpdateInput = {
@@ -413,6 +418,7 @@ export type PlatformObservationUpdateInput = {
   execution?: Prisma.ObservationExecutionUpdateOneRequiredWithoutObservationsNestedInput
   definition?: Prisma.ObservationDefinitionUpdateOneRequiredWithoutObservationsNestedInput
   artifacts?: Prisma.ObservationArtifactUpdateManyWithoutObservationNestedInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUpdateManyWithoutObservationNestedInput
 }
 
 export type PlatformObservationUncheckedUpdateInput = {
@@ -430,6 +436,7 @@ export type PlatformObservationUncheckedUpdateInput = {
   collectedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   artifacts?: Prisma.ObservationArtifactUncheckedUpdateManyWithoutObservationNestedInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUncheckedUpdateManyWithoutObservationNestedInput
 }
 
 export type PlatformObservationCreateManyInput = {
@@ -755,6 +762,20 @@ export type PlatformObservationUncheckedUpdateManyWithoutExecutionNestedInput = 
   deleteMany?: Prisma.PlatformObservationScalarWhereInput | Prisma.PlatformObservationScalarWhereInput[]
 }
 
+export type PlatformObservationCreateNestedOneWithoutDiagnosticInputsInput = {
+  create?: Prisma.XOR<Prisma.PlatformObservationCreateWithoutDiagnosticInputsInput, Prisma.PlatformObservationUncheckedCreateWithoutDiagnosticInputsInput>
+  connectOrCreate?: Prisma.PlatformObservationCreateOrConnectWithoutDiagnosticInputsInput
+  connect?: Prisma.PlatformObservationWhereUniqueInput
+}
+
+export type PlatformObservationUpdateOneRequiredWithoutDiagnosticInputsNestedInput = {
+  create?: Prisma.XOR<Prisma.PlatformObservationCreateWithoutDiagnosticInputsInput, Prisma.PlatformObservationUncheckedCreateWithoutDiagnosticInputsInput>
+  connectOrCreate?: Prisma.PlatformObservationCreateOrConnectWithoutDiagnosticInputsInput
+  upsert?: Prisma.PlatformObservationUpsertWithoutDiagnosticInputsInput
+  connect?: Prisma.PlatformObservationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PlatformObservationUpdateToOneWithWhereWithoutDiagnosticInputsInput, Prisma.PlatformObservationUpdateWithoutDiagnosticInputsInput>, Prisma.PlatformObservationUncheckedUpdateWithoutDiagnosticInputsInput>
+}
+
 export type PlatformObservationCreateNestedOneWithoutArtifactsInput = {
   create?: Prisma.XOR<Prisma.PlatformObservationCreateWithoutArtifactsInput, Prisma.PlatformObservationUncheckedCreateWithoutArtifactsInput>
   connectOrCreate?: Prisma.PlatformObservationCreateOrConnectWithoutArtifactsInput
@@ -783,6 +804,7 @@ export type PlatformObservationCreateWithoutOrganizationInput = {
   execution: Prisma.ObservationExecutionCreateNestedOneWithoutObservationsInput
   definition: Prisma.ObservationDefinitionCreateNestedOneWithoutObservationsInput
   artifacts?: Prisma.ObservationArtifactCreateNestedManyWithoutObservationInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputCreateNestedManyWithoutObservationInput
 }
 
 export type PlatformObservationUncheckedCreateWithoutOrganizationInput = {
@@ -799,6 +821,7 @@ export type PlatformObservationUncheckedCreateWithoutOrganizationInput = {
   collectedAt: Date | string
   createdAt?: Date | string
   artifacts?: Prisma.ObservationArtifactUncheckedCreateNestedManyWithoutObservationInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUncheckedCreateNestedManyWithoutObservationInput
 }
 
 export type PlatformObservationCreateOrConnectWithoutOrganizationInput = {
@@ -860,6 +883,7 @@ export type PlatformObservationCreateWithoutCrawlRunInput = {
   execution: Prisma.ObservationExecutionCreateNestedOneWithoutObservationsInput
   definition: Prisma.ObservationDefinitionCreateNestedOneWithoutObservationsInput
   artifacts?: Prisma.ObservationArtifactCreateNestedManyWithoutObservationInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputCreateNestedManyWithoutObservationInput
 }
 
 export type PlatformObservationUncheckedCreateWithoutCrawlRunInput = {
@@ -876,6 +900,7 @@ export type PlatformObservationUncheckedCreateWithoutCrawlRunInput = {
   collectedAt: Date | string
   createdAt?: Date | string
   artifacts?: Prisma.ObservationArtifactUncheckedCreateNestedManyWithoutObservationInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUncheckedCreateNestedManyWithoutObservationInput
 }
 
 export type PlatformObservationCreateOrConnectWithoutCrawlRunInput = {
@@ -918,6 +943,7 @@ export type PlatformObservationCreateWithoutDefinitionInput = {
   subject: Prisma.ObservationSubjectCreateNestedOneWithoutObservationsInput
   execution: Prisma.ObservationExecutionCreateNestedOneWithoutObservationsInput
   artifacts?: Prisma.ObservationArtifactCreateNestedManyWithoutObservationInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputCreateNestedManyWithoutObservationInput
 }
 
 export type PlatformObservationUncheckedCreateWithoutDefinitionInput = {
@@ -934,6 +960,7 @@ export type PlatformObservationUncheckedCreateWithoutDefinitionInput = {
   collectedAt: Date | string
   createdAt?: Date | string
   artifacts?: Prisma.ObservationArtifactUncheckedCreateNestedManyWithoutObservationInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUncheckedCreateNestedManyWithoutObservationInput
 }
 
 export type PlatformObservationCreateOrConnectWithoutDefinitionInput = {
@@ -976,6 +1003,7 @@ export type PlatformObservationCreateWithoutSubjectInput = {
   execution: Prisma.ObservationExecutionCreateNestedOneWithoutObservationsInput
   definition: Prisma.ObservationDefinitionCreateNestedOneWithoutObservationsInput
   artifacts?: Prisma.ObservationArtifactCreateNestedManyWithoutObservationInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputCreateNestedManyWithoutObservationInput
 }
 
 export type PlatformObservationUncheckedCreateWithoutSubjectInput = {
@@ -992,6 +1020,7 @@ export type PlatformObservationUncheckedCreateWithoutSubjectInput = {
   collectedAt: Date | string
   createdAt?: Date | string
   artifacts?: Prisma.ObservationArtifactUncheckedCreateNestedManyWithoutObservationInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUncheckedCreateNestedManyWithoutObservationInput
 }
 
 export type PlatformObservationCreateOrConnectWithoutSubjectInput = {
@@ -1034,6 +1063,7 @@ export type PlatformObservationCreateWithoutExecutionInput = {
   subject: Prisma.ObservationSubjectCreateNestedOneWithoutObservationsInput
   definition: Prisma.ObservationDefinitionCreateNestedOneWithoutObservationsInput
   artifacts?: Prisma.ObservationArtifactCreateNestedManyWithoutObservationInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputCreateNestedManyWithoutObservationInput
 }
 
 export type PlatformObservationUncheckedCreateWithoutExecutionInput = {
@@ -1050,6 +1080,7 @@ export type PlatformObservationUncheckedCreateWithoutExecutionInput = {
   collectedAt: Date | string
   createdAt?: Date | string
   artifacts?: Prisma.ObservationArtifactUncheckedCreateNestedManyWithoutObservationInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUncheckedCreateNestedManyWithoutObservationInput
 }
 
 export type PlatformObservationCreateOrConnectWithoutExecutionInput = {
@@ -1078,6 +1109,90 @@ export type PlatformObservationUpdateManyWithWhereWithoutExecutionInput = {
   data: Prisma.XOR<Prisma.PlatformObservationUpdateManyMutationInput, Prisma.PlatformObservationUncheckedUpdateManyWithoutExecutionInput>
 }
 
+export type PlatformObservationCreateWithoutDiagnosticInputsInput = {
+  id: string
+  sequence: number
+  status: string
+  payload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  reasons: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  provenance: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  collectedAt: Date | string
+  createdAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutPlatformObservationsInput
+  crawlRun: Prisma.CrawlRunCreateNestedOneWithoutPlatformObservationsInput
+  subject: Prisma.ObservationSubjectCreateNestedOneWithoutObservationsInput
+  execution: Prisma.ObservationExecutionCreateNestedOneWithoutObservationsInput
+  definition: Prisma.ObservationDefinitionCreateNestedOneWithoutObservationsInput
+  artifacts?: Prisma.ObservationArtifactCreateNestedManyWithoutObservationInput
+}
+
+export type PlatformObservationUncheckedCreateWithoutDiagnosticInputsInput = {
+  id: string
+  organizationId: string
+  crawlRunId: string
+  subjectId: string
+  executionId: string
+  observationDefinitionId: string
+  sequence: number
+  status: string
+  payload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  reasons: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  provenance: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  collectedAt: Date | string
+  createdAt?: Date | string
+  artifacts?: Prisma.ObservationArtifactUncheckedCreateNestedManyWithoutObservationInput
+}
+
+export type PlatformObservationCreateOrConnectWithoutDiagnosticInputsInput = {
+  where: Prisma.PlatformObservationWhereUniqueInput
+  create: Prisma.XOR<Prisma.PlatformObservationCreateWithoutDiagnosticInputsInput, Prisma.PlatformObservationUncheckedCreateWithoutDiagnosticInputsInput>
+}
+
+export type PlatformObservationUpsertWithoutDiagnosticInputsInput = {
+  update: Prisma.XOR<Prisma.PlatformObservationUpdateWithoutDiagnosticInputsInput, Prisma.PlatformObservationUncheckedUpdateWithoutDiagnosticInputsInput>
+  create: Prisma.XOR<Prisma.PlatformObservationCreateWithoutDiagnosticInputsInput, Prisma.PlatformObservationUncheckedCreateWithoutDiagnosticInputsInput>
+  where?: Prisma.PlatformObservationWhereInput
+}
+
+export type PlatformObservationUpdateToOneWithWhereWithoutDiagnosticInputsInput = {
+  where?: Prisma.PlatformObservationWhereInput
+  data: Prisma.XOR<Prisma.PlatformObservationUpdateWithoutDiagnosticInputsInput, Prisma.PlatformObservationUncheckedUpdateWithoutDiagnosticInputsInput>
+}
+
+export type PlatformObservationUpdateWithoutDiagnosticInputsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sequence?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  payload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  reasons?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  provenance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  collectedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutPlatformObservationsNestedInput
+  crawlRun?: Prisma.CrawlRunUpdateOneRequiredWithoutPlatformObservationsNestedInput
+  subject?: Prisma.ObservationSubjectUpdateOneRequiredWithoutObservationsNestedInput
+  execution?: Prisma.ObservationExecutionUpdateOneRequiredWithoutObservationsNestedInput
+  definition?: Prisma.ObservationDefinitionUpdateOneRequiredWithoutObservationsNestedInput
+  artifacts?: Prisma.ObservationArtifactUpdateManyWithoutObservationNestedInput
+}
+
+export type PlatformObservationUncheckedUpdateWithoutDiagnosticInputsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  crawlRunId?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectId?: Prisma.StringFieldUpdateOperationsInput | string
+  executionId?: Prisma.StringFieldUpdateOperationsInput | string
+  observationDefinitionId?: Prisma.StringFieldUpdateOperationsInput | string
+  sequence?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  payload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  reasons?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  provenance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  collectedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artifacts?: Prisma.ObservationArtifactUncheckedUpdateManyWithoutObservationNestedInput
+}
+
 export type PlatformObservationCreateWithoutArtifactsInput = {
   id: string
   sequence: number
@@ -1092,6 +1207,7 @@ export type PlatformObservationCreateWithoutArtifactsInput = {
   subject: Prisma.ObservationSubjectCreateNestedOneWithoutObservationsInput
   execution: Prisma.ObservationExecutionCreateNestedOneWithoutObservationsInput
   definition: Prisma.ObservationDefinitionCreateNestedOneWithoutObservationsInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputCreateNestedManyWithoutObservationInput
 }
 
 export type PlatformObservationUncheckedCreateWithoutArtifactsInput = {
@@ -1108,6 +1224,7 @@ export type PlatformObservationUncheckedCreateWithoutArtifactsInput = {
   provenance: Prisma.JsonNullValueInput | runtime.InputJsonValue
   collectedAt: Date | string
   createdAt?: Date | string
+  diagnosticInputs?: Prisma.DiagnosticResultInputUncheckedCreateNestedManyWithoutObservationInput
 }
 
 export type PlatformObservationCreateOrConnectWithoutArtifactsInput = {
@@ -1140,6 +1257,7 @@ export type PlatformObservationUpdateWithoutArtifactsInput = {
   subject?: Prisma.ObservationSubjectUpdateOneRequiredWithoutObservationsNestedInput
   execution?: Prisma.ObservationExecutionUpdateOneRequiredWithoutObservationsNestedInput
   definition?: Prisma.ObservationDefinitionUpdateOneRequiredWithoutObservationsNestedInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUpdateManyWithoutObservationNestedInput
 }
 
 export type PlatformObservationUncheckedUpdateWithoutArtifactsInput = {
@@ -1156,6 +1274,7 @@ export type PlatformObservationUncheckedUpdateWithoutArtifactsInput = {
   provenance?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   collectedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  diagnosticInputs?: Prisma.DiagnosticResultInputUncheckedUpdateManyWithoutObservationNestedInput
 }
 
 export type PlatformObservationCreateManyOrganizationInput = {
@@ -1187,6 +1306,7 @@ export type PlatformObservationUpdateWithoutOrganizationInput = {
   execution?: Prisma.ObservationExecutionUpdateOneRequiredWithoutObservationsNestedInput
   definition?: Prisma.ObservationDefinitionUpdateOneRequiredWithoutObservationsNestedInput
   artifacts?: Prisma.ObservationArtifactUpdateManyWithoutObservationNestedInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUpdateManyWithoutObservationNestedInput
 }
 
 export type PlatformObservationUncheckedUpdateWithoutOrganizationInput = {
@@ -1203,6 +1323,7 @@ export type PlatformObservationUncheckedUpdateWithoutOrganizationInput = {
   collectedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   artifacts?: Prisma.ObservationArtifactUncheckedUpdateManyWithoutObservationNestedInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUncheckedUpdateManyWithoutObservationNestedInput
 }
 
 export type PlatformObservationUncheckedUpdateManyWithoutOrganizationInput = {
@@ -1249,6 +1370,7 @@ export type PlatformObservationUpdateWithoutCrawlRunInput = {
   execution?: Prisma.ObservationExecutionUpdateOneRequiredWithoutObservationsNestedInput
   definition?: Prisma.ObservationDefinitionUpdateOneRequiredWithoutObservationsNestedInput
   artifacts?: Prisma.ObservationArtifactUpdateManyWithoutObservationNestedInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUpdateManyWithoutObservationNestedInput
 }
 
 export type PlatformObservationUncheckedUpdateWithoutCrawlRunInput = {
@@ -1265,6 +1387,7 @@ export type PlatformObservationUncheckedUpdateWithoutCrawlRunInput = {
   collectedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   artifacts?: Prisma.ObservationArtifactUncheckedUpdateManyWithoutObservationNestedInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUncheckedUpdateManyWithoutObservationNestedInput
 }
 
 export type PlatformObservationUncheckedUpdateManyWithoutCrawlRunInput = {
@@ -1311,6 +1434,7 @@ export type PlatformObservationUpdateWithoutDefinitionInput = {
   subject?: Prisma.ObservationSubjectUpdateOneRequiredWithoutObservationsNestedInput
   execution?: Prisma.ObservationExecutionUpdateOneRequiredWithoutObservationsNestedInput
   artifacts?: Prisma.ObservationArtifactUpdateManyWithoutObservationNestedInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUpdateManyWithoutObservationNestedInput
 }
 
 export type PlatformObservationUncheckedUpdateWithoutDefinitionInput = {
@@ -1327,6 +1451,7 @@ export type PlatformObservationUncheckedUpdateWithoutDefinitionInput = {
   collectedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   artifacts?: Prisma.ObservationArtifactUncheckedUpdateManyWithoutObservationNestedInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUncheckedUpdateManyWithoutObservationNestedInput
 }
 
 export type PlatformObservationUncheckedUpdateManyWithoutDefinitionInput = {
@@ -1373,6 +1498,7 @@ export type PlatformObservationUpdateWithoutSubjectInput = {
   execution?: Prisma.ObservationExecutionUpdateOneRequiredWithoutObservationsNestedInput
   definition?: Prisma.ObservationDefinitionUpdateOneRequiredWithoutObservationsNestedInput
   artifacts?: Prisma.ObservationArtifactUpdateManyWithoutObservationNestedInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUpdateManyWithoutObservationNestedInput
 }
 
 export type PlatformObservationUncheckedUpdateWithoutSubjectInput = {
@@ -1389,6 +1515,7 @@ export type PlatformObservationUncheckedUpdateWithoutSubjectInput = {
   collectedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   artifacts?: Prisma.ObservationArtifactUncheckedUpdateManyWithoutObservationNestedInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUncheckedUpdateManyWithoutObservationNestedInput
 }
 
 export type PlatformObservationUncheckedUpdateManyWithoutSubjectInput = {
@@ -1435,6 +1562,7 @@ export type PlatformObservationUpdateWithoutExecutionInput = {
   subject?: Prisma.ObservationSubjectUpdateOneRequiredWithoutObservationsNestedInput
   definition?: Prisma.ObservationDefinitionUpdateOneRequiredWithoutObservationsNestedInput
   artifacts?: Prisma.ObservationArtifactUpdateManyWithoutObservationNestedInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUpdateManyWithoutObservationNestedInput
 }
 
 export type PlatformObservationUncheckedUpdateWithoutExecutionInput = {
@@ -1451,6 +1579,7 @@ export type PlatformObservationUncheckedUpdateWithoutExecutionInput = {
   collectedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   artifacts?: Prisma.ObservationArtifactUncheckedUpdateManyWithoutObservationNestedInput
+  diagnosticInputs?: Prisma.DiagnosticResultInputUncheckedUpdateManyWithoutObservationNestedInput
 }
 
 export type PlatformObservationUncheckedUpdateManyWithoutExecutionInput = {
@@ -1475,10 +1604,12 @@ export type PlatformObservationUncheckedUpdateManyWithoutExecutionInput = {
 
 export type PlatformObservationCountOutputType = {
   artifacts: number
+  diagnosticInputs: number
 }
 
 export type PlatformObservationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   artifacts?: boolean | PlatformObservationCountOutputTypeCountArtifactsArgs
+  diagnosticInputs?: boolean | PlatformObservationCountOutputTypeCountDiagnosticInputsArgs
 }
 
 /**
@@ -1496,6 +1627,13 @@ export type PlatformObservationCountOutputTypeDefaultArgs<ExtArgs extends runtim
  */
 export type PlatformObservationCountOutputTypeCountArtifactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ObservationArtifactWhereInput
+}
+
+/**
+ * PlatformObservationCountOutputType without action
+ */
+export type PlatformObservationCountOutputTypeCountDiagnosticInputsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DiagnosticResultInputWhereInput
 }
 
 
@@ -1519,6 +1657,7 @@ export type PlatformObservationSelect<ExtArgs extends runtime.Types.Extensions.I
   execution?: boolean | Prisma.ObservationExecutionDefaultArgs<ExtArgs>
   definition?: boolean | Prisma.ObservationDefinitionDefaultArgs<ExtArgs>
   artifacts?: boolean | Prisma.PlatformObservation$artifactsArgs<ExtArgs>
+  diagnosticInputs?: boolean | Prisma.PlatformObservation$diagnosticInputsArgs<ExtArgs>
   _count?: boolean | Prisma.PlatformObservationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["platformObservation"]>
 
@@ -1588,6 +1727,7 @@ export type PlatformObservationInclude<ExtArgs extends runtime.Types.Extensions.
   execution?: boolean | Prisma.ObservationExecutionDefaultArgs<ExtArgs>
   definition?: boolean | Prisma.ObservationDefinitionDefaultArgs<ExtArgs>
   artifacts?: boolean | Prisma.PlatformObservation$artifactsArgs<ExtArgs>
+  diagnosticInputs?: boolean | Prisma.PlatformObservation$diagnosticInputsArgs<ExtArgs>
   _count?: boolean | Prisma.PlatformObservationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PlatformObservationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1614,6 +1754,7 @@ export type $PlatformObservationPayload<ExtArgs extends runtime.Types.Extensions
     execution: Prisma.$ObservationExecutionPayload<ExtArgs>
     definition: Prisma.$ObservationDefinitionPayload<ExtArgs>
     artifacts: Prisma.$ObservationArtifactPayload<ExtArgs>[]
+    diagnosticInputs: Prisma.$DiagnosticResultInputPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2029,6 +2170,7 @@ export interface Prisma__PlatformObservationClient<T, Null = never, ExtArgs exte
   execution<T extends Prisma.ObservationExecutionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ObservationExecutionDefaultArgs<ExtArgs>>): Prisma.Prisma__ObservationExecutionClient<runtime.Types.Result.GetResult<Prisma.$ObservationExecutionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   definition<T extends Prisma.ObservationDefinitionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ObservationDefinitionDefaultArgs<ExtArgs>>): Prisma.Prisma__ObservationDefinitionClient<runtime.Types.Result.GetResult<Prisma.$ObservationDefinitionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   artifacts<T extends Prisma.PlatformObservation$artifactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlatformObservation$artifactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ObservationArtifactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  diagnosticInputs<T extends Prisma.PlatformObservation$diagnosticInputsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlatformObservation$diagnosticInputsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiagnosticResultInputPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2493,6 +2635,30 @@ export type PlatformObservation$artifactsArgs<ExtArgs extends runtime.Types.Exte
   take?: number
   skip?: number
   distinct?: Prisma.ObservationArtifactScalarFieldEnum | Prisma.ObservationArtifactScalarFieldEnum[]
+}
+
+/**
+ * PlatformObservation.diagnosticInputs
+ */
+export type PlatformObservation$diagnosticInputsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DiagnosticResultInput
+   */
+  select?: Prisma.DiagnosticResultInputSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DiagnosticResultInput
+   */
+  omit?: Prisma.DiagnosticResultInputOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DiagnosticResultInputInclude<ExtArgs> | null
+  where?: Prisma.DiagnosticResultInputWhereInput
+  orderBy?: Prisma.DiagnosticResultInputOrderByWithRelationInput | Prisma.DiagnosticResultInputOrderByWithRelationInput[]
+  cursor?: Prisma.DiagnosticResultInputWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DiagnosticResultInputScalarFieldEnum | Prisma.DiagnosticResultInputScalarFieldEnum[]
 }
 
 /**

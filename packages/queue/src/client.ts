@@ -1,12 +1,16 @@
 import type { DatabaseClient } from "@website-bot-scroll/db";
 import { Queue } from "bullmq";
 
-import { crawlScopeSchema, runCrawlJobSchema, type CrawlTrigger, type RunCrawlJob } from "./contracts.js";
-import { CRAWL_QUEUE_NAME, crawlJobOptions, RUN_CRAWL_JOB_NAME } from "./worker-options.js";
+import { crawlScopeSchema, runCrawlJobSchema, type CrawlTrigger, type RunCrawlJob } from "./contracts.ts";
+import { CRAWL_QUEUE_NAME, crawlJobOptions, RUN_CRAWL_JOB_NAME } from "./worker-options.ts";
 
-export type EnqueueCrawlInput = Omit<RunCrawlJob, "crawlRunId">;
+export type EnqueueCrawlInput = Omit<RunCrawlJob, "crawlRunId"> & { requestedByUserId?: string };
 export interface QueueProducer { add(name: string, data: RunCrawlJob, options: { jobId: string }): Promise<unknown> }
-export interface CloseableQueueProducer extends QueueProducer { close(): Promise<void> }
+export interface CloseableQueueProducer extends QueueProducer {
+  getJobState(id: string): Promise<string>;
+  getWorkerCount(): Promise<number>;
+  close(): Promise<void>;
+}
 export interface EnqueueDependencies { prisma: DatabaseClient; producer: QueueProducer }
 
 export class CrawlOverlapError extends Error {
@@ -23,23 +27,75 @@ export function createCrawlQueueProducer(redisUrl: string): CloseableQueueProduc
       ...(url.username ? { username: decodeURIComponent(url.username) } : {}),
       ...(url.password ? { password: decodeURIComponent(url.password) } : {}),
       ...(url.protocol === "rediss:" ? { tls: {} } : {}),
+      maxRetriesPerRequest: 1,
+      enableOfflineQueue: false,
     },
   });
+  queue.on("error", () => { /* Connection failures surface through queue operations. */ });
+  async function withQueueDeadline<T>(operation: () => Promise<T>): Promise<T> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      return await Promise.race([
+        operation(),
+        new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error("Crawl queue connection timed out")), 5_000); }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
   return {
-    add: (name, data, options) => queue.add(name, data, { ...crawlJobOptions, ...options }),
+    add: async (name, data, options) => {
+      await withQueueDeadline(() => queue.waitUntilReady());
+      return queue.add(name, data, { ...crawlJobOptions, ...options });
+    },
+    getJobState: (id) => withQueueDeadline(() => queue.getJobState(id)),
+    getWorkerCount: () => withQueueDeadline(() => queue.getWorkersCount()),
     close: () => queue.close(),
   };
 }
 
-async function publish(run: { id: string; organizationId: string; siteId: string; trigger: CrawlTrigger; idempotencyKey: string; authorizationId: string | null; limits: unknown; producerVersion: string | null; normalizationPolicyVersion: string | null; extractorVersion: string | null }, producer: QueueProducer): Promise<void> {
+type StoredCrawl = { id: string; organizationId: string; siteId: string; trigger: CrawlTrigger; idempotencyKey: string; authorizationId: string | null; limits: unknown; producerVersion: string | null; normalizationPolicyVersion: string | null; extractorVersion: string | null };
+
+function storedJob(run: StoredCrawl) {
   const limits = run.limits as { max_pages?: number; max_depth?: number; max_duration_ms?: number; max_response_bytes?: number } | null;
-  const job = runCrawlJobSchema.parse({
+  return {
     organizationId: run.organizationId, siteId: run.siteId, crawlRunId: run.id, trigger: run.trigger, idempotencyKey: run.idempotencyKey,
     authorizationRef: run.authorizationId,
     limits: { maxPages: limits?.max_pages, maxDepth: limits?.max_depth, maxDurationMs: limits?.max_duration_ms, maxResponseBytes: limits?.max_response_bytes },
     producerVersion: run.producerVersion, normalizationPolicyVersion: run.normalizationPolicyVersion, extractorVersion: run.extractorVersion,
-  });
-  await producer.add(RUN_CRAWL_JOB_NAME, job, { jobId: run.id });
+  };
+}
+
+async function publish(run: StoredCrawl, producer: QueueProducer): Promise<void> {
+  await producer.add(RUN_CRAWL_JOB_NAME, runCrawlJobSchema.parse(storedJob(run)), { jobId: run.id });
+}
+
+export async function recoverPendingCrawls({ prisma, producer }: EnqueueDependencies): Promise<void> {
+  const cutoff = new Date(Date.now() - 30_000);
+  let afterId: string | undefined;
+  let hadFailure = false;
+  for (;;) {
+    const runs = await prisma.crawlRun.findMany({
+      where: {
+        status: "PENDING", trigger: "MANUAL", attemptCount: 0,
+        activeSiteKey: { not: null }, createdAt: { lt: cutoff },
+        ...(afterId === undefined ? {} : { id: { gt: afterId } }),
+      },
+      orderBy: { id: "asc" },
+      take: 50,
+    });
+    for (const run of runs) {
+      const job = runCrawlJobSchema.safeParse(storedJob(run));
+      if (!job.success) {
+        hadFailure = true;
+        continue;
+      }
+      await producer.add(RUN_CRAWL_JOB_NAME, job.data, { jobId: run.id });
+    }
+    if (runs.length < 50) break;
+    afterId = runs.at(-1)!.id;
+  }
+  if (hadFailure) throw new Error("Some pending crawls could not be republished");
 }
 
 function isUniqueViolation(error: unknown): boolean {
@@ -58,15 +114,21 @@ export async function enqueueCrawl(input: EnqueueCrawlInput, dependencies: Enque
   if (!authorization) throw new Error("Export authorization does not belong to the organization and site");
   const authorizationScope = crawlScopeSchema.parse(authorization.scope);
 
+  let run;
   try {
-    const run = await dependencies.prisma.crawlRun.create({ data: {
-      organizationId: input.organizationId, siteId: input.siteId, trigger: input.trigger, idempotencyKey: input.idempotencyKey,
-      activeSiteKey: input.siteId, authorizationId: input.authorizationRef, scope: authorizationScope,
-      limits: { max_pages: input.limits.maxPages, max_depth: input.limits.maxDepth, max_duration_ms: input.limits.maxDurationMs, max_response_bytes: input.limits.maxResponseBytes },
-      producerVersion: input.producerVersion, normalizationPolicyVersion: input.normalizationPolicyVersion, extractorVersion: input.extractorVersion,
-    } });
-    await publish(run, dependencies.producer);
-    return run.id;
+    run = await dependencies.prisma.$transaction(async (transaction) => {
+      const created = await transaction.crawlRun.create({ data: {
+        organizationId: input.organizationId, siteId: input.siteId, trigger: input.trigger, idempotencyKey: input.idempotencyKey,
+        activeSiteKey: input.siteId, authorizationId: input.authorizationRef, scope: authorizationScope,
+        limits: { max_pages: input.limits.maxPages, max_depth: input.limits.maxDepth, max_duration_ms: input.limits.maxDurationMs, max_response_bytes: input.limits.maxResponseBytes },
+        producerVersion: input.producerVersion, normalizationPolicyVersion: input.normalizationPolicyVersion, extractorVersion: input.extractorVersion,
+      } });
+      if (input.requestedByUserId) await transaction.auditEvent.create({ data: {
+        organizationId: input.organizationId, userId: input.requestedByUserId, siteId: input.siteId,
+        action: "site.crawl_requested", targetId: created.id,
+      } });
+      return created;
+    });
   } catch (error) {
     if (!isUniqueViolation(error)) throw error;
     const duplicate = await dependencies.prisma.crawlRun.findUnique({ where: { siteId_idempotencyKey: { siteId: input.siteId, idempotencyKey: input.idempotencyKey } } });
@@ -75,5 +137,14 @@ export async function enqueueCrawl(input: EnqueueCrawlInput, dependencies: Enque
       return duplicate.id;
     }
     throw new CrawlOverlapError();
+  }
+  try {
+    await publish(run, dependencies.producer);
+    return run.id;
+  } catch (error) {
+    await dependencies.prisma.crawlRun.deleteMany({
+      where: { id: run.id, status: "PENDING", activeSiteKey: input.siteId, attemptCount: 0 },
+    });
+    throw error;
   }
 }

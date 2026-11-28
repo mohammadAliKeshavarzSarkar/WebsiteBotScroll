@@ -4,6 +4,7 @@
   "type": "module",
   "dependencies": {
     "@website-bot-scroll/domain": "workspace:*",
+    "@website-bot-scroll/observation-schema": "workspace:*",
     "cheerio": "1.1.2"
   },
   "exports": {

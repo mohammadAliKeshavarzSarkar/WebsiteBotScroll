@@ -11,6 +11,7 @@ describeDatabase("bootstrapOwner", () => {
   const prisma = createPrismaClient(databaseUrl!);
 
   beforeEach(async () => {
+    await prisma.$executeRawUnsafe('TRUNCATE TABLE "crawl_runs" CASCADE');
     await prisma.auditEvent.deleteMany();
     await prisma.session.deleteMany();
     await prisma.user.deleteMany();

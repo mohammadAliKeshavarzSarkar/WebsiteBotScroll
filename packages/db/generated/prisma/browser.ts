@@ -43,6 +43,11 @@ export type Site = Prisma.SiteModel
  */
 export type CrawlRun = Prisma.CrawlRunModel
 /**
+ * Model PlatformMigrationState
+ * 
+ */
+export type PlatformMigrationState = Prisma.PlatformMigrationStateModel
+/**
  * Model ExportAuthorization
  * 
  */
@@ -127,6 +132,46 @@ export type RendererSession = Prisma.RendererSessionModel
  * 
  */
 export type PlatformObservation = Prisma.PlatformObservationModel
+/**
+ * Model DiagnosticRuleDefinition
+ * 
+ */
+export type DiagnosticRuleDefinition = Prisma.DiagnosticRuleDefinitionModel
+/**
+ * Model DiagnosticRuleInput
+ * 
+ */
+export type DiagnosticRuleInput = Prisma.DiagnosticRuleInputModel
+/**
+ * Model DiagnosticExecution
+ * 
+ */
+export type DiagnosticExecution = Prisma.DiagnosticExecutionModel
+/**
+ * Model DiagnosticResult
+ * 
+ */
+export type DiagnosticResult = Prisma.DiagnosticResultModel
+/**
+ * Model DiagnosticResultInput
+ * 
+ */
+export type DiagnosticResultInput = Prisma.DiagnosticResultInputModel
+/**
+ * Model ExportProjectionDefinition
+ * 
+ */
+export type ExportProjectionDefinition = Prisma.ExportProjectionDefinitionModel
+/**
+ * Model PlatformSnapshot
+ * 
+ */
+export type PlatformSnapshot = Prisma.PlatformSnapshotModel
+/**
+ * Model ProjectionExecution
+ * 
+ */
+export type ProjectionExecution = Prisma.ProjectionExecutionModel
 /**
  * Model EvidenceArtifact
  * 

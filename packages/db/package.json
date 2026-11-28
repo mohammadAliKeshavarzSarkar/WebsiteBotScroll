@@ -9,7 +9,10 @@
     "./observation-records": "./src/repositories/observation-records.ts",
     "./artifacts": "./src/repositories/artifacts.ts",
     "./renderer-sessions": "./src/repositories/renderer-sessions.ts",
-    "./sites": "./src/repositories/sites.ts"
+    "./diagnostics": "./src/repositories/diagnostics.ts",
+    "./export-projections": "./src/repositories/export-projections.ts",
+    "./sites": "./src/repositories/sites.ts",
+    "./site-workspace": "./src/repositories/site-workspace.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",

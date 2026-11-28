@@ -12,6 +12,7 @@ describeDatabase("SiteRepository tenant isolation", () => {
   const sites = new SiteRepository(prisma);
 
   beforeEach(async () => {
+    await prisma.$executeRawUnsafe('TRUNCATE TABLE "crawl_runs" CASCADE');
     await prisma.auditEvent.deleteMany();
     await prisma.site.deleteMany();
     await prisma.organization.deleteMany();

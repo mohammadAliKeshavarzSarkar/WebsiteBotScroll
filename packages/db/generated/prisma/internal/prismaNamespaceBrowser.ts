@@ -56,6 +56,7 @@ export const ModelName = {
   Session: 'Session',
   Site: 'Site',
   CrawlRun: 'CrawlRun',
+  PlatformMigrationState: 'PlatformMigrationState',
   ExportAuthorization: 'ExportAuthorization',
   EvidencePage: 'EvidencePage',
   EvidenceTransaction: 'EvidenceTransaction',
@@ -73,6 +74,14 @@ export const ModelName = {
   ObservationExecution: 'ObservationExecution',
   RendererSession: 'RendererSession',
   PlatformObservation: 'PlatformObservation',
+  DiagnosticRuleDefinition: 'DiagnosticRuleDefinition',
+  DiagnosticRuleInput: 'DiagnosticRuleInput',
+  DiagnosticExecution: 'DiagnosticExecution',
+  DiagnosticResult: 'DiagnosticResult',
+  DiagnosticResultInput: 'DiagnosticResultInput',
+  ExportProjectionDefinition: 'ExportProjectionDefinition',
+  PlatformSnapshot: 'PlatformSnapshot',
+  ProjectionExecution: 'ProjectionExecution',
   EvidenceArtifact: 'EvidenceArtifact',
   ObservationArtifact: 'ObservationArtifact',
   DomainVerification: 'DomainVerification',
@@ -171,6 +180,21 @@ export const CrawlRunScalarFieldEnum = {
 } as const
 
 export type CrawlRunScalarFieldEnum = (typeof CrawlRunScalarFieldEnum)[keyof typeof CrawlRunScalarFieldEnum]
+
+
+export const PlatformMigrationStateScalarFieldEnum = {
+  crawlRunId: 'crawlRunId',
+  organizationId: 'organizationId',
+  checkpoint: 'checkpoint',
+  parityDigest: 'parityDigest',
+  parityVerifiedAt: 'parityVerifiedAt',
+  readAuthority: 'readAuthority',
+  switchedAt: 'switchedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlatformMigrationStateScalarFieldEnum = (typeof PlatformMigrationStateScalarFieldEnum)[keyof typeof PlatformMigrationStateScalarFieldEnum]
 
 
 export const ExportAuthorizationScalarFieldEnum = {
@@ -414,6 +438,122 @@ export const PlatformObservationScalarFieldEnum = {
 } as const
 
 export type PlatformObservationScalarFieldEnum = (typeof PlatformObservationScalarFieldEnum)[keyof typeof PlatformObservationScalarFieldEnum]
+
+
+export const DiagnosticRuleDefinitionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  version: 'version',
+  policyVersion: 'policyVersion',
+  configurationSchema: 'configurationSchema',
+  configurationSchemaSha256: 'configurationSchemaSha256',
+  outcomes: 'outcomes',
+  supportsUnavailableInputs: 'supportsUnavailableInputs',
+  status: 'status',
+  createdAt: 'createdAt',
+  deprecatedAt: 'deprecatedAt'
+} as const
+
+export type DiagnosticRuleDefinitionScalarFieldEnum = (typeof DiagnosticRuleDefinitionScalarFieldEnum)[keyof typeof DiagnosticRuleDefinitionScalarFieldEnum]
+
+
+export const DiagnosticRuleInputScalarFieldEnum = {
+  ruleDefinitionId: 'ruleDefinitionId',
+  observationDefinitionId: 'observationDefinitionId',
+  position: 'position',
+  scopes: 'scopes',
+  required: 'required'
+} as const
+
+export type DiagnosticRuleInputScalarFieldEnum = (typeof DiagnosticRuleInputScalarFieldEnum)[keyof typeof DiagnosticRuleInputScalarFieldEnum]
+
+
+export const DiagnosticExecutionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  crawlRunId: 'crawlRunId',
+  ruleDefinitionId: 'ruleDefinitionId',
+  stableKey: 'stableKey',
+  attempt: 'attempt',
+  configuration: 'configuration',
+  status: 'status',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
+  error: 'error'
+} as const
+
+export type DiagnosticExecutionScalarFieldEnum = (typeof DiagnosticExecutionScalarFieldEnum)[keyof typeof DiagnosticExecutionScalarFieldEnum]
+
+
+export const DiagnosticResultScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  crawlRunId: 'crawlRunId',
+  executionId: 'executionId',
+  subjectId: 'subjectId',
+  sequence: 'sequence',
+  outcome: 'outcome',
+  messageData: 'messageData',
+  limitations: 'limitations',
+  collectedAt: 'collectedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type DiagnosticResultScalarFieldEnum = (typeof DiagnosticResultScalarFieldEnum)[keyof typeof DiagnosticResultScalarFieldEnum]
+
+
+export const DiagnosticResultInputScalarFieldEnum = {
+  resultId: 'resultId',
+  observationId: 'observationId',
+  position: 'position'
+} as const
+
+export type DiagnosticResultInputScalarFieldEnum = (typeof DiagnosticResultInputScalarFieldEnum)[keyof typeof DiagnosticResultInputScalarFieldEnum]
+
+
+export const ExportProjectionDefinitionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  version: 'version',
+  format: 'format',
+  mediaType: 'mediaType',
+  acceptedObservationDefinitions: 'acceptedObservationDefinitions',
+  acceptedDiagnosticRules: 'acceptedDiagnosticRules',
+  identitySha256: 'identitySha256',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type ExportProjectionDefinitionScalarFieldEnum = (typeof ExportProjectionDefinitionScalarFieldEnum)[keyof typeof ExportProjectionDefinitionScalarFieldEnum]
+
+
+export const PlatformSnapshotScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  crawlRunId: 'crawlRunId',
+  producerRevision: 'producerRevision',
+  sha256: 'sha256',
+  payload: 'payload',
+  frozenAt: 'frozenAt'
+} as const
+
+export type PlatformSnapshotScalarFieldEnum = (typeof PlatformSnapshotScalarFieldEnum)[keyof typeof PlatformSnapshotScalarFieldEnum]
+
+
+export const ProjectionExecutionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  snapshotId: 'snapshotId',
+  projectionDefinitionId: 'projectionDefinitionId',
+  stableKey: 'stableKey',
+  attempt: 'attempt',
+  status: 'status',
+  outputArtifactId: 'outputArtifactId',
+  outputSha256: 'outputSha256',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectionExecutionScalarFieldEnum = (typeof ProjectionExecutionScalarFieldEnum)[keyof typeof ProjectionExecutionScalarFieldEnum]
 
 
 export const EvidenceArtifactScalarFieldEnum = {

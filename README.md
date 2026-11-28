@@ -6,14 +6,17 @@ WebsiteBotScroll is a read-only, evidence-based SEO auditing platform. The repos
 
 The following foundations are runnable today:
 
-- Next.js web application and login page
-- Background worker bootstrap
+- Evidence-first product landing page and owner login
+- Protected, tenant-scoped website registration workspace
+- Owner-declared crawl authorization with exact registered-origin scope
+- Bounded manual crawl submission and persisted run status
+- BullMQ worker consumption with production DNS and HTTP(S) adapters
 - PostgreSQL persistence and tenant-safe repositories
 - Owner authentication and session storage
 - URL normalization and SSRF/network-boundary protection
 - `robots.txt` evaluation and bounded sitemap discovery
 
-The end-to-end workflow where a customer enters a domain and receives a complete scheduled audit is **not connected yet**. Crawl fetching, scheduling, findings, scores, and the customer dashboard are later implementation phases. The current home page therefore shows an MVP-in-progress message.
+An authenticated owner can register a website, record an owner declaration, and start one bounded manual crawl. The detail page shows persisted lifecycle, coverage, stop reason, and safe collection errors. This is not technical domain verification, scheduled monitoring, or an SEO findings/recommendations product.
 
 ## Requirements
 
@@ -79,6 +82,12 @@ Get-Content .env | Where-Object { $_ -match '^[^#].*=.*$' } | ForEach-Object {
 
 Repeat that command in each new terminal before running the worker, migrations, or integration tests.
 
+The web process also records the exact source revision on every crawl. Set it from the checked-out commit in each application terminal:
+
+```powershell
+$env:SOURCE_REVISION = git rev-parse HEAD
+```
+
 ### 3. Start PostgreSQL and Redis
 
 ```powershell
@@ -111,10 +120,13 @@ Open:
 - Web application: <http://localhost:3000>
 - Health endpoint: <http://localhost:3000/api/health>
 - Login page: <http://localhost:3000/login>
+- Owner website workspace: <http://localhost:3000/sites>
 
-The worker prints a JSON `ready` event when its environment is valid.
+The worker prints a JSON `ready` event after configuration is valid and its BullMQ runtime is created. Redis must remain running while crawl requests are submitted and processed.
 
-Owner bootstrap logic exists in `packages/db/src/seed.ts`, but a production-style seed command and the post-login `/sites` dashboard are not wired yet. Consequently, the login screen is present for development, but the complete interactive owner flow is not ready.
+Open the home page, select **Open workspace**, and sign in with the owner account already bootstrapped in your local database. In `/sites`, register an absolute HTTP(S) URL, open the website row, and record the owner declaration. Choose maximum pages (1–100), depth (0–3), and duration (10–300 seconds), then start the crawl. The response limit is fixed at 5 MiB, scope cannot expand beyond the registered host, and only one run can be active per website. Refresh the detail page to inspect persisted status; active runs refresh automatically every five seconds.
+
+Owner bootstrap logic exists in `packages/db/src/seed.ts`, but a production-style seed command is not wired yet. A fresh database therefore needs an owner record created through the existing bootstrap function before the login flow can be used.
 
 ## Run quality checks
 
@@ -152,7 +164,7 @@ pnpm --filter @website-bot-scroll/crawler test
 
 ## Stop local services
 
-Stop containers while preserving their data:
+Stop the web and worker processes with `Ctrl+C` in the terminal running `pnpm dev`. Then stop containers while preserving their data:
 
 ```powershell
 docker compose down
@@ -184,10 +196,31 @@ docs/superpowers     Product specification and phased implementation plan
 
 - [Product design](docs/superpowers/specs/2026-11-14-automated-seo-platform-design.md)
 - [MVP implementation plan](docs/superpowers/plans/2026-11-14-seo-auditor-mvp.md)
+- [Observation definition governance](docs/operations/observation-definition-governance.md)
+- [Observation platform migration and recovery](docs/operations/observation-platform-migration.md)
+- [Stage A.2 synthetic exchange runbook](docs/operations/stage-a2-synthetic-exchange.md)
+- [Web onboarding guide](docs/operations/web-onboarding.md)
 
 ## Evidence interoperability
 
 Stage A.1 defines the reviewable `seo-crawl-evidence` 0.1.0 boundary without coupling this repository to an SEO intelligence engine. See the [interoperability architecture](docs/architecture/evidence-interoperability.md), [evidence preservation gaps](docs/architecture/evidence-preservation-gaps.md), and the package's machine-readable [review manifest](packages/evidence-contract/review-manifest.json).
+
+### Export and verify a frozen evidence snapshot
+
+Load the private database URL in PowerShell, then export with the exact reviewed producer commit:
+
+```powershell
+$env:DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/website_bot_scroll"
+pnpm --filter @website-bot-scroll/evidence-producer evidence:export -- <organization-id> <snapshot-id> D:\Private\WebsiteBotScrollExchange <40-character-producer-commit>
+```
+
+The destination must be private and the generated evidence and manifest files must not already exist. Verify the delivered pair without modifying either file:
+
+```powershell
+pnpm --filter @website-bot-scroll/evidence-producer evidence:verify -- D:\Private\WebsiteBotScrollExchange\<run-id>.evidence.json D:\Private\WebsiteBotScrollExchange\<run-id>.manifest.json <expected-authorization-ref>
+```
+
+The verifier checks the exact evidence byte length and SHA-256 before parsing, then independently replays canonical validation, exchange-profile preflight, and type-sensitive manifest consistency.
 
 ## Troubleshooting
 
@@ -215,6 +248,18 @@ Start only the web app on another port:
 ```powershell
 pnpm --filter web dev -- --port 3001
 ```
+
+### Crawl submission says the queue is unavailable
+
+Confirm Redis and the worker are running, and that `SOURCE_REVISION` is the exact 40-character output of `git rev-parse HEAD`:
+
+```powershell
+docker compose ps
+docker compose logs redis
+$env:SOURCE_REVISION
+```
+
+If publication fails, the newly-created pending run is removed so it does not permanently block a retry.
 
 ### Generated Prisma client is stale
 
