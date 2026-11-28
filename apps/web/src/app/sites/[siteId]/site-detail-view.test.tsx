@@ -44,6 +44,9 @@ describe("owner site detail", () => {
     expect(html).toContain("Finished checking the pages found");
     expect(html).toContain("https://example.com/about");
     expect(html).toContain("HTTP 200");
+    expect(html).toContain("1 of 1 pages collected");
+    expect(html).toMatch(/<time datetime="1970-01-01T00:00:04\.000Z"/i);
+    expect(html).toContain('<th scope="col">Final URL</th>');
     expect(html).not.toContain("frontier_exhausted");
   });
 

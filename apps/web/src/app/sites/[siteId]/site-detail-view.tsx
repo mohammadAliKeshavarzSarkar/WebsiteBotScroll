@@ -19,31 +19,46 @@ const stopMessages: Record<string, string> = {
   worker_error: "The worker could not finish this crawl.",
 };
 
+const completionDate = new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" });
+
 function CrawlSummary({ run }: { run: WorkspaceCrawlRun }) {
   const { coverage, startedAt, finishedAt, pages, errors } = run;
   const seconds = startedAt && finishedAt ? Math.max(0, Math.round((finishedAt.getTime() - startedAt.getTime()) / 1000)) : null;
-  const duration = seconds === null ? null : seconds < 1 ? "Under 1 second" : seconds < 60 ? `${seconds} seconds` : `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+  const duration = seconds === null ? null : seconds < 1 ? "Under 1 second" : seconds === 1 ? "1 second" : seconds < 60 ? `${seconds} seconds` : `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+  const notAttempted = coverage.unattempted ?? Math.max(0, coverage.discovered - coverage.attempted);
+  const reason = run.stopReason && Object.hasOwn(stopMessages, run.stopReason) ? stopMessages[run.stopReason] : null;
   const metrics = [
     { label: "Pages collected", value: coverage.collected },
     { label: "Pages failed", value: coverage.failed },
     { label: "Pages discovered", value: coverage.discovered },
-    { label: "Not attempted", value: coverage.unattempted ?? Math.max(0, coverage.discovered - coverage.attempted) },
+    { label: "Not attempted", value: notAttempted },
   ];
   return <>
-    <div className="run-heading">
-      <h3 className={run.status === "COMPLETED" ? "crawl-complete" : undefined}>{runLabels[run.status]}</h3>
-      {duration ? <span>{duration}</span> : null}
+    <div className="crawl-outcome" data-outcome={run.status.toLowerCase()} role="status">
+      <h3><span className="crawl-outcome-dot" aria-hidden="true" />{runLabels[run.status]}</h3>
+      {reason || run.status === "PENDING" ? <p>{reason ?? "Waiting for a crawl worker."}</p> : null}
+      {finishedAt ? <div className="crawl-run-meta">
+        <time dateTime={finishedAt.toISOString()}>{completionDate.format(finishedAt)} UTC</time>
+        {duration ? <span>{duration}</span> : null}
+      </div> : null}
     </div>
-    {run.stopReason && Object.hasOwn(stopMessages, run.stopReason) ? <p>{stopMessages[run.stopReason]}</p> : null}
-    {run.status === "PENDING" ? <p>Waiting for a crawl worker.</p> : null}
+    {coverage.discovered > 0 ? <div className="crawl-coverage">
+      <div><strong>Collection coverage</strong><span>{coverage.collected} of {coverage.discovered} pages collected</span></div>
+      <meter min={0} max={coverage.discovered} value={coverage.collected} aria-label="Collection coverage" />
+    </div> : null}
     <dl className="coverage-grid">
       {metrics.map(({ label, value }) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
     </dl>
     {pages?.length ? <details className="crawl-result-details">
       <summary>View collected pages ({pages.length})</summary>
-      <ol className="crawl-page-list">{pages.map(({ url, statusCode }, index) => <li key={index}>
-        <span>{url}</span>{statusCode !== null ? <span>HTTP {statusCode}</span> : null}
-      </li>)}</ol>
+      <div className="crawl-page-scroll" tabIndex={0} role="region" aria-label="Collected page results">
+        <table className="crawl-page-table">
+          <thead><tr><th scope="col">Final URL</th><th scope="col">Response</th></tr></thead>
+          <tbody>{pages.map(({ url, statusCode }, index) => <tr key={index}>
+            <td>{url}</td><td>{statusCode !== null ? <span className="crawl-http-badge" data-success={statusCode >= 200 && statusCode < 300}>HTTP {statusCode}</span> : "Unavailable"}</td>
+          </tr>)}</tbody>
+        </table>
+      </div>
     </details> : null}
     {errors.length ? <details className="crawl-result-details" open>
       <summary>Collection errors ({errors.length})</summary>
